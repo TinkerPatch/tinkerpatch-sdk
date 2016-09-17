@@ -1,13 +1,11 @@
 package com.sim.tinyhttpclient;
 
-import com.sim.tinyhttpclient.impl.UrlConnHttpclient;
+import com.sim.tinyhttpclient.impl.UrlConnectionHttpclient;
 
 import org.junit.Test;
 
 import java.io.File;
 import java.util.HashMap;
-
-import static org.junit.Assert.*;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -19,21 +17,21 @@ public class GetUnitTest {
 
     @Test
     public void simpleGet() throws Exception {
-        UrlConnHttpclient client = new UrlConnHttpclient.Builder().build();
+        UrlConnectionHttpclient client = new UrlConnectionHttpclient.Builder().build();
         String response = client.Get(pathUrl, null);
         System.out.print(response);
     }
 
     @Test
     public void simpleGetHttps() throws Exception {
-        UrlConnHttpclient client = new UrlConnHttpclient.Builder().build();
+        UrlConnectionHttpclient client = new UrlConnectionHttpclient.Builder().build();
         String response = client.Get(pathUrl, null);
         System.out.print(response);
     }
 
     @Test
     public void simpleGetWithParameter() throws Exception {
-        UrlConnHttpclient client = new UrlConnHttpclient.Builder().build();
+        UrlConnectionHttpclient client = new UrlConnectionHttpclient.Builder().build();
         HashMap<String, String> map = new HashMap<>();
         map.put("limit", "1");
         String response = client.Get(pathUrl, map);
@@ -42,7 +40,7 @@ public class GetUnitTest {
 
     @Test
     public void simpleGetFile() throws Exception {
-        UrlConnHttpclient client = new UrlConnHttpclient.Builder().build();
+        UrlConnectionHttpclient client = new UrlConnectionHttpclient.Builder().build();
         HashMap<String, String> map = new HashMap<>();
         map.put("limit", "1");
         File response = client.GetFile(pathUrl, map, "./test.tmp");

@@ -1,6 +1,6 @@
 package com.sim.tinyhttpclient;
 
-import com.sim.tinyhttpclient.impl.UrlConnHttpclient;
+import com.sim.tinyhttpclient.impl.UrlConnectionHttpclient;
 
 import org.junit.Test;
 
@@ -16,19 +16,19 @@ public class PostUnitTest {
 
     @Test
     public void simplePost() throws Exception {
-        UrlConnHttpclient client = new UrlConnHttpclient.Builder().build();
+        UrlConnectionHttpclient client = new UrlConnectionHttpclient.Builder().build();
         client.Post(pathUrl, null);
     }
 
     @Test
     public void simplePostHttps() throws Exception {
-        UrlConnHttpclient client = new UrlConnHttpclient.Builder().build();
+        UrlConnectionHttpclient client = new UrlConnectionHttpclient.Builder().build();
         client.Post(pathUrl, null);
     }
 
     @Test
     public void simplePostWithParameter() throws Exception {
-        UrlConnHttpclient client = new UrlConnHttpclient.Builder().build();
+        UrlConnectionHttpclient client = new UrlConnectionHttpclient.Builder().build();
         HashMap<String, String> map = new HashMap<>();
         map.put("limit", "1");
         client.Post("https://api.xmonster.cn/v2/feeds", map);

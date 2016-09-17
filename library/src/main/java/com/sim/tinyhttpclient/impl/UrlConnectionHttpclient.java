@@ -10,7 +10,6 @@ import com.sim.tinyhttpclient.util.StringUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -23,7 +22,7 @@ import java.util.Map;
  * Created by sun on 9/18/16.
  */
 
-public class UrlConnHttpclient implements IClient {
+public class UrlConnectionHttpclient implements IClient {
 
     private final String charset;
     private final String userAgent;
@@ -33,7 +32,7 @@ public class UrlConnHttpclient implements IClient {
     // TODO: currently we didn't support keep alive
     private final boolean isKeepAlive;
 
-    private UrlConnHttpclient(
+    private UrlConnectionHttpclient(
             final String charset,
             final String userAgent,
             final boolean isKeepAlive,
@@ -181,12 +180,12 @@ public class UrlConnHttpclient implements IClient {
             return this;
         }
 
-        public UrlConnHttpclient build() {
+        public UrlConnectionHttpclient build() {
             if (StringUtils.isBlank(userAgent)) {
                 userAgent = System.getProperty("http.agent");
                 userAgent += ";tinyhttpclient";
             }
-            return new UrlConnHttpclient(
+            return new UrlConnectionHttpclient(
                     charset,
                     userAgent,
                     isKeepAlive,

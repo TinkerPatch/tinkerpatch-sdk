@@ -15,6 +15,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Map;
 
@@ -66,23 +67,72 @@ public class UrlConnectionHttpclient implements IClient {
     }
 
     public String Post(String pathUrl, Map<String, String> params, String body) throws IOException {
+        return bodyActionToString(pathUrl, params, body, RequestAction.POST);
+    }
+
+    public String Post(String pathUrl, Map<String, String> params, Map<String, String> urlForm) throws IOException {
+        return formActionToString(pathUrl, params, urlForm, RequestAction.POST);
+    }
+
+    public String Put(String pathUrl, Map<String, String> params) throws IOException {
+        return Put(pathUrl, params, "");
+    }
+
+    public String Put(String pathUrl, Map<String, String> params, String body) throws IOException {
+        return bodyActionToString(pathUrl, params, body, RequestAction.PUT);
+    }
+
+    public String Put(String pathUrl, Map<String, String> params, Map<String, String> urlForm) throws IOException {
+        return formActionToString(pathUrl, params, urlForm, RequestAction.PUT);
+    }
+
+    public String Patch(String pathUrl, Map<String, String> params) throws IOException {
+        return Patch(pathUrl, params, "");
+    }
+
+    public String Patch(String pathUrl, Map<String, String> params, String body) throws IOException {
+        return bodyActionToString(pathUrl, params, body, RequestAction.PATCH);
+    }
+
+    public String Patch(String pathUrl, Map<String, String> params, Map<String, String> urlForm) throws IOException {
+        return formActionToString(pathUrl, params, urlForm, RequestAction.PATCH);
+    }
+
+    public String formActionToString(
+            String pathUrl,
+            Map<String, String> params,
+            Map<String, String> urlForm,
+            RequestAction action) throws IOException {
         URL url = buildUrl(pathUrl, params);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoInput(true);
-        conn.setRequestMethod(RequestAction.POST.getAction());
+        setReqeustMethod(action, conn);
+        conn.setRequestProperty("Content-Type", String.format("application/x-www-form-urlencoded; charset=%s", charset));
+        writeToRequest(conn, urlForm);
+        return launchConnection(conn);
+    }
+
+    public String bodyActionToString(
+            String pathUrl,
+            Map<String, String> params,
+            String body,
+            RequestAction action) throws IOException {
+        URL url = buildUrl(pathUrl, params);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setDoInput(true);
+        setReqeustMethod(action, conn);
         conn.setRequestProperty("Content-Type", String.format("application/json; charset=%s", charset));
         writeToRequest(conn, body);
         return launchConnection(conn);
     }
 
-    public String Post(String pathUrl, Map<String, String> params, Map<String, String> urlForm) throws IOException {
-        URL url = buildUrl(pathUrl, params);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setDoInput(true);
-        conn.setRequestMethod(RequestAction.POST.getAction());
-        conn.setRequestProperty("Content-Type", String.format("application/x-www-form-urlencoded; charset=%s", charset));
-        writeToRequest(conn, urlForm);
-        return launchConnection(conn);
+    private void setReqeustMethod(RequestAction action, HttpURLConnection conn) throws ProtocolException {
+        if (action.equals(RequestAction.PATCH)) {
+            conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+            conn.setRequestMethod(RequestAction.POST.getAction());
+        } else {
+            conn.setRequestMethod(action.getAction());
+        }
     }
 
     @NonNull

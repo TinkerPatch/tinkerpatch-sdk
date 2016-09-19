@@ -98,6 +98,18 @@ public class UrlConnectionHttpclient implements IClient {
         return formActionToString(pathUrl, params, urlForm, RequestAction.PATCH);
     }
 
+    public String Delete(String pathUrl, Map<String, String> params) throws IOException {
+        return Patch(pathUrl, params, "");
+    }
+
+    public String Delete(String pathUrl, Map<String, String> params, String body) throws IOException {
+        return bodyActionToString(pathUrl, params, body, RequestAction.DELETE);
+    }
+
+    public String Delete(String pathUrl, Map<String, String> params, Map<String, String> urlForm) throws IOException {
+        return formActionToString(pathUrl, params, urlForm, RequestAction.DELETE);
+    }
+
     public String formActionToString(
             String pathUrl,
             Map<String, String> params,

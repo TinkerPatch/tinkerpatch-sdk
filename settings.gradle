@@ -1,1 +1,4 @@
-include ':example', ':library'
+include ':example'
+include ':library'
+include ':integration:okhttp'
+include ':integration:okhttp3'

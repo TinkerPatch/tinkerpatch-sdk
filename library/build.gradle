@@ -1,31 +1,39 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+apply plugin: 'maven'
 
-group='com.github.simpleton'
+group = GROUP as String
+
+findbugs {
+    toolVersion = FINDBUGS_VERSION
+}
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion COMPILE_SDK_VERSION as int
+    buildToolsVersion BUILD_TOOLS_VERSION as String
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
-        consumerProguardFiles 'proguard-rules.pro'
+        minSdkVersion MIN_SDK_VERSION as int
+        targetSdkVersion TARGET_SDK_VERSION as int
+        versionName VERSION_NAME as String
+        consumerProguardFiles 'proguard-rules.txt'
     }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
         }
     }
-}
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    testCompile 'junit:junit:4.12'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 dependencies {
@@ -54,4 +62,63 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+
+
+afterEvaluate {
+    task findbugs(type: FindBugs, dependsOn: assembleDebug) {
+
+        description 'Run findbugs'
+        group 'verification'
+
+        classes = fileTree('build/intermediates/classes/debug/')
+        source = fileTree('src/main/java')
+        classpath = project.configurations.compile
+
+        effort = 'max'
+
+        excludeFilter = file("findbugs-exclude.xml")
+
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    check.dependsOn('findbugs')
+
+    pmd {
+        toolVersion '5.4.0'
+    }
+
+    task pmd(type: Pmd) {
+        targetJdk = TargetJdk.VERSION_1_7
+
+        description 'Run pmd'
+        group 'verification'
+
+        // If ruleSets is not empty, it seems to contain some
+        // defaults which override rules in the ruleset file...
+        ruleSets = []
+        ruleSetFiles = files('pmd-ruleset.xml')
+        source = fileTree('src/main/java')
+
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    check.dependsOn('pmd')
+}
+apply from: "${rootProject.projectDir}/gradle/upload.gradle"
+// exclude <dependency> tag for android support-v4 library from :glide's pom
+// this will ensure that this warning will not prevent the build from completing:
+// Module 'com.github.bumptech.glide:glide:4.0.0-SNAPSHOT' depends on one or more Android Libraries but is a jar
+// most users will need to override support-v4 version anyway if a newer version is available
+// TODO make support-v4 a <scope>runtime</scope> dependency in pom.xml
+afterEvaluate {
+    uploadArchives.repositories.mavenDeployer.pom.whenConfigured { p ->
+        p.dependencies = p.dependencies.findAll { dep -> dep.artifactId != "support-v4" }
+    }
 }

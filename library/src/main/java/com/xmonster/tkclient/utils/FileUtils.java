@@ -1,6 +1,5 @@
-package com.sim.tinyhttpclient.util;
+package com.xmonster.tkclient.utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

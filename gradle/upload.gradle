@@ -16,8 +16,7 @@
  *
  * Based on: https://github.com/mcxiaoke/gradle-mvn-push/blob/master/gradle-mvn-push.gradle.
  * Local test with (..._REPOSITORY_URL properties must be full paths):
- * gradlew clean buildArchives uploadArchives --stacktrace --info -PSNAPSHOT_REPOSITORY_URL=file://p:\projects\contrib\github-glide\repo-snapshot -PRELEASE_REPOSITORY_URL=file://p:\projects\contrib\github-glide\repo-release
- * For faster runs add: -x check
+  * For faster runs add: -x check
  *
  */
 
@@ -124,8 +123,10 @@ afterEvaluate { project ->
 
         task androidJavadocs(type: Javadoc, dependsOn: compileReleaseJavaWithJavac) {
             source = releaseVariants.collect { it.javaCompile.source }
-            classpath = files(releaseVariants.collect { files(it.javaCompile.classpath.files,
-                    project.android.bootClasspath) })
+            classpath = files(releaseVariants.collect {
+                files(it.javaCompile.classpath.files,
+                        project.android.bootClasspath)
+            })
 
             options {
                 links('http://docs.oracle.com/javase/7/docs/api/')

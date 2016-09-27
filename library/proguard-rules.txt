@@ -1,1 +1,1 @@
--keep public class * implements com.xmonster.tkclient.module.GlideModule
+-keep public class * implements com.xmonster.tkclient.module.TKClientModule

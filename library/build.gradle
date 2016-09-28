@@ -1,10 +1,31 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'findbugs'
 apply plugin: 'pmd'
 apply plugin: 'maven'
 
-group = GROUP as String
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = POM_NAME
+
+    publishedGroupId = GROUP
+    libraryName = POM_NAME
+    artifact = POM_ARTIFACT_ID
+
+    libraryDescription = POM_DESCRIPTION
+
+    siteUrl = POM_URL
+    gitUrl = GIT_URL
+
+    libraryVersion = VERSION_NAME
+
+    developerId = POM_DEVELOPER_ID
+    developerName = POM_DEVELOPER_NAME
+    developerEmail = POM_DEVELOPER_EMAIL
+
+    licenseName = 'The MIT License (MIT)'
+    licenseUrl = 'https://opensource.org/licenses/mit-license.php'
+    allLicenses = ["MIT"]
+}
 
 findbugs {
     toolVersion = FINDBUGS_VERSION
@@ -39,31 +60,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
-
-// build a jar with source files
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    failOnError false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
-}
-
-// build a jar with javadoc
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
 
 afterEvaluate {
     task findbugs(type: FindBugs, dependsOn: "assembleDebug") {
@@ -111,10 +107,6 @@ afterEvaluate {
 
     check.dependsOn('pmd')
 }
-//apply from: "${rootProject.projectDir}/gradle/upload.gradle"
 
-//afterEvaluate {
-//    uploadArchives.repositories.mavenDeployer.pom.whenConfigured { p ->
-//        p.dependencies = p.dependencies.findAll { dep -> dep.artifactId != "support-v4" }
-//    }
-//}
+apply from: "${rootProject.projectDir}/gradle/bintray.gradle"
+apply from: "${rootProject.projectDir}/gradle/install.gradle"

@@ -14,10 +14,11 @@ public class MainViewModel {
     private static final String TAG = "MainViewModel";
     public ObservableField<String> response;
     private TinkerClient tinkerClient;
+    private static final String APP_KEY = "c9dd59c417cdc023";
 
     public MainViewModel(Context context) {
         this.response = new ObservableField<>("Hello World!");
-        tinkerClient = TinkerClient.with(context, "appKey", "appVersion");
+        tinkerClient = TinkerClient.with(context, APP_KEY, "1");
     }
 
     public void sync() {

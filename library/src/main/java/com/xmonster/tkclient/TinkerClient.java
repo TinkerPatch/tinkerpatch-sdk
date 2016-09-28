@@ -3,6 +3,7 @@ package com.xmonster.tkclient;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.xmonster.tkclient.integration.urlconnection.UrlConnectionUrlLoader;
 import com.xmonster.tkclient.model.DataFetcher;
 import com.xmonster.tkclient.model.RequestLoader;
 import com.xmonster.tkclient.model.TKClientUrl;
@@ -38,10 +39,10 @@ public class TinkerClient implements TKClientFactory {
                     TKClientModule module = new ManifestParser(applicationContext).parse();
                     if (module != null) {
                         module.register(applicationContext, client.registry);
+                        client.loader = client.registry.build(TKClientUrl.class, InputStream.class);
                     } else {
-                        throw new RuntimeException("No Http Module Loaded");
+                        client.loader = new UrlConnectionUrlLoader();
                     }
-                    client.loader = client.registry.build(TKClientUrl.class, InputStream.class);
                 }
             }
         }

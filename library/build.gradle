@@ -111,10 +111,10 @@ afterEvaluate {
 
     check.dependsOn('pmd')
 }
-apply from: "${rootProject.projectDir}/gradle/upload.gradle"
+//apply from: "${rootProject.projectDir}/gradle/upload.gradle"
 
-afterEvaluate {
-    uploadArchives.repositories.mavenDeployer.pom.whenConfigured { p ->
-        p.dependencies = p.dependencies.findAll { dep -> dep.artifactId != "support-v4" }
-    }
-}
+//afterEvaluate {
+//    uploadArchives.repositories.mavenDeployer.pom.whenConfigured { p ->
+//        p.dependencies = p.dependencies.findAll { dep -> dep.artifactId != "support-v4" }
+//    }
+//}

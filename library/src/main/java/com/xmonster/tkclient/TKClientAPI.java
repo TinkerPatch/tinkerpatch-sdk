@@ -8,7 +8,7 @@ import java.io.File;
  * Created by sun on 27/09/2016.
  */
 
-public interface TKClientFactory {
+public interface TKClientAPI {
 
     /**
      * 每次启动或唤醒调请求 http://{Host}/{appKey}/{appVersion}?d={deviceId}&v={timestamp}

@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-public class TinkerClient implements TKClientFactory {
+public class TinkerClient implements TKClientAPI {
 
     private final String appVersion;
     private final String appKey;

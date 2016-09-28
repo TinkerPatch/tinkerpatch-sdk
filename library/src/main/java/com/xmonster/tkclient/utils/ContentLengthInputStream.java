@@ -37,9 +37,7 @@ public final class ContentLengthInputStream extends FilterInputStream {
             try {
                 result = Integer.parseInt(contentLengthHeader);
             } catch (NumberFormatException e) {
-                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                    Log.d(TAG, "failed to parse content length header: " + contentLengthHeader, e);
-                }
+                Log.d(TAG, "failed to parse content length header: " + contentLengthHeader, e);
             }
         }
         return result;

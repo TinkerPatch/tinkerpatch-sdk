@@ -42,8 +42,10 @@ public class MainViewModel {
         tinkerClient.download("patchVersion", "./test", new DataFetcher.DataCallback<File>() {
             @Override
             public void onDataReady(File data) {
-                Log.d(TAG, "save to " + data.getAbsolutePath());
-                response.set(data.getAbsolutePath());
+                if (data != null) {
+                    Log.d(TAG, "save to " + data.getAbsolutePath());
+                    response.set(data.getAbsolutePath());
+                }
             }
 
             @Override

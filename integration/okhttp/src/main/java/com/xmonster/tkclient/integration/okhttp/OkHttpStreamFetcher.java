@@ -43,9 +43,7 @@ public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
         client.newCall(request).enqueue(new com.squareup.okhttp.Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                    Log.d(TAG, "OkHttp failed to obtain result", e);
-                }
+                Log.d(TAG, "OkHttp failed to obtain result", e);
                 callback.onLoadFailed(e);
             }
 
@@ -55,7 +53,7 @@ public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
                 if (response.isSuccessful()) {
                     long contentLength = response.body().contentLength();
                     stream = ContentLengthInputStream.obtain(responseBody.byteStream(), contentLength);
-                } else if (Log.isLoggable(TAG, Log.DEBUG)) {
+                } else {
                     Log.d(TAG, "OkHttp got error response: " + response.code() + ", " + response.message());
                 }
                 callback.onDataReady(stream);

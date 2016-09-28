@@ -45,9 +45,7 @@ public class OkHttp3StreamFetcher implements DataFetcher<InputStream> {
         call.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                    Log.d(TAG, "OkHttp3 failed to obtain result", e);
-                }
+                Log.d(TAG, "OkHttp3 failed to obtain result", e);
                 callback.onLoadFailed(e);
             }
 
@@ -56,11 +54,9 @@ public class OkHttp3StreamFetcher implements DataFetcher<InputStream> {
                 responseBody = response.body();
                 if (response.isSuccessful()) {
                     long contentLength = response.body().contentLength();
-                    if (Log.isLoggable(TAG, Log.DEBUG)) {
-                        Log.d(TAG, "OkHttp3 got success response: " + response.code() + ", " + response.message());
-                    }
+                    Log.d(TAG, "OkHttp3 got success response: " + response.code() + ", " + response.message());
                     stream = ContentLengthInputStream.obtain(responseBody.byteStream(), contentLength);
-                } else if (Log.isLoggable(TAG, Log.DEBUG)) {
+                } else {
                     Log.d(TAG, "OkHttp3 got error response: " + response.code() + ", " + response.message());
                 }
                 callback.onDataReady(stream);

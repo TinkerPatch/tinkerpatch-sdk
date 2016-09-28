@@ -42,9 +42,7 @@ public final class ManifestParser {
     }
 
     public TKClientModule parse() {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "Loading TKClient module");
-        }
+        Log.d(TAG, "Loading TKClient module");
         TKClientModule module = null;
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(
@@ -57,17 +55,13 @@ public final class ManifestParser {
             for (String key : appInfo.metaData.keySet()) {
                 if (MODULE_VALUE.equals(appInfo.metaData.get(key))) {
                     module = parseModule(key);
-                    if (Log.isLoggable(TAG, Log.DEBUG)) {
-                        Log.d(TAG, "Loaded TinkerClient module: " + key);
-                    }
+                    Log.d(TAG, "Loaded TinkerClient module: " + key);
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException("Unable to find metadata to parse TKClientModules", e);
         }
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "Finished loading TinkerClient modules");
-        }
+        Log.d(TAG, "Finished loading TinkerClient modules");
         return module;
     }
 }

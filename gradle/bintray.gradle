@@ -22,9 +22,6 @@ if (isAndroidProject) {
 }
 
 
-logger.info("Published artifacts in ${configurations.archives}:")
-configurations.archives.artifacts.files.files.each { logger.info("\t$it"); }
-
 // Bintray
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())

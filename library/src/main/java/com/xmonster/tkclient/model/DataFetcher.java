@@ -32,6 +32,11 @@ public interface DataFetcher<T> {
     void cancel();
 
     /**
+     * Returns the class of the data this fetcher will attempt to obtain.
+     */
+    Class<T> getDataClass();
+
+    /**
      * Callback that should be called when data has been loaded and is available, or when the load
      * fails.
      *

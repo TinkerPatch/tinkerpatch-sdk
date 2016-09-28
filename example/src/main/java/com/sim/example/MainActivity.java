@@ -9,11 +9,12 @@ import com.sim.example.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private MainViewModel mainViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        mainViewModel = new MainViewModel();
+        mainViewModel = new MainViewModel(this);
         binding.setViewModel(mainViewModel);
     }
 }

@@ -3,7 +3,10 @@ package com.xmonster.tkclient.integration.okhttp3;
 import android.content.Context;
 
 import com.xmonster.tkclient.Registry;
+import com.xmonster.tkclient.model.TKClientUrl;
 import com.xmonster.tkclient.module.TKClientModule;
+
+import java.io.InputStream;
 
 /**
  * A {@link com.xmonster.tkclient.module.TKClientModule} implementation to replace default
@@ -18,6 +21,6 @@ public class OkHttp3TKClientModule implements TKClientModule {
 
     @Override
     public void register(Context context, Registry registry) {
-        registry.setLoaderFactory(new OkHttp3UrlLoader.Factory());
+        registry.register(TKClientUrl.class, InputStream.class, new OkHttp3UrlLoader.Factory());
     }
 }

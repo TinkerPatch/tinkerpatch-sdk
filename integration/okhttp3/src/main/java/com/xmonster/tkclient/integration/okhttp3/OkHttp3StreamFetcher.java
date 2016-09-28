@@ -56,6 +56,9 @@ public class OkHttp3StreamFetcher implements DataFetcher<InputStream> {
                 responseBody = response.body();
                 if (response.isSuccessful()) {
                     long contentLength = response.body().contentLength();
+                    if (Log.isLoggable(TAG, Log.DEBUG)) {
+                        Log.d(TAG, "OkHttp3 got success response: " + response.code() + ", " + response.message());
+                    }
                     stream = ContentLengthInputStream.obtain(responseBody.byteStream(), contentLength);
                 } else if (Log.isLoggable(TAG, Log.DEBUG)) {
                     Log.d(TAG, "OkHttp3 got error response: " + response.code() + ", " + response.message());
@@ -85,5 +88,10 @@ public class OkHttp3StreamFetcher implements DataFetcher<InputStream> {
         if (local != null) {
             local.cancel();
         }
+    }
+
+    @Override
+    public Class<InputStream> getDataClass() {
+        return InputStream.class;
     }
 }

@@ -110,11 +110,11 @@ public class TKClientUrl {
             return this;
         }
 
-        public TKClientUrl.Builder param(String key, String value) {
+        public TKClientUrl.Builder param(String key, Object value) {
             if (params == null) {
                 this.params = new HashMap<>();
             }
-            this.params.put(key, value);
+            this.params.put(key, String.valueOf(value));
             return this;
         }
 

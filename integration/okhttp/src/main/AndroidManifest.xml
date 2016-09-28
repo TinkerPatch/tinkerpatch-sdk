@@ -3,7 +3,7 @@
 
     <application>
         <meta-data
-            android:name="com.xmonster.tkclient.integration.okhttp.OkHttpTinkerClientModule"
-            android:value="TinkerClientModule" />
+            android:name="com.xmonster.tkclient.integration.okhttp.OkHttpTKClientModule"
+            android:value="TKClientModule" />
     </application>
 </manifest>

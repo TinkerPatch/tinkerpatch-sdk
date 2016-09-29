@@ -1,4 +1,4 @@
 include ':example'
-include ':tkclient'
-include ':integration:okhttp-integration'
-include ':integration:okhttp3-integration'
+include ':library'
+include ':integration:okhttp'
+include ':integration:okhttp3'

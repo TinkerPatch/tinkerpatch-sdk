@@ -1,25 +1,74 @@
 apply plugin: 'com.jfrog.bintray'
 
 version = VERSION_NAME
+project.archivesBaseName = POM_ARTIFACT_ID
+
+
 def isAndroidProject = project.plugins.hasPlugin('com.android.application') || project.plugins.hasPlugin('com.android.library')
 if (isAndroidProject) {
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
+    def releaseVariants = project.android.libraryVariants.findAll {
+        it.buildType.name.equalsIgnoreCase('release')
     }
 
-    task javadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    task androidJavadocs(type: Javadoc, dependsOn: 'compileReleaseJavaWithJavac') {
+        source = releaseVariants.collect { it.javaCompile.source }
+        classpath = files(releaseVariants.collect { files(it.javaCompile.classpath.files,
+                project.android.bootClasspath) })
+
+        options {
+            links('http://docs.oracle.com/javase/7/docs/api/')
+            linksOffline('http://d.android.com/reference', "${android.sdkDirectory}/docs/reference")
+        }
+
         exclude '**/BuildConfig.java'
         exclude '**/R.java'
     }
+
+    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+        classifier = 'javadoc'
+        from androidJavadocs.destinationDir
+        baseName "${JAR_PREFIX}${project.name}${JAR_POSTFIX}"
+    }
+
+    task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from project.android.sourceSets.main.java.source
+        baseName "${JAR_PREFIX}${project.name}${JAR_POSTFIX}"
+    }
+
+    task androidLibraryJar(type: Jar, dependsOn: 'compileReleaseJavaWithJavac' /* == variant.javaCompile */) {
+        print project
+        //from compileReleaseJavaWithJavac.destinationDir
+        exclude '**/R.class'
+        exclude '**/BuildConfig.class'
+        baseName "${JAR_PREFIX}${project.name}${JAR_POSTFIX}"
+    }
+
+    artifacts {
+        archives androidLibraryJar
+        archives androidSourcesJar
+        archives androidJavadocsJar
+    }
+
 } else if (project.plugins.hasPlugin('java')) { // Java libraries
+    println "[bintray.gradle]java project"
     task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = 'sources'
         from sourceSets.main.allSource
     }
+    task javadocsJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+    artifacts {
+        archives sourcesJar
+        archives javadocsJar
+    }
 }
+
+logger.info("Published artifacts in ${configurations.archives}:")
+configurations.archives.artifacts.files.files.each { logger.info("\t$it"); }
+
 
 
 // Bintray

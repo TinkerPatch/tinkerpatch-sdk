@@ -22,6 +22,8 @@ ext {
     developerName = POM_DEVELOPER_NAME
     developerEmail = POM_DEVELOPER_EMAIL
 
+    packageMethod = POM_PACKAGING
+
     licenseName = 'The MIT License (MIT)'
     licenseUrl = 'https://opensource.org/licenses/mit-license.php'
     allLicenses = ["MIT"]
@@ -108,5 +110,6 @@ afterEvaluate {
     check.dependsOn('pmd')
 }
 
-apply from: "${rootProject.projectDir}/gradle/bintray.gradle"
 apply from: "${rootProject.projectDir}/gradle/install.gradle"
+apply from: "${rootProject.projectDir}/gradle/bintray.gradle"
+

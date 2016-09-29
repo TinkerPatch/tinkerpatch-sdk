@@ -1,12 +1,13 @@
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = publishedGroupId  // Maven Group ID for the artifact
+project.archivesBaseName = ext.artifact
 
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom.project {
-            packaging POM_PACKAGING
+            packaging packageMethod
             groupId publishedGroupId
             artifactId artifact
 

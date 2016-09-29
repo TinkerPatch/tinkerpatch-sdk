@@ -1,8 +1,7 @@
 apply plugin: 'com.jfrog.bintray'
 
-version = VERSION_NAME
-project.archivesBaseName = POM_ARTIFACT_ID
-
+version = libraryVersion
+project.archivesBaseName = ext.artifact
 
 def isAndroidProject = project.plugins.hasPlugin('com.android.application') || project.plugins.hasPlugin('com.android.library')
 if (isAndroidProject) {
@@ -16,6 +15,11 @@ if (isAndroidProject) {
                 project.android.bootClasspath) })
 
         options {
+            encoding "UTF-8"
+            charSet 'UTF-8'
+            title "$libraryName $libraryVersion"
+            author true
+            version true
             links('http://docs.oracle.com/javase/7/docs/api/')
             linksOffline('http://d.android.com/reference', "${android.sdkDirectory}/docs/reference")
         }
@@ -27,25 +31,17 @@ if (isAndroidProject) {
     task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
         classifier = 'javadoc'
         from androidJavadocs.destinationDir
-        baseName "${JAR_PREFIX}${project.name}${JAR_POSTFIX}"
+        baseName "${project.name}${JAR_POSTFIX}"
     }
 
     task androidSourcesJar(type: Jar) {
         classifier = 'sources'
         from project.android.sourceSets.main.java.source
-        baseName "${JAR_PREFIX}${project.name}${JAR_POSTFIX}"
+        baseName "${project.name}${JAR_POSTFIX}"
     }
 
-    task androidLibraryJar(type: Jar, dependsOn: 'compileReleaseJavaWithJavac' /* == variant.javaCompile */) {
-        print project
-        //from compileReleaseJavaWithJavac.destinationDir
-        exclude '**/R.class'
-        exclude '**/BuildConfig.class'
-        baseName "${JAR_PREFIX}${project.name}${JAR_POSTFIX}"
-    }
 
     artifacts {
-        archives androidLibraryJar
         archives androidSourcesJar
         archives androidJavadocsJar
     }
@@ -70,7 +66,6 @@ logger.info("Published artifacts in ${configurations.archives}:")
 configurations.archives.artifacts.files.files.each { logger.info("\t$it"); }
 
 
-
 // Bintray
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
@@ -79,7 +74,9 @@ bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
 
+
     configurations = ['archives']
+
     pkg {
         repo = bintrayRepo
         name = bintrayName
@@ -88,6 +85,7 @@ bintray {
         vcsUrl = gitUrl
         licenses = allLicenses
         publish = true
+        dryRun = false
         publicDownloadNumbers = true
         version {
             desc = libraryDescription
@@ -99,3 +97,31 @@ bintray {
         }
     }
 }
+
+
+
+//https://www.jfrog.com/confluence/display/RTF/Gradle+Artifactory+Plugin
+// for SNAPSHOT VERSION
+
+
+//apply plugin: "com.jfrog.artifactory"
+//artifactory {
+//    contextUrl = 'http://oss.jfrog.org/artifactory' //The base Artifactory URL if not overridden by the publisher/resolver
+//    resolve {
+//        repository {
+//            repoKey = 'libs-release'
+//        }
+//    }
+//    publish {
+//        repository {
+//            repoKey = 'oss-snapshot-local' //The Artifactory repository key to publish to
+//            username = bintray.user
+//            password = bintray.key
+//            maven = true
+//        }
+//        defaults {
+//            //这里的名字和前面bintray.configurations的值一致即可，会将其包含的输出上传到jfrog上去
+//            publishConfigs('archives')
+//        }
+//    }
+//}

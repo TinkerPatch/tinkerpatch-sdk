@@ -19,13 +19,15 @@ ext {
     developerName = POM_DEVELOPER_NAME
     developerEmail = POM_DEVELOPER_EMAIL
 
+    packageMethod = POM_PACKAGING
+
     licenseName = 'The MIT License (MIT)'
     licenseUrl = 'https://opensource.org/licenses/mit-license.php'
     allLicenses = ["MIT"]
 }
 
 dependencies {
-    compile project(':library')
+    compile project(':tkclient')
     compile "com.squareup.okhttp3:okhttp:${OKHTTP3_VERSION}"
 }
 
@@ -45,5 +47,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
-apply from: "${rootProject.projectDir}/gradle/bintray.gradle"
+
 apply from: "${rootProject.projectDir}/gradle/install.gradle"
+apply from: "${rootProject.projectDir}/gradle/bintray.gradle"
+

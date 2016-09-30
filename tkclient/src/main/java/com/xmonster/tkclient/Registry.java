@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class Registry {
 
-    private Set<Entry<?, ?>> loaderFactorySet;
+    private final Set<Entry<?, ?>> loaderFactorySet;
 
     public Registry() {
         this.loaderFactorySet = new HashSet<>(1);

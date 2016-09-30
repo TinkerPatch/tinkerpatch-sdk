@@ -10,9 +10,16 @@ import java.io.InputStream;
  * Created by sun on 9/18/16.
  */
 
-public class Utils {
+public final class Utils {
+
+    private Utils() {
+        // nothing
+    }
+
     public static File readStreamToFile(InputStream inputStream, String filePath) throws IOException {
-        if (inputStream == null) return null;
+        if (inputStream == null) {
+            return null;
+        }
 
         File file = new File(filePath);
         if (!file.getParentFile().exists()) {
@@ -29,7 +36,9 @@ public class Utils {
     }
 
     public static String readStreamToString(InputStream inputStream) throws IOException {
-        if (inputStream == null) return null;
+        if (inputStream == null) {
+            return null;
+        }
 
         ByteArrayOutputStream bo = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];

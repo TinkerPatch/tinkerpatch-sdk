@@ -58,7 +58,7 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
 
     @Override
     public void cancel() {
-
+        // NOT IMPLEMENT
     }
 
     @Override

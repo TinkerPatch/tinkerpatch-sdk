@@ -86,12 +86,14 @@ public class TKClientUrl {
         }
 
         static String urlEncode(Map<?, ?> map, String charset) {
-            if (map == null) return "";
+            if (map == null) {
+                return "";
+            }
 
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<?, ?> entry : map.entrySet()) {
                 if (sb.length() > 0) {
-                    sb.append("&");
+                    sb.append('&');
                 }
                 try {
                     sb.append(String.format("%s=%s",
@@ -126,6 +128,7 @@ public class TKClientUrl {
         public TKClientUrl.Builder method(String method) {
             switch (method) {
                 case "GET":
+                case "POST":
                     this.method = method;
                     break;
                 default:

@@ -98,7 +98,10 @@ public class TinkerClient implements TKClientAPI {
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-                if (callback == null) return;
+                if (callback == null) {
+                    return;
+                }
+
                 try {
                     callback.onDataReady(Utils.readStreamToString(data));
                 } catch (IOException e) {
@@ -110,7 +113,10 @@ public class TinkerClient implements TKClientAPI {
 
             @Override
             public void onLoadFailed(Exception e) {
-                if (callback == null) return;
+                if (callback == null) {
+                    return;
+                }
+
                 try {
                     callback.onLoadFailed(e);
                 } finally {
@@ -136,7 +142,9 @@ public class TinkerClient implements TKClientAPI {
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-                if (callback == null) return;
+                if (callback == null) {
+                    return;
+                }
                 try {
                     callback.onDataReady(Utils.readStreamToFile(data, filePath));
                 } catch (IOException e) {
@@ -148,7 +156,10 @@ public class TinkerClient implements TKClientAPI {
 
             @Override
             public void onLoadFailed(Exception e) {
-                if (callback == null) return;
+                if (callback == null) {
+                    return;
+                }
+
                 try {
                     callback.onLoadFailed(e);
                 } finally {

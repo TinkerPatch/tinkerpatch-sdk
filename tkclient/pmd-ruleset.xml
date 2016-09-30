@@ -22,10 +22,12 @@
 
         <!-- This check breaks on double checked locking which is safe in Java 6/7 -->
         <exclude name="NonThreadSafeSingleton"/>
-
+        <!-- This check breaks the builder pattern, I didn't find the solution-->
+        <exclude name="AccessorClassGeneration"/>
         <!-- TODO: Fix these -->
         <exclude name="AvoidReassigningParameters"/>
         <exclude name="GodClass"/>
+
     </rule>
 
     <rule ref="rulesets/java/empty.xml/EmptyCatchBlock" message="Commented blocks are ok">

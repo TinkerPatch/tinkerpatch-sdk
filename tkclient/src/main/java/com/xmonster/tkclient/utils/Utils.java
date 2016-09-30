@@ -1,5 +1,7 @@
 package com.xmonster.tkclient.utils;
 
+import com.xmonster.tkclient.Config;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,7 +30,7 @@ public final class Utils {
         }
         FileOutputStream fileOutput = new FileOutputStream(file);
         try {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[Config.BUFFER_SIZE];
             int bufferLength;
             while ((bufferLength = inputStream.read(buffer)) > 0) {
                 fileOutput.write(buffer, 0, bufferLength);
@@ -49,7 +51,7 @@ public final class Utils {
         }
 
         ByteArrayOutputStream bo = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[Config.BUFFER_SIZE];
         int bufferLength;
 
         while ((bufferLength = inputStream.read(buffer)) > 0) {

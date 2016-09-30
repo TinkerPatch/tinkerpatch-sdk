@@ -12,7 +12,7 @@ public class Headers {
      * A Headers object containing reasonable defaults that should be used when users don't want
      * to provide their own headers.
      */
-    public static Headers DEFAULT = new Headers.Builder().build();
+    public static final Headers DEFAULT = new Headers.Builder().build();
 
     private final Map<String, String> headers;
 

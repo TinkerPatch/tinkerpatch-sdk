@@ -15,6 +15,8 @@ import com.xmonster.tkclient.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class TinkerClient implements TKClientAPI {
@@ -103,7 +105,7 @@ public class TinkerClient implements TKClientAPI {
                 }
 
                 try {
-                    callback.onDataReady(Utils.readStreamToString(data));
+                    callback.onDataReady(Utils.readStreamToString(data, "UTF-8"));
                 } catch (IOException e) {
                     callback.onLoadFailed(e);
                 } finally {

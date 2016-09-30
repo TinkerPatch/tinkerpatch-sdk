@@ -19,20 +19,41 @@ import java.util.Arrays;
 
 public class TinkerClient implements TKClientAPI {
 
-    private final String appVersion;
-    private final String appKey;
-    private final String host;
+    private final String  appVersion;
+    private final String  appKey;
+    private final String  host;
+    private final boolean debug;
     private final Registry registry;
     private RequestLoader<TKClientUrl, InputStream> loader;
     private static volatile TinkerClient client;
 
-    public static TinkerClient with(Context context, String appKey, String appVersion) {
+    /**
+     * Singleton get method for Tinker client, you need invoke
+     * {@link #init(Context, String, String, Boolean)} before it invoke.
+     * @return the instance of {@link TinkerClient}
+     */
+    public static TinkerClient get() {
+        if (client == null) {
+            throw new RuntimeException("Please invoke init Tinker Client first");
+        }
+        return client;
+    }
+
+    /**
+     * init the Tinker Client, it only effect at first time.
+     * you should only invoke once in your app lifecycle
+     */
+    public static TinkerClient init(Context context,
+                                    String appKey,
+                                    String appVersion,
+                                    Boolean debugMode) {
         if (client == null) {
             synchronized (TinkerClient.class) {
                 if (client == null) {
                     client = new TinkerClient.Builder()
                             .appKey(appKey)
                             .appVersion(appVersion)
+                            .debug(debugMode)
                             .build();
 
                     Context applicationContext = context.getApplicationContext();
@@ -51,7 +72,13 @@ public class TinkerClient implements TKClientAPI {
 
     @Override
     public void sync(final DataFetcher.DataCallback<String> callback) {
-        final String url = TextUtils.join("/", Arrays.asList(this.host, this.appKey, this.appVersion));
+        String url;
+        if (client.debug) {
+            url = TextUtils.join("/", Arrays.asList(this.host, "dev", this.appKey, this.appVersion));
+        } else {
+            url = TextUtils.join("/", Arrays.asList(this.host, this.appKey, this.appVersion));
+        }
+
         TKClientUrl tkClientUrl = new TKClientUrl.Builder()
                 .url(url)
                 .param("d", "deviceId")
@@ -122,10 +149,11 @@ public class TinkerClient implements TKClientAPI {
         });
     }
 
-    private TinkerClient(final String appVersion, final String appKey, final String host) {
+    private TinkerClient(String appVersion, String appKey, String host, Boolean debug) {
         this.appVersion = appVersion;
         this.appKey = appKey;
         this.host = host;
+        this.debug = debug;
         this.registry = new Registry();
     }
 
@@ -134,6 +162,7 @@ public class TinkerClient implements TKClientAPI {
         private String appVersion;
         private String appKey;
         private String host;
+        private Boolean debug;
 
         public TinkerClient.Builder host(String host) {
             this.host = host;
@@ -150,15 +179,23 @@ public class TinkerClient implements TKClientAPI {
             return this;
         }
 
+        public TinkerClient.Builder debug(boolean debug) {
+            this.debug = debug;
+            return this;
+        }
+
         void makeDefault() {
             if (TextUtils.isEmpty(host)) {
                 this.host = HOST_URL;
+            }
+            if (TextUtils.isEmpty(this.appKey) || TextUtils.isEmpty(this.appVersion)) {
+                throw new RuntimeException("You need setup Appkey and AppVersion");
             }
         }
 
         public TinkerClient build() {
             makeDefault();
-            return new TinkerClient(this.appVersion, this.appKey, this.host);
+            return new TinkerClient(this.appVersion, this.appKey, this.host, this.debug);
         }
     }
 }

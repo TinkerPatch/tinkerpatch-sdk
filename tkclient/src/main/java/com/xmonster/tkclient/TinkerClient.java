@@ -15,6 +15,8 @@ import com.xmonster.tkclient.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class TinkerClient implements TKClientAPI {
@@ -98,9 +100,12 @@ public class TinkerClient implements TKClientAPI {
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-                if (callback == null) return;
+                if (callback == null) {
+                    return;
+                }
+
                 try {
-                    callback.onDataReady(Utils.readStreamToString(data));
+                    callback.onDataReady(Utils.readStreamToString(data, "UTF-8"));
                 } catch (IOException e) {
                     callback.onLoadFailed(e);
                 } finally {
@@ -110,7 +115,10 @@ public class TinkerClient implements TKClientAPI {
 
             @Override
             public void onLoadFailed(Exception e) {
-                if (callback == null) return;
+                if (callback == null) {
+                    return;
+                }
+
                 try {
                     callback.onLoadFailed(e);
                 } finally {
@@ -136,7 +144,9 @@ public class TinkerClient implements TKClientAPI {
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-                if (callback == null) return;
+                if (callback == null) {
+                    return;
+                }
                 try {
                     callback.onDataReady(Utils.readStreamToFile(data, filePath));
                 } catch (IOException e) {
@@ -148,7 +158,10 @@ public class TinkerClient implements TKClientAPI {
 
             @Override
             public void onLoadFailed(Exception e) {
-                if (callback == null) return;
+                if (callback == null) {
+                    return;
+                }
+
                 try {
                     callback.onLoadFailed(e);
                 } finally {

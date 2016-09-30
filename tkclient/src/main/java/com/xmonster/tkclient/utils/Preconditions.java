@@ -7,7 +7,7 @@ import java.util.Collection;
 public final class Preconditions {
 
     private Preconditions() {
-        // Utility class.
+        // Utils class.
     }
 
     public static void checkArgument(boolean expression, String message) {

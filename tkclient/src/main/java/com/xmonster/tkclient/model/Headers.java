@@ -12,7 +12,7 @@ public class Headers {
      * A Headers object containing reasonable defaults that should be used when users don't want
      * to provide their own headers.
      */
-    public static Headers DEFAULT = new Headers.Builder().build();
+    public static final Headers DEFAULT = new Headers.Builder().build();
 
     private final Map<String, String> headers;
 
@@ -24,7 +24,7 @@ public class Headers {
         return headers;
     }
 
-    public static final class Builder {
+    private static class Builder {
         private static final String USER_AGENT_HEADER = "User-Agent";
         private static final String DEFAULT_USER_AGENT = System.getProperty("http.agent");
         private static final String ENCODING_HEADER = "Accept-Encoding";
@@ -57,7 +57,7 @@ public class Headers {
         }
 
         public Headers build() {
-            if (headers == null || headers.size() == 0) {
+            if (headers == null || headers.isEmpty()) {
                 return new Headers(DEFAULT_HEADERS);
             } else {
                 return new Headers(Collections.unmodifiableMap(headers));

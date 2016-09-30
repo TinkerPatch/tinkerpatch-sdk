@@ -5,31 +5,51 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by sun on 9/18/16.
  */
 
-public class Utils {
+public final class Utils {
+
+    private Utils() {
+        // nothing
+    }
+
     public static File readStreamToFile(InputStream inputStream, String filePath) throws IOException {
-        if (inputStream == null) return null;
+        if (inputStream == null) {
+            return null;
+        }
 
         File file = new File(filePath);
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
+        File parent = file.getParentFile();
+        if (!parent.exists()) {
+            if (parent.mkdirs()) {
+                throw new IOException(String.format("Can't create folder %s", parent.getAbsolutePath()));
+            }
         }
         FileOutputStream fileOutput = new FileOutputStream(file);
-        byte[] buffer = new byte[1024];
-        int bufferLength;
-        while ((bufferLength = inputStream.read(buffer)) > 0) {
-            fileOutput.write(buffer, 0, bufferLength);
+        try {
+            byte[] buffer = new byte[1024];
+            int bufferLength;
+            while ((bufferLength = inputStream.read(buffer)) > 0) {
+                fileOutput.write(buffer, 0, bufferLength);
+            }
+        } finally {
+            try {
+                fileOutput.close();
+            } catch (IOException ignored) {
+            }
         }
-        fileOutput.close();
         return file;
     }
 
-    public static String readStreamToString(InputStream inputStream) throws IOException {
-        if (inputStream == null) return null;
+    public static String readStreamToString(InputStream inputStream, String charset) throws IOException {
+        if (inputStream == null) {
+            return null;
+        }
 
         ByteArrayOutputStream bo = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
@@ -38,6 +58,7 @@ public class Utils {
         while ((bufferLength = inputStream.read(buffer)) > 0) {
             bo.write(buffer, 0, bufferLength);
         }
-        return bo.toString();
+        return bo.toString(charset);
     }
+
 }

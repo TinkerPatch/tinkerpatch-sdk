@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Created by sun on 9/18/16.
@@ -25,10 +23,8 @@ public final class Utils {
 
         File file = new File(filePath);
         File parent = file.getParentFile();
-        if (!parent.exists()) {
-            if (parent.mkdirs()) {
-                throw new IOException(String.format("Can't create folder %s", parent.getAbsolutePath()));
-            }
+        if (!parent.exists() && !parent.mkdirs()) {
+            throw new IOException(String.format("Can't create folder %s", parent.getAbsolutePath()));
         }
         FileOutputStream fileOutput = new FileOutputStream(file);
         try {
@@ -41,6 +37,7 @@ public final class Utils {
             try {
                 fileOutput.close();
             } catch (IOException ignored) {
+                // ignored
             }
         }
         return file;

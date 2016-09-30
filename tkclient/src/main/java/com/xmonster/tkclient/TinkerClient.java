@@ -1,6 +1,7 @@
 package com.xmonster.tkclient;
 
 import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import com.xmonster.tkclient.integration.urlconnection.UrlConnectionUrlLoader;
@@ -15,8 +16,6 @@ import com.xmonster.tkclient.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class TinkerClient implements TKClientAPI {
@@ -83,18 +82,17 @@ public class TinkerClient implements TKClientAPI {
 
     @Override
     public void sync(final DataFetcher.DataCallback<String> callback) {
-        String url;
+        Uri.Builder urlBuilder = Uri.parse(this.host).buildUpon();
         if (client.debug) {
-            url = TextUtils.join("/", Arrays.asList(this.host, "dev", this.appKey, this.appVersion));
-        } else {
-            url = TextUtils.join("/", Arrays.asList(this.host, this.appKey, this.appVersion));
+            urlBuilder.appendPath("dev");
         }
+        final String url = urlBuilder.appendPath(this.appKey)
+            .appendPath(this.appVersion)
+            .appendQueryParameter("d", "deviceId/ & /123") //TODO: add release deviceId
+            .appendQueryParameter("v", String.valueOf(System.currentTimeMillis()))
+            .build().toString();
 
-        TKClientUrl tkClientUrl = new TKClientUrl.Builder()
-            .url(url)
-            .param("d", "deviceId")
-            .param("v", System.currentTimeMillis())
-            .build();
+        TKClientUrl tkClientUrl = new TKClientUrl.Builder().url(url).build();
 
         final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
@@ -103,9 +101,8 @@ public class TinkerClient implements TKClientAPI {
                 if (callback == null) {
                     return;
                 }
-
                 try {
-                    callback.onDataReady(Utils.readStreamToString(data, "UTF-8"));
+                    callback.onDataReady(Utils.readStreamToString(data, Config.CHARSET));
                 } catch (IOException e) {
                     callback.onLoadFailed(e);
                 } finally {
@@ -118,7 +115,6 @@ public class TinkerClient implements TKClientAPI {
                 if (callback == null) {
                     return;
                 }
-
                 try {
                     callback.onLoadFailed(e);
                 } finally {
@@ -131,15 +127,17 @@ public class TinkerClient implements TKClientAPI {
     @Override
     public void download(String patchVersion, final String filePath, final DataFetcher.DataCallback<? super File> callback) {
         patchVersion = Preconditions.checkNotEmpty(patchVersion);
-        final String url = TextUtils.join(
-            "/",
-            Arrays.asList(this.host, this.appKey, this.appVersion, "file" + patchVersion)
-        );
-        TKClientUrl tkClientUrl = new TKClientUrl.Builder()
-            .url(url)
-            .param("d", "deviceId")
-            .param("v", System.currentTimeMillis())
-            .build();
+        final String url = Uri.parse(this.host)
+            .buildUpon()
+            .appendPath(this.appKey)
+            .appendPath(this.appVersion)
+            .appendPath(String.format("file%s", patchVersion))
+            .appendQueryParameter("d", "deviceId/ & /123") //TODO: add release deviceId
+            .appendQueryParameter("v", String.valueOf(System.currentTimeMillis()))
+            .build().toString();
+
+        TKClientUrl tkClientUrl = new TKClientUrl.Builder().url(url).build();
+
         final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override

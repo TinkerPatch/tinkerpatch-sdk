@@ -19,7 +19,6 @@ import java.util.Map;
 public class TKClientUrl {
 
     private static final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
-    private static final String CHARSET = "UTF-8";
 
     private final Headers headers;
     private final String stringUrl;
@@ -81,32 +80,6 @@ public class TKClientUrl {
         private String method;
         private Headers headers;
 
-        static String urlEncode(String s, String charset) throws UnsupportedEncodingException {
-            return URLEncoder.encode(s, charset);
-        }
-
-        static String urlEncode(Map<?, ?> map, String charset) {
-            if (map == null) {
-                return "";
-            }
-
-            StringBuilder sb = new StringBuilder();
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                if (sb.length() > 0) {
-                    sb.append('&');
-                }
-                try {
-                    sb.append(String.format("%s=%s",
-                        urlEncode(entry.getKey().toString(), charset),
-                        urlEncode(entry.getValue().toString(), charset)
-                    ));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
-            return sb.toString();
-        }
-
         public TKClientUrl.Builder url(String url) {
             this.url = url;
             return this;
@@ -143,6 +116,7 @@ public class TKClientUrl {
         }
 
         private void makeDefault() {
+            Uri.Builder urlBuilder = Uri.parse(this.url).buildUpon();
             if (TextUtils.isEmpty(this.method)) {
                 this.method = "GET";
             }
@@ -150,8 +124,11 @@ public class TKClientUrl {
                 this.headers = Headers.DEFAULT;
             }
             if (this.params != null) {
-                this.url = String.format("%s?%s", url, urlEncode(this.params, CHARSET));
+                for (Map.Entry<String, String> entry : params.entrySet()) {
+                    urlBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+                }
             }
+            this.url = urlBuilder.build().toString();
         }
 
         public TKClientUrl build() {

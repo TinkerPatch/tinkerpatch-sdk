@@ -39,9 +39,8 @@
         <TextView
             android:id="@+id/response_tv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="16dp"
-            android:maxLines = "1000"
             android:scrollbars = "vertical"
             android:text="@{viewModel.response}" />
 

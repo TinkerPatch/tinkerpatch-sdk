@@ -28,7 +28,7 @@ public class MainViewModel {
     public void sync() {
         this.response.set("sync");
         Log.d(TAG, "sync");
-        TinkerClient.get().sync(new DataFetcher.DataCallback<String>() {
+        TinkerClient.get().sync(context, new DataFetcher.DataCallback<String>() {
             @Override
             public void onDataReady(String data) {
                 response.set(data);
@@ -47,6 +47,7 @@ public class MainViewModel {
         final String patchVersion = "1";
         File patchFile = new File(context.getFilesDir(), "this/is/a/test/folder/patch_" + patchVersion);
         TinkerClient.get().download(
+            context,
             patchVersion,
             patchFile.getAbsolutePath(),
             new DataFetcher.DataCallback<File>() {

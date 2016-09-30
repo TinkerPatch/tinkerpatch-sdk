@@ -10,13 +10,13 @@ import com.xmonster.tkclient.model.RequestLoader;
 import com.xmonster.tkclient.model.TKClientUrl;
 import com.xmonster.tkclient.module.ManifestParser;
 import com.xmonster.tkclient.module.TKClientModule;
+import com.xmonster.tkclient.utils.Installation;
 import com.xmonster.tkclient.utils.Preconditions;
 import com.xmonster.tkclient.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 public class TinkerClient implements TKClientAPI {
 
@@ -81,14 +81,14 @@ public class TinkerClient implements TKClientAPI {
     }
 
     @Override
-    public void sync(final DataFetcher.DataCallback<String> callback) {
+    public void sync(final Context context, final DataFetcher.DataCallback<String> callback) {
         Uri.Builder urlBuilder = Uri.parse(this.host).buildUpon();
         if (client.debug) {
             urlBuilder.appendPath("dev");
         }
         final String url = urlBuilder.appendPath(this.appKey)
             .appendPath(this.appVersion)
-            .appendQueryParameter("d", "deviceId/ & /123") //TODO: add release deviceId
+            .appendQueryParameter("d", Installation.id(context))
             .appendQueryParameter("v", String.valueOf(System.currentTimeMillis()))
             .build().toString();
 
@@ -125,14 +125,18 @@ public class TinkerClient implements TKClientAPI {
     }
 
     @Override
-    public void download(String patchVersion, final String filePath, final DataFetcher.DataCallback<? super File> callback) {
-        patchVersion = Preconditions.checkNotEmpty(patchVersion);
+    public void download(final Context context,
+                         final String patchVersion,
+                         final String filePath,
+                         final DataFetcher.DataCallback<? super File> callback) {
+
+        Preconditions.checkNotEmpty(patchVersion);
         final String url = Uri.parse(this.host)
             .buildUpon()
             .appendPath(this.appKey)
             .appendPath(this.appVersion)
             .appendPath(String.format("file%s", patchVersion))
-            .appendQueryParameter("d", "deviceId/ & /123") //TODO: add release deviceId
+            .appendQueryParameter("d", Installation.id(context))
             .appendQueryParameter("v", String.valueOf(System.currentTimeMillis()))
             .build().toString();
 

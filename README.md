@@ -10,3 +10,7 @@
 3. volly(TODO)
 4. apachehttpclient(TODO)
 
+## TODO feature
+
+1. 灰度下发
+2. 条件下发

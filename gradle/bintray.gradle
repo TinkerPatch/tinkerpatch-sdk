@@ -11,8 +11,10 @@ if (isAndroidProject) {
 
     task androidJavadocs(type: Javadoc, dependsOn: 'compileReleaseJavaWithJavac') {
         source = releaseVariants.collect { it.javaCompile.source }
-        classpath = files(releaseVariants.collect { files(it.javaCompile.classpath.files,
-                project.android.bootClasspath) })
+        classpath = files(releaseVariants.collect {
+            files(it.javaCompile.classpath.files,
+                    project.android.bootClasspath)
+        })
 
         options {
             encoding "UTF-8"
@@ -65,7 +67,6 @@ if (isAndroidProject) {
 logger.info("Published artifacts in ${configurations.archives}:")
 configurations.archives.artifacts.files.files.each { logger.info("\t$it"); }
 
-
 // Bintray
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
@@ -98,11 +99,8 @@ bintray {
     }
 }
 
-
-
 //https://www.jfrog.com/confluence/display/RTF/Gradle+Artifactory+Plugin
 // for SNAPSHOT VERSION
-
 
 //apply plugin: "com.jfrog.artifactory"
 //artifactory {

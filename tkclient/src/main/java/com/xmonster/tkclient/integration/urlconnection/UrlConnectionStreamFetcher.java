@@ -19,13 +19,51 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
 
     private static final String TAG = "UrlConnectionFetcher";
-    private InputStream stream;
     private final TKClientUrl tkUrl;
     private final ThreadPoolExecutor threadPool;
+    private InputStream stream;
 
     public UrlConnectionStreamFetcher(ThreadPoolExecutor threadPool, TKClientUrl tkUrl) {
         this.tkUrl = tkUrl;
         this.threadPool = threadPool;
+    }
+
+    @Override
+    public void loadData(final DataCallback<? super InputStream> callback) {
+        ConnectionWorker worker = new ConnectionWorker(tkUrl, new DataCallback<InputStream>() {
+            @Override
+            public void onDataReady(InputStream data) {
+                stream = data;
+                callback.onDataReady(data);
+            }
+
+            @Override
+            public void onLoadFailed(Exception e) {
+                callback.onLoadFailed(e);
+            }
+        });
+        this.threadPool.execute(worker);
+    }
+
+    @Override
+    public void cleanup() {
+        try {
+            if (stream != null) {
+                stream.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void cancel() {
+
+    }
+
+    @Override
+    public Class<InputStream> getDataClass() {
+        return InputStream.class;
     }
 
     private static class ConnectionWorker implements Runnable {
@@ -60,43 +98,5 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
                 this.callback.onLoadFailed(e);
             }
         }
-    }
-
-    @Override
-    public void loadData(final DataCallback<? super InputStream> callback) {
-        ConnectionWorker worker = new ConnectionWorker(tkUrl, new DataCallback<InputStream>() {
-            @Override
-            public void onDataReady(InputStream data) {
-                stream = data;
-                callback.onDataReady(data);
-            }
-
-            @Override
-            public void onLoadFailed(Exception e) {
-                callback.onLoadFailed(e);
-            }
-        });
-        this.threadPool.execute(worker);
-    }
-
-    @Override
-    public void cleanup() {
-        try {
-            if (stream != null) {
-                stream.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-     }
-
-    @Override
-    public void cancel() {
-
-    }
-
-    @Override
-    public Class<InputStream> getDataClass() {
-        return InputStream.class;
     }
 }

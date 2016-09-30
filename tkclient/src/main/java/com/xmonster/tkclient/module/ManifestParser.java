@@ -46,8 +46,8 @@ public final class ManifestParser {
         TKClientModule module = null;
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(
-                    context.getPackageName(),
-                    PackageManager.GET_META_DATA
+                context.getPackageName(),
+                PackageManager.GET_META_DATA
             );
             if (appInfo.metaData == null) {
                 return null;

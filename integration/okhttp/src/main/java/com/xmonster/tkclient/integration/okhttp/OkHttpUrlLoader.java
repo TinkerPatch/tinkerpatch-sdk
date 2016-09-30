@@ -31,17 +31,6 @@ public class OkHttpUrlLoader implements RequestLoader<TKClientUrl, InputStream> 
         private static volatile OkHttpClient internalClient;
         private OkHttpClient client;
 
-        private static OkHttpClient getInternalClient() {
-            if (internalClient == null) {
-                synchronized (Factory.class) {
-                    if (internalClient == null) {
-                        internalClient = new OkHttpClient();
-                    }
-                }
-            }
-            return internalClient;
-        }
-
         /**
          * Constructor for a new Factory that runs requests using a static singleton client.
          */
@@ -54,6 +43,17 @@ public class OkHttpUrlLoader implements RequestLoader<TKClientUrl, InputStream> 
          */
         public Factory(OkHttpClient client) {
             this.client = client;
+        }
+
+        private static OkHttpClient getInternalClient() {
+            if (internalClient == null) {
+                synchronized (Factory.class) {
+                    if (internalClient == null) {
+                        internalClient = new OkHttpClient();
+                    }
+                }
+            }
+            return internalClient;
         }
 
         @Override

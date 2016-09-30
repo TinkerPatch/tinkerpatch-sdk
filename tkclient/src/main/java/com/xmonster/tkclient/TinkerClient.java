@@ -19,17 +19,26 @@ import java.util.Arrays;
 
 public class TinkerClient implements TKClientAPI {
 
-    private final String  appVersion;
-    private final String  appKey;
-    private final String  host;
+    private static volatile TinkerClient client;
+    private final String appVersion;
+    private final String appKey;
+    private final String host;
     private final boolean debug;
     private final Registry registry;
     private RequestLoader<TKClientUrl, InputStream> loader;
-    private static volatile TinkerClient client;
+
+    private TinkerClient(String appVersion, String appKey, String host, Boolean debug) {
+        this.appVersion = appVersion;
+        this.appKey = appKey;
+        this.host = host;
+        this.debug = debug;
+        this.registry = new Registry();
+    }
 
     /**
      * Singleton get method for Tinker client, you need invoke
      * {@link #init(Context, String, String, Boolean)} before it invoke.
+     *
      * @return the instance of {@link TinkerClient}
      */
     public static TinkerClient get() {
@@ -51,10 +60,10 @@ public class TinkerClient implements TKClientAPI {
             synchronized (TinkerClient.class) {
                 if (client == null) {
                     client = new TinkerClient.Builder()
-                            .appKey(appKey)
-                            .appVersion(appVersion)
-                            .debug(debugMode)
-                            .build();
+                        .appKey(appKey)
+                        .appVersion(appVersion)
+                        .debug(debugMode)
+                        .build();
 
                     Context applicationContext = context.getApplicationContext();
                     TKClientModule module = new ManifestParser(applicationContext).parse();
@@ -80,10 +89,10 @@ public class TinkerClient implements TKClientAPI {
         }
 
         TKClientUrl tkClientUrl = new TKClientUrl.Builder()
-                .url(url)
-                .param("d", "deviceId")
-                .param("v", System.currentTimeMillis())
-                .build();
+            .url(url)
+            .param("d", "deviceId")
+            .param("v", System.currentTimeMillis())
+            .build();
 
         final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
@@ -115,14 +124,14 @@ public class TinkerClient implements TKClientAPI {
     public void download(String patchVersion, final String filePath, final DataFetcher.DataCallback<? super File> callback) {
         patchVersion = Preconditions.checkNotEmpty(patchVersion);
         final String url = TextUtils.join(
-                "/",
-                Arrays.asList(this.host, this.appKey, this.appVersion, "file"+patchVersion)
+            "/",
+            Arrays.asList(this.host, this.appKey, this.appVersion, "file" + patchVersion)
         );
         TKClientUrl tkClientUrl = new TKClientUrl.Builder()
-                .url(url)
-                .param("d", "deviceId")
-                .param("v", System.currentTimeMillis())
-                .build();
+            .url(url)
+            .param("d", "deviceId")
+            .param("v", System.currentTimeMillis())
+            .build();
         final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
@@ -147,14 +156,6 @@ public class TinkerClient implements TKClientAPI {
                 }
             }
         });
-    }
-
-    private TinkerClient(String appVersion, String appKey, String host, Boolean debug) {
-        this.appVersion = appVersion;
-        this.appKey = appKey;
-        this.host = host;
-        this.debug = debug;
-        this.registry = new Registry();
     }
 
     public static class Builder {

@@ -95,8 +95,8 @@ public class TKClientUrl {
                 }
                 try {
                     sb.append(String.format("%s=%s",
-                            urlEncode(entry.getKey().toString(), charset),
-                            urlEncode(entry.getValue().toString(), charset)
+                        urlEncode(entry.getKey().toString(), charset),
+                        urlEncode(entry.getValue().toString(), charset)
                     ));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();

@@ -18,7 +18,7 @@ public class Registry {
         this.loaderFactorySet = new HashSet<>(1);
     }
 
-    public <T, U>Registry register(Class<T> reqClass, Class<U> respClass, RequestLoaderFactory<T, U> factory) {
+    public <T, U> Registry register(Class<T> reqClass, Class<U> respClass, RequestLoaderFactory<T, U> factory) {
         Entry<T, U> entry = new Entry<>(reqClass, respClass, factory);
         this.loaderFactorySet.add(entry);
         return this;

@@ -25,7 +25,7 @@ public class Utils {
             fileOutput.write(buffer, 0, bufferLength);
         }
         fileOutput.close();
-        return new File(filePath);
+        return file;
     }
 
     public static String readStreamToString(InputStream inputStream) throws IOException {

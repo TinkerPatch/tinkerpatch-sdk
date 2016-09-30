@@ -23,11 +23,11 @@ public class UrlConnectionUrlLoader implements RequestLoader<TKClientUrl, InputS
     public UrlConnectionUrlLoader() {
         BlockingQueue<Runnable> workQueue = new LinkedBlockingDeque<>();
         threadPool = new ThreadPoolExecutor(
-                1,       // Initial pool size
-                2,       // Max pool size
-                KEEP_ALIVE_TIME,
-                KEEP_ALIVE_TIME_UNIT,
-                workQueue
+            1,       // Initial pool size
+            2,       // Max pool size
+            KEEP_ALIVE_TIME,
+            KEEP_ALIVE_TIME_UNIT,
+            workQueue
         );
     }
 

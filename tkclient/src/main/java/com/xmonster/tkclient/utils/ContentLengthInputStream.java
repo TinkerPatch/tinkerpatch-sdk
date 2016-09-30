@@ -68,8 +68,8 @@ public final class ContentLengthInputStream extends FilterInputStream {
             readSoFar += read;
         } else if (contentLength - readSoFar > 0) {
             throw new IOException("Failed to read all expected data"
-                    + ", expected: " + contentLength
-                    + ", but read: " + readSoFar);
+                + ", expected: " + contentLength
+                + ", but read: " + readSoFar);
         }
         return read;
     }

@@ -21,18 +21,10 @@ public class Conditions {
     private static final String FILE_NAME = "CONDITIONS_MAP";
     private static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
 
-    private Map<String, String> properties;
+    private final Map<String, String> properties;
 
     public Conditions (Context context) {
-        File file = new File(context.getFilesDir(), FILE_NAME);
-        try {
-            properties = read(context);
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (properties == null) {
-            properties = new HashMap<>();
-        }
+        properties = read(context);
     }
 
     public Boolean check(String rules) {
@@ -57,12 +49,17 @@ public class Conditions {
         outputStream.close();
     }
 
-    private HashMap<String, String> read(Context context) throws IOException, ClassNotFoundException {
-        File file = new File(context.getFilesDir(), FILE_NAME);
-        if (file.exists()) {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-            return (HashMap<String, String>) ois.readObject();
+    private HashMap<String, String> read(Context context) {
+        try {
+            File file = new File(context.getFilesDir(), FILE_NAME);
+            if (file.exists()) {
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+                return (HashMap<String, String>) ois.readObject();
+            }
+        } catch (Exception ignore) {
+            ignore.printStackTrace();
         }
+        return new HashMap<>();
     }
 
     private static Boolean isInt(String string) {

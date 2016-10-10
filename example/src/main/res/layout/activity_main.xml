@@ -29,12 +29,20 @@
             android:text="sync" />
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/update_btn"
+            android:id="@+id/download_btn"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="16dp"
             android:onClick="@{() -> viewModel.fetchUpdate()}"
             android:text="fetch update" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/update_btn"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:onClick="@{() -> viewModel.update()}"
+            android:text="update" />
 
         <TextView
             android:id="@+id/response_tv"

@@ -33,7 +33,6 @@ dependencies {
     //compile 'com.github.simpleton:tkclient:0.0.3@aar'
     //compile 'com.github.simpleton:okhttp3-integration:0.0.3@aar'
 
-
     compile project(':tkclient')
     compile project(':integration:okhttp')
     compile fileTree(dir: 'libs', include: ['*.jar'])

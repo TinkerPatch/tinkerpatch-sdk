@@ -8,6 +8,7 @@ import com.xmonster.tkclient.integration.urlconnection.UrlConnectionUrlLoader;
 import com.xmonster.tkclient.model.DataFetcher;
 import com.xmonster.tkclient.model.RequestLoader;
 import com.xmonster.tkclient.model.TKClientUrl;
+import com.xmonster.tkclient.model.response.SyncResponse;
 import com.xmonster.tkclient.module.ManifestParser;
 import com.xmonster.tkclient.module.TKClientModule;
 import com.xmonster.tkclient.utils.Installation;
@@ -80,6 +81,53 @@ public class TinkerClient implements TKClientAPI {
         return client;
     }
 
+    public void update(
+        final Context context,
+        final String patchVersion,
+        final String filePath,
+        final DataFetcher.DataCallback<? super File> callback) {
+
+        if (callback == null) {
+            throw new RuntimeException("callback can't be null");
+        }
+
+        sync(context, new DataFetcher.DataCallback<String>() {
+            @Override
+            public void onDataReady(String data) {
+                SyncResponse response = SyncResponse.fromJson(data);
+                if (response == null) {
+                    callback.onLoadFailed(new RuntimeException("Can't sync with version: response == null"));
+                } else {
+
+                    DataFetcher.DataCallback downloadCallback = new DataFetcher.DataCallback<File>() {
+                        @Override
+                        public void onDataReady(File data) {
+                            callback.onDataReady(data);
+                        }
+
+                        @Override
+                        public void onLoadFailed(Exception e) {
+                            callback.onLoadFailed(e);
+                        }
+                    };
+                    /**
+                     * 在SDK启动时检测灰度值有没有生成，若没有，从1-10随机选择一个数，保存起来作为这个设备的灰度值。
+                     * 若是灰度下发，请求返回的json会有g字段，值是1-10，例如{v:5, g:2}。
+                     * 这里g字段的值大于设备的灰度值就命中灰度，否则不命中
+                     */
+                    if (response.grayValue == null || Installation.grayValue(context) >= response.grayValue) {
+                        download(context, patchVersion, filePath, downloadCallback);
+                    }
+                }
+            }
+
+            @Override
+            public void onLoadFailed(Exception e) {
+                callback.onLoadFailed(e);
+            }
+        });
+    }
+
     @Override
     public void sync(final Context context, final DataFetcher.DataCallback<String> callback) {
         Uri.Builder urlBuilder = Uri.parse(this.host).buildUpon();
@@ -102,7 +150,9 @@ public class TinkerClient implements TKClientAPI {
                     return;
                 }
                 try {
-                    callback.onDataReady(Utils.readStreamToString(data, Config.CHARSET));
+                    String response = Utils.readStreamToString(data, Config.CHARSET);
+                    SyncResponse.fromJson(response);
+                    callback.onDataReady(response);
                 } catch (IOException e) {
                     callback.onLoadFailed(e);
                 } finally {

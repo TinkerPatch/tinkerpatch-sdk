@@ -59,5 +59,4 @@ public final class Utils {
         }
         return bo.toString(charset);
     }
-
 }

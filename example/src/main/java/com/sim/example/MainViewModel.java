@@ -67,6 +67,33 @@ public class MainViewModel {
         );
     }
 
+    public void update() {
+        this.response.set("update whole flow");
+        Log.d(TAG, "update");
+        final String patchVersion = "1";
+        File patchFile = new File(context.getFilesDir(), "this/is/a/test/folder/patch_" + patchVersion);
+        TinkerClient.get().update(
+            context,
+            patchVersion,
+            patchFile.getAbsolutePath(),
+            new DataFetcher.DataCallback<File>() {
+                @Override
+                public void onDataReady(File data) {
+                    if (data != null) {
+                        Log.d(TAG, "save to " + data.getAbsolutePath());
+                        response.set(data.getAbsolutePath() + readFromFile(data));
+                    }
+                }
+
+                @Override
+                public void onLoadFailed(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        );
+    }
+
+
     public String readFromFile(File file) {
         //Read text from file
         StringBuilder text = new StringBuilder();

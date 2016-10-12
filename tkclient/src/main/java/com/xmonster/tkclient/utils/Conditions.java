@@ -3,8 +3,6 @@ package com.xmonster.tkclient.utils;
 import android.content.Context;
 import android.text.TextUtils;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,8 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -29,7 +25,7 @@ import java.util.regex.Pattern;
 public class Conditions {
 
     private static final String FILE_NAME = "CONDITIONS_MAP";
-    private static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
+
 
     private final Map<String, String> properties;
 
@@ -38,7 +34,8 @@ public class Conditions {
     }
 
     public Boolean check(String rules) {
-        return true;
+        List<String> rpList = Helper.toReversePolish(rules);
+        return Helper.calcReversePolish(rpList, properties);
     }
 
     public Conditions set(String key, String value) {
@@ -72,11 +69,7 @@ public class Conditions {
         return new HashMap<>();
     }
 
-    private static Boolean isInt(String string) {
-        return INT_PATTERN.matcher(string).matches();
-    }
-
-    static class Parser {
+    static class Helper {
         private static final String WITH_DELIMITER = "((?<=[%1$s])|(?=[%1$s]))";
         private static final List<String> TOKENS = new ArrayList<>(4);
         private static final HashMap<String, Integer> TOKEN_PRIORITY = new HashMap<>();
@@ -92,7 +85,7 @@ public class Conditions {
             TOKEN_PRIORITY.put(")", 3);
         }
 
-        public static boolean calc(String input) {
+        public static List<String> toReversePolish(String input) {
             Stack<String> opStack = new Stack<>();
             List<String> rpList = new LinkedList<>();
             for (String word : tokenize(input)) {
@@ -105,8 +98,7 @@ public class Conditions {
             while (!opStack.isEmpty()) {
                 rpList.add(opStack.pop());
             }
-            System.out.println(rpList);
-            return true;
+            return rpList;
         }
 
         private static void pushOp(Stack<String> stack, List<String> rpList, String op) {
@@ -136,6 +128,118 @@ public class Conditions {
             }
         }
 
+        public static Boolean calcReversePolish(List<String> list, Map<String, String> props) {
+            Stack<Object> stack = new Stack<>();
+            for (String word : list) {
+                if (!isToken(word)) {
+                    stack.push(word);
+                } else {
+                    switch (word) {
+                        case "|": {
+                            Boolean left, right;
+                            Object v1 = stack.pop();
+                            Object v2 = stack.pop();
+                            left = calcExpr((String) v1, props);
+                            if (left) {
+                                stack.push(Boolean.TRUE);
+                                continue;
+                            }
+                            right = calcExpr((String) v2, props);
+                            stack.push(right);
+                            break;
+                        }
+                        case "&": {
+                            Boolean left, right;
+                            Object v1 = stack.pop();
+                            Object v2 = stack.pop();
+                            left = calcExpr(v1, props);
+                            if (!left) {
+                                stack.push(Boolean.FALSE);
+                                continue;
+                            }
+                            right = calcExpr(v2, props);
+                            stack.push(right);
+                            break;
+                        }
+                        default:
+                            throw new RuntimeException("Unsupported Operator:" + word);
+                    }
+                }
+            }
+            return (Boolean) stack.pop();
+        }
+        public static Boolean calcExpr(Object obj, Map<String, String>props) {
+            if (obj instanceof String) {
+                return calcExpr((String)obj, props);
+            } else if (obj instanceof Boolean) {
+                return (Boolean) obj;
+            } else {
+                throw new RuntimeException("illegal type pass to calcExpr");
+            }
+        }
+
+        public static Boolean calcExpr(String expr, Map<String, String>props) {
+            List<String> exprList = splitExpr(expr);
+            String op = exprList.get(1);
+            String left = exprList.get(0);
+            String right = exprList.get(2);
+            if (props.containsKey(left)) {
+                left = props.get(left);
+            }
+            if (props.containsKey(right)) {
+                right = props.get(right);
+            }
+            return calcExpr(left, right, op);
+        }
+
+        public static Boolean calcExpr(String left, String right, String op) {
+            switch (op) {
+                case "==":
+                    return left.equals(right);
+                case "!=":
+                    return !left.equals(right);
+                case ">=":
+                    if (isInt(left)) {
+                        return Integer.valueOf(left) >= Integer.valueOf(right);
+                    } else {
+                        return left.compareToIgnoreCase(right) >= 0;
+                    }
+                case ">":
+                    if (isInt(left)) {
+                        return Integer.valueOf(left) > Integer.valueOf(right);
+                    } else {
+                        return left.compareToIgnoreCase(right) > 0;
+                    }
+                case "<=":
+                    if (isInt(left)) {
+                        return Integer.valueOf(left) <= Integer.valueOf(right);
+                    } else {
+                        return left.compareToIgnoreCase(right) <= 0;
+                    }
+                case "<":
+                    if (isInt(left)) {
+                        return Integer.valueOf(left) < Integer.valueOf(right);
+                    } else {
+                        return left.compareToIgnoreCase(right) < 0;
+                    }
+                default:
+                    throw new RuntimeException("Unsupported Operator");
+            }
+        }
+
+        public static List<String> splitExpr(String expr) {
+            String[] ops = new String[] {"==", "!=", ">=", "<=", ">", "<"};
+            for (String op : ops) {
+                if (expr.contains(op)) {
+                    int pos = expr.indexOf(op);
+                    String left = expr.substring(0, pos);
+                    String right = expr.substring(pos+op.length(), expr.length());
+                    return Arrays.asList(left, op, right);
+                }
+            }
+            return new ArrayList<>();
+        }
+
         private static Boolean isToken(String word) {
             return TOKENS.contains(word);
         }
@@ -148,6 +252,11 @@ public class Conditions {
             }
             String splits = TextUtils.join("|", tokens);
             return Arrays.asList(input.split(String.format(WITH_DELIMITER, splits)));
+        }
+
+        private static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
+        private static Boolean isInt(String string) {
+            return INT_PATTERN.matcher(string).matches();
         }
     }
 }

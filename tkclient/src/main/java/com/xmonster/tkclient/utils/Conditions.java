@@ -168,6 +168,7 @@ public class Conditions {
             }
             return (Boolean) stack.pop();
         }
+
         public static Boolean calcExpr(Object obj, Map<String, String>props) {
             if (obj instanceof String) {
                 return calcExpr((String)obj, props);

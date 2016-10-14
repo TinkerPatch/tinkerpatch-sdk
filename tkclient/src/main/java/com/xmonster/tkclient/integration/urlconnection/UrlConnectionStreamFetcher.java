@@ -10,22 +10,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-/**
- * Created by sun on 29/09/2016.
- */
 
 public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
 
     private static final String TAG = "UrlConnectionFetcher";
     private final TKClientUrl tkUrl;
-    private final ThreadPoolExecutor threadPool;
-    private InputStream stream;
+    private final Executor executor;
+    InputStream stream;
 
-    public UrlConnectionStreamFetcher(ThreadPoolExecutor threadPool, TKClientUrl tkUrl) {
+    public UrlConnectionStreamFetcher(Executor executor, TKClientUrl tkUrl) {
         this.tkUrl = tkUrl;
-        this.threadPool = threadPool;
+        this.executor = executor;
     }
 
     @Override
@@ -42,7 +40,7 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
                 callback.onLoadFailed(e);
             }
         });
-        this.threadPool.execute(worker);
+        executor.execute(worker);
     }
 
     @Override

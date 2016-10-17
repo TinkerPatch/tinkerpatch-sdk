@@ -11,22 +11,23 @@ import java.util.UUID;
 
 /**
  * solution from
- * <a href="http://android-developers.blogspot.com/2011/03/identifying-app-installations.html">identifying-app-installations</a>
+ * <a href="http://android-developers.blogspot.com/2011/03/identifying-app-installations.html">
+ * identifying-app-installations</a>
  */
 public class Installation {
-    private static String ID = null;
+    private static String gID = null;
     private static Integer gValue = null;
     private static final String INSTALLATION = "INSTALLATION";
     private static final String GRAY_VALUE = "GRAY_VALUE";
 
-    public synchronized static String id(Context context) {
-        if (ID == null) {
-            ID = fileValue(context, INSTALLATION, UUID.randomUUID().toString());
+    public static synchronized String id(Context context) {
+        if (gID == null) {
+            gID = fileValue(context, INSTALLATION, UUID.randomUUID().toString());
         }
-        return ID;
+        return gID;
     }
 
-    public synchronized static Integer grayValue(Context context) {
+    public static synchronized Integer grayValue(Context context) {
         if (gValue == null) {
             int g = randInt(1, 10);
             gValue = Integer.valueOf(fileValue(context, GRAY_VALUE, String.valueOf(g)));
@@ -34,7 +35,7 @@ public class Installation {
         return gValue;
     }
 
-    private synchronized static String fileValue(Context context, String fileName, String value) {
+    private static synchronized String fileValue(Context context, String fileName, String value) {
         File file = new File(context.getFilesDir(), fileName);
         try {
             if (!file.exists()) {

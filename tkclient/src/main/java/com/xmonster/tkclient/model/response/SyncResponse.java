@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * Created by sun on 10/10/2016.
  */
 
-public class SyncResponse {
+public final class SyncResponse {
 
     public final String version;
     public final Integer grayValue;
@@ -42,8 +42,6 @@ public class SyncResponse {
 
     @Override
     public String toString() {
-        return "version:" + version +
-            " grayValue:" + grayValue +
-            " conditions:" + conditions;
+        return "version:" + version + " grayValue:" + grayValue + " conditions:" + conditions;
     }
 }

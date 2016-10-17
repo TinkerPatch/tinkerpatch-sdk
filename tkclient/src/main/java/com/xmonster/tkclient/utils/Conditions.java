@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 import static com.xmonster.tkclient.TinkerClient.TAG;
 
 
-
 /**
  * Created by sun on 11/10/2016.
  */
@@ -30,7 +29,7 @@ import static com.xmonster.tkclient.TinkerClient.TAG;
 public class Conditions {
 
     private static final String FILE_NAME = "CONDITIONS_MAP";
-    private static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
+    static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
 
     private final Map<String, String> properties;
 
@@ -102,7 +101,7 @@ public class Conditions {
         return new HashMap<>();
     }
 
-    static class Helper {
+    static final class Helper {
         private static final String WITH_DELIMITER = "((?<=[%1$s])|(?=[%1$s]))";
         private static final List<String> TOKENS = new ArrayList<>(4);
         private static final HashMap<String, Integer> TOKEN_PRIORITY = new HashMap<>();

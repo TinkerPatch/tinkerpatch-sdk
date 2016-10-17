@@ -151,7 +151,7 @@
         <module name="StringLiteralEquality" />
         <module name="UnnecessaryParentheses" />
         <module name="LineLength">
-            <property name="max" value="100" />
+            <property name="max" value="120" />
         </module>
 
         <!-- Checks for class design. -->

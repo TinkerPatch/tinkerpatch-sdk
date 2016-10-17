@@ -17,7 +17,7 @@ public class Installation {
     private static String ID = null;
     private static Integer gValue = null;
     private static final String INSTALLATION = "INSTALLATION";
-    private static final String  GRAY_VALUE = "GRAY_VALUE";
+    private static final String GRAY_VALUE = "GRAY_VALUE";
 
     public synchronized static String id(Context context) {
         if (ID == null) {
@@ -57,6 +57,7 @@ public class Installation {
     private static void writeInstallationFile(File installation, String value) throws IOException {
         FileOutputStream out = new FileOutputStream(installation);
         out.write(value.getBytes());
+        out.flush();
         out.close();
     }
 

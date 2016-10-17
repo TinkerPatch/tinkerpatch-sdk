@@ -5,10 +5,8 @@ import android.text.TextUtils;
 
 import com.xmonster.tkclient.utils.Preconditions;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 

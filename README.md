@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/simpleton/tinker_client.svg?branch=master)](https://travis-ci.org/simpleton/tinker_client)
 [ ![Download](https://api.bintray.com/packages/simsun/maven/TinkerClient/images/download.svg) ](https://bintray.com/simsun/maven/TinkerClient/_latestVersion)
 
-This is project is in very alpha stage, feel free to make a PR. 
+This project is in very alpha stage, feel free to make a PR.
 
 ## Download
 

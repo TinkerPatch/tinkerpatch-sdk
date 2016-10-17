@@ -27,15 +27,15 @@ http://tinkerpatch.com
 
 we use urlConnection as default. and you support importing some fancy httpClient as integrations.  
 
-1. okhttp
+### 1. okhttp
 
 
 add `compile 'com.github.simpleton:okhttp-integration:0.0.4@aar'` in your `dependencies`
 
-2. okhttp3
+### 2. okhttp3
 
-add `compile 'com.github.simpleton:okhttp-integration:0.0.4@aar'` in your `dependencies`
+add `compile 'com.github.simpleton:okhttp3-integration:0.0.4@aar'` in your `dependencies`
 
-3. volly(TODO)
-4. apachehttpclient(TODO)
+###3. volly(TODO)
+###4. apachehttpclient(TODO)
 

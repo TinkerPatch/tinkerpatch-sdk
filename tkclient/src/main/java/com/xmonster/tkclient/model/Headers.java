@@ -43,6 +43,7 @@ class Headers {
         private Map<String, String> headers;
 
         Builder() {
+            // This constructor is intentionally empty. Nothing special is needed here.
         }
 
         public Builder setHeader(String key, String value) {

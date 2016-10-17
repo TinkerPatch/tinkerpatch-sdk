@@ -16,11 +16,15 @@ import java.util.UUID;
  * <a href="http://android-developers.blogspot.com/2011/03/identifying-app-installations.html">
  * identifying-app-installations</a>
  */
-public class Installation {
+public final class Installation {
     private static String gID = null;
     private static Integer gValue = null;
     private static final String INSTALLATION = "INSTALLATION";
     private static final String GRAY_VALUE = "GRAY_VALUE";
+
+    private Installation() {
+        // A Utils Class
+    }
 
     public static synchronized String id(Context context) {
         if (gID == null) {

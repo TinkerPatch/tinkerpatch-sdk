@@ -30,6 +30,7 @@ import static com.xmonster.tkclient.TinkerClient.TAG;
 public class Conditions {
 
     private static final String FILE_NAME = "CONDITIONS_MAP";
+    private static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
 
     private final Map<String, String> properties;
 
@@ -105,6 +106,11 @@ public class Conditions {
         private static final String WITH_DELIMITER = "((?<=[%1$s])|(?=[%1$s]))";
         private static final List<String> TOKENS = new ArrayList<>(4);
         private static final HashMap<String, Integer> TOKEN_PRIORITY = new HashMap<>();
+
+        private Helper() {
+            // A Util Class
+        }
+
         static {
             TOKENS.add("&");
             TOKENS.add("|");
@@ -134,17 +140,17 @@ public class Conditions {
         }
 
         private static void pushOp(Stack<String> stack, List<String> rpList, String op) {
-            if (stack.isEmpty() || op.equals("(")) {
+            if (stack.isEmpty() || "(".equals(op)) {
                 stack.push(op);
                 return;
             }
 
-            if (stack.peek().equals("(")) {
+            if ("(".equals(stack.peek())) {
                 stack.push(op);
                 return;
             }
 
-            if (op.equals(")")) {
+            if (")".equals(op)) {
                 String tmp;
                 while (!"(".equals(tmp = stack.pop())) {
                     rpList.add(tmp);
@@ -287,7 +293,6 @@ public class Conditions {
             return Arrays.asList(input.split(String.format(WITH_DELIMITER, splits)));
         }
 
-        private static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
         private static Boolean isInt(String string) {
             return INT_PATTERN.matcher(string).matches();
         }

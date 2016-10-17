@@ -17,7 +17,7 @@ import java.io.InputStream;
 public final class Utils {
 
     private Utils() {
-        // nothing
+        // A Utils Class
     }
 
     public static File readStreamToFile(InputStream inputStream, String filePath) throws IOException {

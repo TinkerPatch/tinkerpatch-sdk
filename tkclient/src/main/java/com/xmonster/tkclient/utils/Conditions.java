@@ -51,16 +51,32 @@ public class Conditions {
         }
     }
 
+    /**
+     * set the k,v to conditions map.
+     * you should invoke {@link #save(Context)} for saving the map to disk
+     * @param key the key
+     * @param value the value
+     * @return {@link Conditions} this
+     */
     public Conditions set(String key, String value) {
         properties.put(key, value);
         return this;
     }
 
+    /**
+     * Clean all properties. you should invoke {@link #save(Context)} for saving to disk.
+     * @return {@link Conditions} this
+     */
     public Conditions clean() {
         properties.clear();
         return this;
     }
 
+    /**
+     * save to disk
+     * @param context {@link android.content.Context}
+     * @throws IOException
+     */
     public void save(Context context) throws IOException {
         File file = new File(context.getFilesDir(), FILE_NAME);
         ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
@@ -70,11 +86,14 @@ public class Conditions {
     }
 
     private HashMap<String, String> read(Context context) {
+
         try {
             File file = new File(context.getFilesDir(), FILE_NAME);
             if (file.exists()) {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-                return (HashMap<String, String>) ois.readObject();
+                HashMap<String, String> map = (HashMap<String, String>) ois.readObject();
+                ois.close();
+                return map;
             }
         } catch (Exception ignore) {
             ignore.printStackTrace();
@@ -214,25 +233,25 @@ public class Conditions {
                     return !left.equals(right);
                 case ">=":
                     if (isInt(left)) {
-                        return Integer.valueOf(left) >= Integer.valueOf(right);
+                        return Integer.parseInt(left) >= Integer.parseInt(right);
                     } else {
                         return left.compareToIgnoreCase(right) >= 0;
                     }
                 case ">":
                     if (isInt(left)) {
-                        return Integer.valueOf(left) > Integer.valueOf(right);
+                        return Integer.parseInt(left) > Integer.parseInt(right);
                     } else {
                         return left.compareToIgnoreCase(right) > 0;
                     }
                 case "<=":
                     if (isInt(left)) {
-                        return Integer.valueOf(left) <= Integer.valueOf(right);
+                        return Integer.parseInt(left) <= Integer.parseInt(right);
                     } else {
                         return left.compareToIgnoreCase(right) <= 0;
                     }
                 case "<":
                     if (isInt(left)) {
-                        return Integer.valueOf(left) < Integer.valueOf(right);
+                        return Integer.parseInt(left) < Integer.parseInt(right);
                     } else {
                         return left.compareToIgnoreCase(right) < 0;
                     }

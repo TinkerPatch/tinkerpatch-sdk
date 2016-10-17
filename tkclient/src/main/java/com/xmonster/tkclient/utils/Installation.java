@@ -2,6 +2,8 @@ package com.xmonster.tkclient.utils;
 
 import android.content.Context;
 
+import com.xmonster.tkclient.Config;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,14 +54,21 @@ public class Installation {
         byte[] bytes = new byte[(int) f.length()];
         f.readFully(bytes);
         f.close();
-        return new String(bytes);
+        return new String(bytes, Config.CHARSET);
     }
 
     private static void writeInstallationFile(File installation, String value) throws IOException {
-        FileOutputStream out = new FileOutputStream(installation);
-        out.write(value.getBytes());
-        out.flush();
-        out.close();
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(installation);
+            out.write(value.getBytes(Config.CHARSET));
+            out.flush();
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
+
     }
 
     private static int randInt(int min, int max) {

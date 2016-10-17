@@ -21,7 +21,7 @@ public class MainViewModel {
 
     public MainViewModel(Context context) {
         this.response = new ObservableField<>("Hello World!");
-        TinkerClient.init(context, APP_KEY, "1", true);
+        TinkerClient.init(context, APP_KEY, "1", false);
         this.context = context;
     }
 
@@ -39,6 +39,7 @@ public class MainViewModel {
                 e.printStackTrace();
             }
         });
+        TinkerClient.get().params("test", "1").save(context);
     }
 
     public void fetchUpdate() {

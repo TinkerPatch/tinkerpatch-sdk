@@ -11,6 +11,7 @@ import com.xmonster.tkclient.model.TKClientUrl;
 import com.xmonster.tkclient.model.response.SyncResponse;
 import com.xmonster.tkclient.module.ManifestParser;
 import com.xmonster.tkclient.module.TKClientModule;
+import com.xmonster.tkclient.utils.Conditions;
 import com.xmonster.tkclient.utils.Installation;
 import com.xmonster.tkclient.utils.Preconditions;
 import com.xmonster.tkclient.utils.Utils;
@@ -28,13 +29,15 @@ public class TinkerClient implements TKClientAPI {
     private final boolean debug;
     private final Registry registry;
     private RequestLoader<TKClientUrl, InputStream> loader;
+    final Conditions conditions;
 
-    private TinkerClient(String appVersion, String appKey, String host, Boolean debug) {
+    TinkerClient(String appVersion, String appKey, String host, Boolean debug, Conditions conditions) {
         this.appVersion = appVersion;
         this.appKey = appKey;
         this.host = host;
         this.debug = debug;
         this.registry = new Registry();
+        this.conditions = conditions;
     }
 
     /**
@@ -61,10 +64,11 @@ public class TinkerClient implements TKClientAPI {
         if (client == null) {
             synchronized (TinkerClient.class) {
                 if (client == null) {
-                    client = new TinkerClient.Builder()
+                    client = new Builder()
                         .appKey(appKey)
                         .appVersion(appVersion)
                         .debug(debugMode)
+                        .conditions(context)
                         .build();
 
                     Context applicationContext = context.getApplicationContext();
@@ -79,6 +83,19 @@ public class TinkerClient implements TKClientAPI {
             }
         }
         return client;
+    }
+
+    public TinkerClient params(String key, String value) {
+        this.conditions.set(key, value);
+        return this;
+    }
+
+    public void save(Context context) {
+        try {
+            this.conditions.save(context);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void update(
@@ -115,7 +132,8 @@ public class TinkerClient implements TKClientAPI {
                      * 若是灰度下发，请求返回的json会有g字段，值是1-10，例如{v:5, g:2}。
                      * 这里g字段的值大于设备的灰度值就命中灰度，否则不命中
                      */
-                    if (response.grayValue == null || Installation.grayValue(context) >= response.grayValue) {
+                    if ((response.grayValue == null || Installation.grayValue(context) >= response.grayValue)
+                        && conditions.check("")) {
                         download(context, patchVersion, filePath, downloadCallback);
                     }
                 }
@@ -223,30 +241,36 @@ public class TinkerClient implements TKClientAPI {
         });
     }
 
-    public static class Builder {
+    static class Builder {
         private static final String HOST_URL = "http://q.tinkerpatch.com";
         private String appVersion;
         private String appKey;
         private String host;
         private Boolean debug;
+        private Conditions conditions;
 
-        public TinkerClient.Builder host(String host) {
+        TinkerClient.Builder host(String host) {
             this.host = host;
             return this;
         }
 
-        public TinkerClient.Builder appKey(String appKey) {
+        TinkerClient.Builder appKey(String appKey) {
             this.appKey = appKey;
             return this;
         }
 
-        public TinkerClient.Builder appVersion(String appVersion) {
+        TinkerClient.Builder appVersion(String appVersion) {
             this.appVersion = appVersion;
             return this;
         }
 
-        public TinkerClient.Builder debug(boolean debug) {
+        TinkerClient.Builder debug(boolean debug) {
             this.debug = debug;
+            return this;
+        }
+
+        TinkerClient.Builder conditions(Context context) {
+            this.conditions = new Conditions(context);
             return this;
         }
 
@@ -257,11 +281,14 @@ public class TinkerClient implements TKClientAPI {
             if (TextUtils.isEmpty(this.appKey) || TextUtils.isEmpty(this.appVersion)) {
                 throw new RuntimeException("You need setup Appkey and AppVersion");
             }
+            if (this.conditions == null) {
+                throw new RuntimeException("You need init conditions property");
+            }
         }
 
         public TinkerClient build() {
             makeDefault();
-            return new TinkerClient(this.appVersion, this.appKey, this.host, this.debug);
+            return new TinkerClient(this.appVersion, this.appKey, this.host, this.debug, this.conditions);
         }
     }
 }

@@ -21,5 +21,10 @@ public interface TKClientAPI {
      * 若本地未下载过这个补丁版本，则请求
      * http://{Host}/{appKey}/{appVersion}/file{patchVersion}?d={deviceId}&v={timestamp}
      */
-    void download(Context context, String patchVersion, String filePath, DataFetcher.DataCallback<? super File> callback);
+    void download(
+        Context context,
+        String patchVersion,
+        String filePath,
+        DataFetcher.DataCallback<? super File> callback
+    );
 }

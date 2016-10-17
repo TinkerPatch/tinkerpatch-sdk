@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Headers {
+class Headers {
 
     /**
      * A Headers object containing reasonable defaults that should be used when users don't want
@@ -14,9 +14,9 @@ public class Headers {
      */
     public static final Headers DEFAULT = new Headers.Builder().build();
 
-    private final Map<String, String> headers;
+    final Map<String, String> headers;
 
-    private Headers(Map<String, String> headers) {
+    Headers(Map<String, String> headers) {
         this.headers = new HashMap<>(headers);
     }
 
@@ -41,6 +41,10 @@ public class Headers {
         }
 
         private Map<String, String> headers;
+
+        Builder() {
+            // This constructor is intentionally empty. Nothing special is needed here.
+        }
 
         public Builder setHeader(String key, String value) {
             if (headers == null) {

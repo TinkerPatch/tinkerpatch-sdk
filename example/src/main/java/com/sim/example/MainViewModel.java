@@ -107,8 +107,7 @@ public class MainViewModel {
                 text.append('\n');
             }
             br.close();
-        }
-        catch (IOException e) {
+        } catch (IOException ignore) {
             //You'll need to add proper error handling here
         }
         return text.toString();

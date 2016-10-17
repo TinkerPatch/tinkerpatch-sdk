@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import static com.xmonster.tkclient.TinkerClient.TAG;
 
+
 /**
  * Created by sun on 11/10/2016.
  */
@@ -28,10 +29,11 @@ import static com.xmonster.tkclient.TinkerClient.TAG;
 public class Conditions {
 
     private static final String FILE_NAME = "CONDITIONS_MAP";
+    static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
 
     private final Map<String, String> properties;
 
-    public Conditions (Context context) {
+    public Conditions(Context context) {
         properties = read(context);
     }
 
@@ -49,16 +51,32 @@ public class Conditions {
         }
     }
 
+    /**
+     * set the k,v to conditions map.
+     * you should invoke {@link #save(Context)} for saving the map to disk
+     * @param key the key
+     * @param value the value
+     * @return {@link Conditions} this
+     */
     public Conditions set(String key, String value) {
         properties.put(key, value);
         return this;
     }
 
+    /**
+     * Clean all properties. you should invoke {@link #save(Context)} for saving to disk.
+     * @return {@link Conditions} this
+     */
     public Conditions clean() {
         properties.clear();
         return this;
     }
 
+    /**
+     * save to disk
+     * @param context {@link android.content.Context}
+     * @throws IOException
+     */
     public void save(Context context) throws IOException {
         File file = new File(context.getFilesDir(), FILE_NAME);
         ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
@@ -68,11 +86,14 @@ public class Conditions {
     }
 
     private HashMap<String, String> read(Context context) {
+
         try {
             File file = new File(context.getFilesDir(), FILE_NAME);
             if (file.exists()) {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-                return (HashMap<String, String>) ois.readObject();
+                HashMap<String, String> map = (HashMap<String, String>) ois.readObject();
+                ois.close();
+                return map;
             }
         } catch (Exception ignore) {
             ignore.printStackTrace();
@@ -80,10 +101,15 @@ public class Conditions {
         return new HashMap<>();
     }
 
-    static class Helper {
+    static final class Helper {
         private static final String WITH_DELIMITER = "((?<=[%1$s])|(?=[%1$s]))";
         private static final List<String> TOKENS = new ArrayList<>(4);
         private static final HashMap<String, Integer> TOKEN_PRIORITY = new HashMap<>();
+
+        private Helper() {
+            // A Util Class
+        }
+
         static {
             TOKENS.add("&");
             TOKENS.add("|");
@@ -113,19 +139,19 @@ public class Conditions {
         }
 
         private static void pushOp(Stack<String> stack, List<String> rpList, String op) {
-            if (stack.isEmpty() || op.equals("(")) {
+            if (stack.isEmpty() || "(".equals(op)) {
                 stack.push(op);
                 return;
             }
 
-            if (stack.peek().equals("(")) {
+            if ("(".equals(stack.peek())) {
                 stack.push(op);
                 return;
             }
 
-            if (op.equals(")")) {
+            if (")".equals(op)) {
                 String tmp;
-                while(!"(".equals(tmp=stack.pop())){
+                while (!"(".equals(tmp = stack.pop())) {
                     rpList.add(tmp);
                 }
                 return;
@@ -147,11 +173,12 @@ public class Conditions {
                     // such 'true || expr'
                     stack.push(word);
                 } else {
+                    Boolean left, right;
+                    Object v1, v2;
                     switch (word) {
-                        case "|": {
-                            Boolean left, right;
-                            Object v1 = stack.pop();
-                            Object v2 = stack.pop();
+                        case "|":
+                            v1 = stack.pop();
+                            v2 = stack.pop();
                             left = calcExpr((String) v1, props);
                             if (left) {
                                 stack.push(Boolean.TRUE);
@@ -160,11 +187,9 @@ public class Conditions {
                             right = calcExpr((String) v2, props);
                             stack.push(right);
                             break;
-                        }
-                        case "&": {
-                            Boolean left, right;
-                            Object v1 = stack.pop();
-                            Object v2 = stack.pop();
+                        case "&":
+                            v1 = stack.pop();
+                            v2 = stack.pop();
                             left = calcExpr(v1, props);
                             if (!left) {
                                 stack.push(Boolean.FALSE);
@@ -173,7 +198,6 @@ public class Conditions {
                             right = calcExpr(v2, props);
                             stack.push(right);
                             break;
-                        }
                         default:
                             throw new RuntimeException("Unsupported Operator:" + word);
                     }
@@ -182,9 +206,9 @@ public class Conditions {
             return calcExpr(stack.pop(), props);
         }
 
-        public static Boolean calcExpr(Object obj, Map<String, String>props) {
+        public static Boolean calcExpr(Object obj, Map<String, String> props) {
             if (obj instanceof String) {
-                return calcExpr((String)obj, props);
+                return calcExpr((String) obj, props);
             } else if (obj instanceof Boolean) {
                 return (Boolean) obj;
             } else {
@@ -192,7 +216,7 @@ public class Conditions {
             }
         }
 
-        public static Boolean calcExpr(String expr, Map<String, String>props) {
+        public static Boolean calcExpr(String expr, Map<String, String> props) {
             List<String> exprList = splitExpr(expr);
             String op = exprList.get(1);
             String left = exprList.get(0);
@@ -214,25 +238,25 @@ public class Conditions {
                     return !left.equals(right);
                 case ">=":
                     if (isInt(left)) {
-                        return Integer.valueOf(left) >= Integer.valueOf(right);
+                        return Integer.parseInt(left) >= Integer.parseInt(right);
                     } else {
                         return left.compareToIgnoreCase(right) >= 0;
                     }
                 case ">":
                     if (isInt(left)) {
-                        return Integer.valueOf(left) > Integer.valueOf(right);
+                        return Integer.parseInt(left) > Integer.parseInt(right);
                     } else {
                         return left.compareToIgnoreCase(right) > 0;
                     }
                 case "<=":
                     if (isInt(left)) {
-                        return Integer.valueOf(left) <= Integer.valueOf(right);
+                        return Integer.parseInt(left) <= Integer.parseInt(right);
                     } else {
                         return left.compareToIgnoreCase(right) <= 0;
                     }
                 case "<":
                     if (isInt(left)) {
-                        return Integer.valueOf(left) < Integer.valueOf(right);
+                        return Integer.parseInt(left) < Integer.parseInt(right);
                     } else {
                         return left.compareToIgnoreCase(right) < 0;
                     }
@@ -247,7 +271,7 @@ public class Conditions {
                 if (expr.contains(op)) {
                     int pos = expr.indexOf(op);
                     String left = expr.substring(0, pos);
-                    String right = expr.substring(pos+op.length(), expr.length());
+                    String right = expr.substring(pos + op.length(), expr.length());
                     return Arrays.asList(left, op, right);
                 }
             }
@@ -259,7 +283,7 @@ public class Conditions {
         }
 
         private static List<String> tokenize(String input) {
-            input = input.replaceAll("\\s+","").replaceAll("&&","&").replaceAll("\\|\\|","|");
+            input = input.replaceAll("\\s+", "").replaceAll("&&", "&").replaceAll("\\|\\|", "|");
             List<String> tokens = new ArrayList<>(TOKENS.size());
             for (String token : TOKENS) {
                 tokens.add(Pattern.quote(token));
@@ -268,7 +292,6 @@ public class Conditions {
             return Arrays.asList(input.split(String.format(WITH_DELIMITER, splits)));
         }
 
-        private static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
         private static Boolean isInt(String string) {
             return INT_PATTERN.matcher(string).matches();
         }

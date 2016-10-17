@@ -2,6 +2,7 @@ package com.xmonster.tkclient.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +19,8 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+import static com.xmonster.tkclient.TinkerClient.TAG;
+
 /**
  * Created by sun on 11/10/2016.
  */
@@ -26,7 +29,6 @@ public class Conditions {
 
     private static final String FILE_NAME = "CONDITIONS_MAP";
 
-
     private final Map<String, String> properties;
 
     public Conditions (Context context) {
@@ -34,8 +36,17 @@ public class Conditions {
     }
 
     public Boolean check(String rules) {
+        if (TextUtils.isEmpty(rules)) {
+            return true;
+        }
         List<String> rpList = Helper.toReversePolish(rules);
-        return Helper.calcReversePolish(rpList, properties);
+        try {
+            return Helper.calcReversePolish(rpList, properties);
+        } catch (Exception ignore) {
+            Log.e(TAG, "parse conditions error(have you written '==' as '='?): " + rules);
+            Log.w(TAG, ignore);
+            return false;
+        }
     }
 
     public Conditions set(String key, String value) {
@@ -132,6 +143,8 @@ public class Conditions {
             Stack<Object> stack = new Stack<>();
             for (String word : list) {
                 if (!isToken(word)) {
+                    // lazy calcExpr at pop from stack, some expr needn't calculate.
+                    // such 'true || expr'
                     stack.push(word);
                 } else {
                     switch (word) {
@@ -166,7 +179,7 @@ public class Conditions {
                     }
                 }
             }
-            return (Boolean) stack.pop();
+            return calcExpr(stack.pop(), props);
         }
 
         public static Boolean calcExpr(Object obj, Map<String, String>props) {

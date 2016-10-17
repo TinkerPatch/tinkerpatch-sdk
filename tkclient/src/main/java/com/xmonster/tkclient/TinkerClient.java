@@ -3,6 +3,7 @@ package com.xmonster.tkclient;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.xmonster.tkclient.integration.urlconnection.UrlConnectionUrlLoader;
 import com.xmonster.tkclient.model.DataFetcher;
@@ -21,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class TinkerClient implements TKClientAPI {
+
+    public static final String TAG = "TinkerClient";
 
     private static volatile TinkerClient client;
     private final String appVersion;
@@ -127,14 +130,12 @@ public class TinkerClient implements TKClientAPI {
                             callback.onLoadFailed(e);
                         }
                     };
-                    /**
-                     * 在SDK启动时检测灰度值有没有生成，若没有，从1-10随机选择一个数，保存起来作为这个设备的灰度值。
-                     * 若是灰度下发，请求返回的json会有g字段，值是1-10，例如{v:5, g:2}。
-                     * 这里g字段的值大于设备的灰度值就命中灰度，否则不命中
-                     */
-                    if ((response.grayValue == null || Installation.grayValue(context) >= response.grayValue)
-                        && conditions.check("")) {
+
+                    if (Utils.isInGrayGroup(response.grayValue, context)
+                        && conditions.check(response.conditions)) {
                         download(context, patchVersion, filePath, downloadCallback);
+                    } else {
+                        Log.i(TAG, "Didn't hit, response is: " + response.toString());
                     }
                 }
             }

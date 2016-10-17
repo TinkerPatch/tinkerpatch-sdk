@@ -1,5 +1,7 @@
 package com.xmonster.tkclient.utils;
 
+import android.content.Context;
+
 import com.xmonster.tkclient.Config;
 
 import java.io.ByteArrayOutputStream;
@@ -58,5 +60,14 @@ public final class Utils {
             bo.write(buffer, 0, bufferLength);
         }
         return bo.toString(charset);
+    }
+
+    /**
+     * 在SDK启动时检测灰度值有没有生成，若没有，从1-10随机选择一个数，保存起来作为这个设备的灰度值。
+     * 若是灰度下发，请求返回的json会有g字段，值是1-10，例如{v:5, g:2}。
+     * 这里g字段的值大于设备的灰度值就命中灰度，否则不命中
+     */
+    public static boolean isInGrayGroup(Integer grayValue, Context context) {
+        return grayValue == null || Installation.grayValue(context) >= grayValue;
     }
 }

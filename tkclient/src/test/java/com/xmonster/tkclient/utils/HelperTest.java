@@ -14,6 +14,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,8 +29,15 @@ public class HelperTest {
     @Test
     public void toReversePolish1() throws Exception {
         TestCase.assertTrue(
-            Conditions.Helper.toReversePolish("test>1 && (test<2 || uid=100)").equals(
-                Arrays.asList("test>1", "test<2", "uid=100", "|", "&"))
+            Conditions.Helper.toReversePolish("test>1 && (test<2 || uid==100)").equals(
+                Arrays.asList("test>1", "test<2", "uid==100", "|", "&"))
+        );
+    }
+
+    @Test
+    public void toReversePolish2() throws Exception {
+        TestCase.assertTrue(
+            Conditions.Helper.toReversePolish("test==1").equals(Collections.singletonList("test==1"))
         );
     }
 
@@ -64,7 +72,7 @@ public class HelperTest {
     @Test
     public void calcExpr1() throws Exception {
         TestCase.assertFalse(Conditions.Helper.calcExpr("city>shanghai", props));
-        TestCase.assertFalse(Conditions.Helper.calcExpr("city>=shanghai", props));
+        TestCase.assertTrue(Conditions.Helper.calcExpr("city>=shanghai", props));
         TestCase.assertTrue(Conditions.Helper.calcExpr("city==shanghai", props));
         TestCase.assertTrue(Conditions.Helper.calcExpr("city!=guangdong", props));
     }

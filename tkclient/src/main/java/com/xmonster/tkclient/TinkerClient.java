@@ -21,7 +21,6 @@ import com.xmonster.tkclient.utils.VersionUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
 
 public class TinkerClient implements TKClientAPI {
 

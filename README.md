@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.github.simpleton:tkclient:0.0.4@aar'
+  compile 'com.github.simpleton:tkclient:0.0.5@aar'
 }
 
 ```
@@ -31,11 +31,11 @@ we use urlConnection as default. and you support importing some fancy httpClient
 ### 1. okhttp
 
 
-add `compile 'com.github.simpleton:okhttp-integration:0.0.4@aar'` in your `dependencies`
+add `compile 'com.github.simpleton:okhttp-integration:0.0.5@aar'` in your `dependencies`
 
 ### 2. okhttp3
 
-add `compile 'com.github.simpleton:okhttp3-integration:0.0.4@aar'` in your `dependencies`
+add `compile 'com.github.simpleton:okhttp3-integration:0.0.5@aar'` in your `dependencies`
 
 ###3. volly(TODO)
 ###4. apachehttpclient(TODO)

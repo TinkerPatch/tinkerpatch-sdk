@@ -286,7 +286,7 @@ public class Conditions {
 
         private static List<String> tokenize(String input) {
             input = input.replaceAll("\\s+", "")
-                .replaceAll("&amp;","&").replaceAll("&lt;","<").replaceAll("&gt;",">")
+                .replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">")
                 .replaceAll("&&", "&").replaceAll("\\|\\|", "|");
             List<String> tokens = new ArrayList<>(TOKENS.size());
             for (String token : TOKENS) {

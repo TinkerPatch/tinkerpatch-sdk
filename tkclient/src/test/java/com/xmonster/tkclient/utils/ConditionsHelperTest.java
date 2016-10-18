@@ -54,7 +54,9 @@ public class ConditionsHelperTest {
 
     @Test
     public void calc1() throws Exception {
-        List<String> list = Conditions.Helper.toReversePolish("(test!=1&amp;&amp;city==shanghai)||(uid&gt;=101)||(deviceid&lt;10000)");
+        List<String> list = Conditions.Helper.toReversePolish(
+            "(test!=1&amp;&amp;city==shanghai)||(uid&gt;=101)||(deviceid&lt;10000)"
+        );
         Assert.assertTrue(Conditions.Helper.calcReversePolish(list, props));
     }
 
@@ -62,7 +64,9 @@ public class ConditionsHelperTest {
     public void calc2() throws Exception {
         Map<String, String> props1 = new HashMap<>();
         props1.put("test", "1");
-        List<String> list = Conditions.Helper.toReversePolish("(test!=1&amp;&amp;city==shanghai)||(uid&gt;=101)||(deviceid&lt;10000)");
+        List<String> list = Conditions.Helper.toReversePolish(
+            "(test!=1&amp;&amp;city==shanghai)||(uid&gt;=101)||(deviceid&lt;10000)"
+        );
         Assert.assertFalse(Conditions.Helper.calcReversePolish(list, props1));
     }
 

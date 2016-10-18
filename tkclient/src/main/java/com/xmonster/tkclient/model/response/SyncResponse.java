@@ -46,7 +46,7 @@ public final class SyncResponse {
 
     @Override
     public String toString() {
-        return "version:" + version + " grayValue:" + grayValue + " conditions:" + conditions
-            + " pause:" + isPaused;
+        return "version:" + version + "\ngrayValue:" + grayValue + "\nconditions:" + conditions
+            + "\npause:" + isPaused;
     }
 }

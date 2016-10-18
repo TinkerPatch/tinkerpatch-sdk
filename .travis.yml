@@ -1,5 +1,11 @@
 language: android
 jdk: oraclejdk8
+
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
+
 android:
   components:
     - platform-tools

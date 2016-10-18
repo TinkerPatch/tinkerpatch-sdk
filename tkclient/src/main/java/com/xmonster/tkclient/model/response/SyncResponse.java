@@ -34,7 +34,7 @@ public final class SyncResponse {
         try {
             JSONObject jsonObject = new JSONObject(json);
             String version = jsonObject.getString(KEY_VERSION);
-            String conditions = jsonObject.getString(KEY_CONDITIONS);
+            String conditions = jsonObject.optString(KEY_CONDITIONS);
             Integer grayValue = jsonObject.optInt(KEY_GRAY);
             Integer pauseFlag = jsonObject.optInt(KEY_PAUSE);
             return new SyncResponse(version, grayValue, conditions, pauseFlag == 1);

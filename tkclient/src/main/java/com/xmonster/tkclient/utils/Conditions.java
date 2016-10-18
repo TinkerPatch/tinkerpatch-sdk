@@ -28,7 +28,7 @@ import static com.xmonster.tkclient.TinkerClient.TAG;
 
 public class Conditions {
 
-    private static final String FILE_NAME = "CONDITIONS_MAP";
+    static final String FILE_NAME = "CONDITIONS_MAP";
     static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
 
     private final Map<String, String> properties;
@@ -216,17 +216,20 @@ public class Conditions {
         }
 
         public static Boolean calcExpr(String expr, Map<String, String> props) {
+            boolean isInProps = false;
             List<String> exprList = splitExpr(expr);
             String op = exprList.get(1);
             String left = exprList.get(0);
             String right = exprList.get(2);
             if (props.containsKey(left)) {
+                isInProps = true;
                 left = props.get(left);
             }
             if (props.containsKey(right)) {
+                isInProps = true;
                 right = props.get(right);
             }
-            return calcExpr(left, right, op);
+            return isInProps && calcExpr(left, right, op);
         }
 
         public static Boolean calcExpr(String left, String right, String op) {

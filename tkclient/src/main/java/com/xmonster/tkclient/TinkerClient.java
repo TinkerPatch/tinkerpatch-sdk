@@ -105,11 +105,7 @@ public class TinkerClient implements TKClientAPI {
         }
     }
 
-    public void update(
-        final Context context,
-        final String patchVersion,
-        final String filePath,
-        final DataFetcher.DataCallback<? super File> callback) {
+    public void update(final Context context, final DataFetcher.DataCallback<? super File> callback) {
 
         if (callback == null) {
             throw new RuntimeException("callback can't be null");
@@ -139,7 +135,9 @@ public class TinkerClient implements TKClientAPI {
                         && !response.isPaused
                         && Utils.isInGrayGroup(response.grayValue, context)
                         && conditions.check(response.conditions)) {
-                        download(context, patchVersion, filePath, downloadCallback);
+
+                        String patchPath = getPatchFilePath(context, response.version);
+                        download(context, response.version, patchPath, downloadCallback);
                     } else {
                         Log.i(TAG, "Needn't update, response is: " + response.toString());
                     }
@@ -256,6 +254,11 @@ public class TinkerClient implements TKClientAPI {
      */
     public Integer getCurrentPatchVersoin(Context context) {
         return VersionUtils.getCurrentVersion(context);
+    }
+
+    String getPatchFilePath(Context context, String version) {
+        File file = new File(context.getFilesDir(), Config.DEFAULT_PATCH_PATH_PREFIX + version);
+        return file.getAbsolutePath();
     }
 
     Boolean isUpdate(Context context, String version) {

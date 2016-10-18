@@ -73,11 +73,8 @@ public class MainViewModel {
         this.response.set("update whole flow");
         Log.d(TAG, "update");
         final String patchVersion = "1";
-        File patchFile = new File(context.getFilesDir(), "this/is/a/test/folder/patch_" + patchVersion);
         TinkerClient.get().update(
             context,
-            patchVersion,
-            patchFile.getAbsolutePath(),
             new DataFetcher.DataCallback<File>() {
                 @Override
                 public void onDataReady(File data) {

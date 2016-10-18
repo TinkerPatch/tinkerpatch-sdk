@@ -139,7 +139,8 @@ public class TinkerClient implements TKClientAPI {
                         String patchPath = getPatchFilePath(context, response.version);
                         download(context, response.version, patchPath, downloadCallback);
                     } else {
-                        Log.i(TAG, "Needn't update, response is: " + response.toString());
+                        Log.i(TAG, "Needn't update, sync response is: " + response.toString()
+                            + "gray: " + Installation.grayValue(context));
                     }
                 }
             }

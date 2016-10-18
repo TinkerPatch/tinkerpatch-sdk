@@ -53,6 +53,12 @@ public class HelperTest {
     }
 
     @Test
+    public void calc1() throws Exception {
+        List<String> list = Conditions.Helper.toReversePolish("(test!=1&amp;&amp;city==shanghai)||(uid&gt;=101)||(deviceid&lt;10000)");
+        Assert.assertTrue(Conditions.Helper.calcReversePolish(list, props));
+    }
+
+    @Test
     public void calc() throws Exception {
         List<String> list = Conditions.Helper.toReversePolish("test>1 && (test<2 || uid==100)");
         Assert.assertFalse(Conditions.Helper.calcReversePolish(list, props));

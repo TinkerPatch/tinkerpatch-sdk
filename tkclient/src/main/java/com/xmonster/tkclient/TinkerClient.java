@@ -16,10 +16,12 @@ import com.xmonster.tkclient.utils.Conditions;
 import com.xmonster.tkclient.utils.Installation;
 import com.xmonster.tkclient.utils.Preconditions;
 import com.xmonster.tkclient.utils.Utils;
+import com.xmonster.tkclient.utils.VersionUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 
 public class TinkerClient implements TKClientAPI {
 
@@ -59,18 +61,20 @@ public class TinkerClient implements TKClientAPI {
     /**
      * init the Tinker Client, it only effect at first time.
      * you should only invoke once in your app lifecycle
+     * @param context {@link android.content.Context} context
+     * @param appKey your appKey get from <a href=tinkerpatch.com>tinkerpatch.com<a/>
+     * @param appVersion your app version, this is "App版本号" in tinkerpatch.com
+     * @param debug use debug config, which is "开发预览" in tinkerpatch.com
+     * @return {@link #TinkerClient} tinker patch client
      */
-    public static TinkerClient init(Context context,
-                                    String appKey,
-                                    String appVersion,
-                                    Boolean debugMode) {
+    public static TinkerClient init(Context context, String appKey, String appVersion, Boolean debug) {
         if (client == null) {
             synchronized (TinkerClient.class) {
                 if (client == null) {
                     client = new Builder()
                         .appKey(appKey)
                         .appVersion(appVersion)
-                        .debug(debugMode)
+                        .debug(debug)
                         .conditions(context)
                         .build();
 
@@ -119,7 +123,7 @@ public class TinkerClient implements TKClientAPI {
                     callback.onLoadFailed(new RuntimeException("Can't sync with version: response == null"));
                 } else {
 
-                    DataFetcher.DataCallback downloadCallback = new DataFetcher.DataCallback<File>() {
+                    DataFetcher.DataCallback<File> downloadCallback = new DataFetcher.DataCallback<File>() {
                         @Override
                         public void onDataReady(File data) {
                             callback.onDataReady(data);
@@ -131,11 +135,13 @@ public class TinkerClient implements TKClientAPI {
                         }
                     };
 
-                    if (Utils.isInGrayGroup(response.grayValue, context)
+                    if (isUpdate(context, response.version)
+                        && !response.isPaused
+                        && Utils.isInGrayGroup(response.grayValue, context)
                         && conditions.check(response.conditions)) {
                         download(context, patchVersion, filePath, downloadCallback);
                     } else {
-                        Log.i(TAG, "Didn't hit, response is: " + response.toString());
+                        Log.i(TAG, "Needn't update, response is: " + response.toString());
                     }
                 }
             }
@@ -172,7 +178,7 @@ public class TinkerClient implements TKClientAPI {
                     String response = Utils.readStreamToString(data, Config.CHARSET);
                     SyncResponse.fromJson(response);
                     callback.onDataReady(response);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     callback.onLoadFailed(e);
                 } finally {
                     dataFetcher.cleanup();
@@ -220,7 +226,8 @@ public class TinkerClient implements TKClientAPI {
                 }
                 try {
                     callback.onDataReady(Utils.readStreamToFile(data, filePath));
-                } catch (IOException e) {
+                    VersionUtils.update(context, Integer.parseInt(patchVersion), filePath);
+                } catch (Exception e) {
                     callback.onLoadFailed(e);
                 } finally {
                     dataFetcher.cleanup();
@@ -240,6 +247,21 @@ public class TinkerClient implements TKClientAPI {
                 }
             }
         });
+    }
+
+    /**
+     * Get current patch version
+     * @param context {@link android.content.Context}
+     * @return patch version
+     */
+    public Integer getCurrentPatchVersoin(Context context) {
+        return VersionUtils.getCurrentVersion(context);
+    }
+
+    Boolean isUpdate(Context context, String version) {
+        Integer latestVersion = Integer.parseInt(version);
+        Integer currentVersion = VersionUtils.getCurrentVersion(context);
+        return latestVersion > currentVersion;
     }
 
     static class Builder {

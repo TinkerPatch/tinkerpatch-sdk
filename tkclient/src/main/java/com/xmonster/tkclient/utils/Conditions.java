@@ -144,16 +144,15 @@ public class Conditions {
                 return;
             }
 
-            if ("(".equals(stack.peek())) {
-                stack.push(op);
-                return;
-            }
-
             if (")".equals(op)) {
                 String tmp;
                 while (!"(".equals(tmp = stack.pop())) {
                     rpList.add(tmp);
                 }
+                return;
+            }
+            if ("(".equals(stack.peek())) {
+                stack.push(op);
                 return;
             }
 
@@ -179,12 +178,12 @@ public class Conditions {
                         case "|":
                             v1 = stack.pop();
                             v2 = stack.pop();
-                            left = calcExpr((String) v1, props);
+                            left = calcExpr(v1, props);
                             if (left) {
                                 stack.push(Boolean.TRUE);
                                 continue;
                             }
-                            right = calcExpr((String) v2, props);
+                            right = calcExpr(v2, props);
                             stack.push(right);
                             break;
                         case "&":
@@ -199,7 +198,7 @@ public class Conditions {
                             stack.push(right);
                             break;
                         default:
-                            throw new RuntimeException("Unsupported Operator:" + word);
+                            throw new RuntimeException("Unsupported Operator: " + word);
                     }
                 }
             }
@@ -283,7 +282,9 @@ public class Conditions {
         }
 
         private static List<String> tokenize(String input) {
-            input = input.replaceAll("\\s+", "").replaceAll("&&", "&").replaceAll("\\|\\|", "|");
+            input = input.replaceAll("\\s+", "")
+                .replaceAll("&amp;","&").replaceAll("&lt;","<").replaceAll("&gt;",">")
+                .replaceAll("&&", "&").replaceAll("\\|\\|", "|");
             List<String> tokens = new ArrayList<>(TOKENS.size());
             for (String token : TOKENS) {
                 tokens.add(Pattern.quote(token));

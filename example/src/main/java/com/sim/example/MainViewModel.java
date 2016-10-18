@@ -16,12 +16,13 @@ public class MainViewModel {
 
     private static final String TAG = "MainViewModel";
     private static final String APP_KEY = "c9dd59c417cdc023";
+    private static final String APP_VERSION = "version_test_1";
     private final Context context;
     public ObservableField<String> response;
 
     public MainViewModel(Context context) {
         this.response = new ObservableField<>("Hello World!");
-        TinkerClient.init(context, APP_KEY, "1", false);
+        TinkerClient.init(context, APP_KEY, APP_VERSION, false);
         this.context = context;
     }
 

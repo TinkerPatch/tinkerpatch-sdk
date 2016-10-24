@@ -69,6 +69,18 @@ public class MainViewModel {
         );
     }
 
+    public void reportSuccess() {
+        Log.d(TAG, "reportSuccess");
+        final String patchVersion = "1";
+        TinkerClient.get().reportSuccess(context, patchVersion);
+    }
+
+    public void reportFail() {
+        Log.d(TAG, "reportFail");
+        final String patchVersion = "1";
+        TinkerClient.get().reportFail(context, patchVersion, 400);
+    }
+
     public void update() {
         this.response.set("update whole flow");
         Log.d(TAG, "update");
@@ -91,7 +103,6 @@ public class MainViewModel {
             }
         );
     }
-
 
     public String readFromFile(File file) {
         //Read text from file

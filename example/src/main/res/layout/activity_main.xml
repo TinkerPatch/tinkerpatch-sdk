@@ -37,6 +37,22 @@
             android:text="fetch update" />
 
         <android.support.v7.widget.AppCompatButton
+            android:id="@+id/report_succ_btn"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:onClick="@{() -> viewModel.reportSuccess()}"
+            android:text="report_success" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/report_fail_btn"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:onClick="@{() -> viewModel.reportFail()}"
+            android:text="report_fail" />
+
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/update_btn"
             android:layout_width="match_parent"
             android:layout_height="56dp"

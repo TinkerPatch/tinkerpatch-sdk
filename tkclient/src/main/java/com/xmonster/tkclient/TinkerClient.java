@@ -9,6 +9,8 @@ import com.xmonster.tkclient.integration.urlconnection.UrlConnectionUrlLoader;
 import com.xmonster.tkclient.model.DataFetcher;
 import com.xmonster.tkclient.model.RequestLoader;
 import com.xmonster.tkclient.model.TKClientUrl;
+import com.xmonster.tkclient.model.request.FailReport;
+import com.xmonster.tkclient.model.request.SuccessReport;
 import com.xmonster.tkclient.model.response.SyncResponse;
 import com.xmonster.tkclient.module.ManifestParser;
 import com.xmonster.tkclient.module.TKClientModule;
@@ -243,6 +245,52 @@ public class TinkerClient implements TKClientAPI {
                 } finally {
                     dataFetcher.cleanup();
                 }
+            }
+        });
+    }
+
+    @Override
+    public void reportSuccess(Context context, String patchVersion) {
+        Uri.Builder urlBuilder = Uri.parse(TKClientAPI.REPORT_SUCCESS_URL).buildUpon();
+        final String url = urlBuilder.build().toString();
+        SuccessReport report = new SuccessReport(this.appKey, this.appVersion, patchVersion);
+        TKClientUrl tkClientUrl = new TKClientUrl.Builder()
+            .url(url)
+            .body(report.toJson())
+            .method("POST").build();
+        final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
+        dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
+            @Override
+            public void onDataReady(InputStream data) {
+
+            }
+
+            @Override
+            public void onLoadFailed(Exception e) {
+
+            }
+        });
+    }
+
+    @Override
+    public void reportFail(Context context, String patchVersion, Integer errCode) {
+        Uri.Builder urlBuilder = Uri.parse(TKClientAPI.REPORT_FAIL_URL).buildUpon();
+        final String url = urlBuilder.build().toString();
+        FailReport report = new FailReport(this.appKey, this.appVersion, patchVersion, errCode);
+        TKClientUrl tkClientUrl = new TKClientUrl.Builder()
+            .url(url)
+            .body(report.toJson())
+            .method("POST").build();
+        final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
+        dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
+            @Override
+            public void onDataReady(InputStream data) {
+
+            }
+
+            @Override
+            public void onLoadFailed(Exception e) {
+
             }
         });
     }

@@ -8,6 +8,7 @@ import com.xmonster.tkclient.utils.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -82,10 +83,21 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
                 conn.setReadTimeout(10000 /* milliseconds */);
                 conn.setConnectTimeout(15000 /* milliseconds */);
                 conn.setInstanceFollowRedirects(false);
+                conn.setUseCaches(false);
                 for (Map.Entry<String, String> entry : url.getHeaders().entrySet()) {
                     conn.setRequestProperty(entry.getKey(), entry.getValue());
                 }
-                conn.setUseCaches(false);
+                switch (url.getMethod()) {
+                    case "GET":
+                        break;
+                    case "POST":
+                        OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+                        writer.write(url.getBody());
+                        writer.flush();
+                        break;
+                    default:
+                        throw new RuntimeException("Unsupported request method" + url.getMethod());
+                }
                 conn.connect();
                 Log.d(TAG, "response code " + conn.getResponseCode() + " msg: " + conn.getResponseMessage());
                 InputStream inputStream = conn.getInputStream();

@@ -12,7 +12,9 @@ import java.io.InputStream;
 import java.util.Map;
 
 import okhttp3.Call;
+import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -22,9 +24,10 @@ import okhttp3.ResponseBody;
 public class OkHttp3StreamFetcher implements DataFetcher<InputStream> {
     private static final String TAG = "OkHttp3Fetcher";
     private final Call.Factory client;
-    private ResponseBody responseBody;
     private volatile Call call;
-    private InputStream stream;
+    ResponseBody responseBody;
+    InputStream stream;
+    MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private TKClientUrl tkUrl;
 
     public OkHttp3StreamFetcher(Call.Factory client, TKClientUrl tkUrl) {
@@ -35,6 +38,17 @@ public class OkHttp3StreamFetcher implements DataFetcher<InputStream> {
     @Override
     public void loadData(final DataCallback<? super InputStream> callback) {
         Request.Builder requestBuilder = new Request.Builder().url(tkUrl.toStringUrl());
+        switch (tkUrl.getMethod()) {
+            case "GET":
+                requestBuilder = requestBuilder.get();
+                break;
+            case "POST":
+                RequestBody requestBody = RequestBody.create(JSON, tkUrl.getBody());
+                requestBuilder = requestBuilder.post(requestBody);
+                break;
+            default:
+                throw new RuntimeException("Unsupported request Method" + tkUrl.getMethod());
+        }
         for (Map.Entry<String, String> headerEntry : tkUrl.getHeaders().entrySet()) {
             String key = headerEntry.getKey();
             requestBuilder.addHeader(key, headerEntry.getValue());

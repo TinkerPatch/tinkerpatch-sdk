@@ -3,8 +3,10 @@ package com.xmonster.tkclient.integration.okhttp;
 
 import android.util.Log;
 
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 import com.xmonster.tkclient.model.DataFetcher;
@@ -22,8 +24,9 @@ import java.util.Map;
 public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
     private static final String TAG = "OkHttpFetcher";
     private final OkHttpClient client;
-    private ResponseBody responseBody;
-    private InputStream stream;
+    ResponseBody responseBody;
+    InputStream stream;
+    MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private TKClientUrl tkUrl;
 
     public OkHttpStreamFetcher(OkHttpClient client, TKClientUrl tkUrl) {
@@ -34,6 +37,17 @@ public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
     @Override
     public void loadData(final DataCallback<? super InputStream> callback) {
         Request.Builder requestBuilder = new Request.Builder().url(tkUrl.toStringUrl());
+        switch (tkUrl.getMethod()) {
+            case "GET":
+                requestBuilder = requestBuilder.get();
+                break;
+            case "POST":
+                RequestBody requestBody = RequestBody.create(JSON, tkUrl.getBody());
+                requestBuilder = requestBuilder.post(requestBody);
+                break;
+            default:
+                throw new RuntimeException("Unsupported request Method" + tkUrl.getMethod());
+        }
         for (Map.Entry<String, String> headerEntry : tkUrl.getHeaders().entrySet()) {
             String key = headerEntry.getKey();
             requestBuilder.addHeader(key, headerEntry.getValue());

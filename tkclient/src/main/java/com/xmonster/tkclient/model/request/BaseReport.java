@@ -6,7 +6,6 @@ import org.json.JSONObject;
 /**
  * Created by sun on 24/10/2016.
  */
-
 public class BaseReport {
     public final String appKey;
     public final String appVersion;
@@ -21,7 +20,7 @@ public class BaseReport {
     }
 
     protected JSONObject toJsonObject() throws JSONException {
-        JSONObject jsonObject= new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         jsonObject.put("k", appKey);
         jsonObject.put("av", appVersion);
         jsonObject.put("pv", patchVersion);

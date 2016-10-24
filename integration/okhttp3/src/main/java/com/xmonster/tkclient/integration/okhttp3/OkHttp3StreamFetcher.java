@@ -23,11 +23,12 @@ import okhttp3.ResponseBody;
  */
 public class OkHttp3StreamFetcher implements DataFetcher<InputStream> {
     private static final String TAG = "OkHttp3Fetcher";
+    public static MediaType mediaTypeJson = MediaType.parse("application/json; charset=utf-8");
+
     private final Call.Factory client;
     private volatile Call call;
     ResponseBody responseBody;
     InputStream stream;
-    MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private TKClientUrl tkUrl;
 
     public OkHttp3StreamFetcher(Call.Factory client, TKClientUrl tkUrl) {
@@ -43,7 +44,7 @@ public class OkHttp3StreamFetcher implements DataFetcher<InputStream> {
                 requestBuilder = requestBuilder.get();
                 break;
             case "POST":
-                RequestBody requestBody = RequestBody.create(JSON, tkUrl.getBody());
+                RequestBody requestBody = RequestBody.create(mediaTypeJson, tkUrl.getBody());
                 requestBuilder = requestBuilder.post(requestBody);
                 break;
             default:

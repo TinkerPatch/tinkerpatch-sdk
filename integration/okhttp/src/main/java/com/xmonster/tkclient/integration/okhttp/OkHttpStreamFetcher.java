@@ -23,10 +23,11 @@ import java.util.Map;
  */
 public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
     private static final String TAG = "OkHttpFetcher";
+    static MediaType mediaTypeJson = MediaType.parse("application/json; charset=utf-8");
+
     private final OkHttpClient client;
     ResponseBody responseBody;
     InputStream stream;
-    MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private TKClientUrl tkUrl;
 
     public OkHttpStreamFetcher(OkHttpClient client, TKClientUrl tkUrl) {
@@ -42,7 +43,7 @@ public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
                 requestBuilder = requestBuilder.get();
                 break;
             case "POST":
-                RequestBody requestBody = RequestBody.create(JSON, tkUrl.getBody());
+                RequestBody requestBody = RequestBody.create(mediaTypeJson, tkUrl.getBody());
                 requestBuilder = requestBuilder.post(requestBody);
                 break;
             default:

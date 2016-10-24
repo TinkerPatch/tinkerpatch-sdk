@@ -12,8 +12,8 @@ import java.io.File;
 
 public interface TKClientAPI {
 
-    public static final String REPORT_SUCCESS_URL = "http://stat.tinkerpatch.com/succ.php";
-    public static final String REPORT_FAIL_URL = "http://stat.tinkerpatch.com/err.php";
+    String REPORT_SUCCESS_URL = "http://stat.tinkerpatch.com/succ.php";
+    String REPORT_FAIL_URL = "http://stat.tinkerpatch.com/err.php";
     /**
      * 每次启动或唤醒调请求 http://{Host}/{appKey}/{appVersion}?d={deviceId}&v={timestamp}
      */

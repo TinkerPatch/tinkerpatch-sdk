@@ -262,12 +262,12 @@ public class TinkerClient implements TKClientAPI {
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-
+                Log.d(TAG, "reportSuccess successfully");
             }
 
             @Override
             public void onLoadFailed(Exception e) {
-
+                Log.e(TAG, "reportSuccess error", e);
             }
         });
     }
@@ -285,12 +285,12 @@ public class TinkerClient implements TKClientAPI {
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-
+                Log.d(TAG, "reportFail successfully");
             }
 
             @Override
             public void onLoadFailed(Exception e) {
-
+                Log.e(TAG, "reportSuccess error", e);
             }
         });
     }

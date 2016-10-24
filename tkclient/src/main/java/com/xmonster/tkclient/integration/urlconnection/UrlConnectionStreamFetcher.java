@@ -2,6 +2,7 @@ package com.xmonster.tkclient.integration.urlconnection;
 
 import android.util.Log;
 
+import com.xmonster.tkclient.Config;
 import com.xmonster.tkclient.model.DataFetcher;
 import com.xmonster.tkclient.model.TKClientUrl;
 import com.xmonster.tkclient.utils.Preconditions;
@@ -91,9 +92,10 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
                     case "GET":
                         break;
                     case "POST":
-                        OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+                        OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream(), Config.CHARSET);
                         writer.write(url.getBody());
                         writer.flush();
+                        writer.close();
                         break;
                     default:
                         throw new RuntimeException("Unsupported request method" + url.getMethod());

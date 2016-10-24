@@ -22,9 +22,9 @@ import okhttp3.ResponseBody;
 public class OkHttp3StreamFetcher implements DataFetcher<InputStream> {
     private static final String TAG = "OkHttp3Fetcher";
     private final Call.Factory client;
-    private ResponseBody responseBody;
     private volatile Call call;
-    private InputStream stream;
+    ResponseBody responseBody;
+    InputStream stream;
     private TKClientUrl tkUrl;
 
     public OkHttp3StreamFetcher(Call.Factory client, TKClientUrl tkUrl) {

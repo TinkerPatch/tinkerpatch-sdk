@@ -22,8 +22,8 @@ import java.util.Map;
 public class OkHttpStreamFetcher implements DataFetcher<InputStream> {
     private static final String TAG = "OkHttpFetcher";
     private final OkHttpClient client;
-    private ResponseBody responseBody;
-    private InputStream stream;
+    ResponseBody responseBody;
+    InputStream stream;
     private TKClientUrl tkUrl;
 
     public OkHttpStreamFetcher(OkHttpClient client, TKClientUrl tkUrl) {

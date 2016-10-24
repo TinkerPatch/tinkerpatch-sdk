@@ -26,7 +26,7 @@ http://tinkerpatch.com
 
 ## Support Integration
 
-we use urlConnection as default. and you support importing some fancy httpClient as integrations.  
+we use urlConnection as default, and support you importing some fancy httpClient as integrations.  
 
 ### 1. okhttp
 

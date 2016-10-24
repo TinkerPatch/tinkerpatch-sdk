@@ -37,7 +37,7 @@ dependencies {
     //compile 'com.github.simpleton:okhttp3-integration:0.0.3@aar'
 
     compile project(':tkclient')
-    compile project(':integration:okhttp')
+    //compile project(':integration:okhttp')
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 }

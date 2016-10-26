@@ -24,19 +24,11 @@ dependencies {
 http://tinkerpatch.com
 
 
-## Support Integration
+## Support Integration(TODO)
 
 we use urlConnection as default, and support you importing some fancy httpClient as integrations.  
 
-### 1. okhttp
+### 1. okhttp(TODO)
+### 2. okhttp3(TODO)
 
-
-add `compile 'com.github.simpleton:okhttp-integration:0.0.5@aar'` in your `dependencies`
-
-### 2. okhttp3
-
-add `compile 'com.github.simpleton:okhttp3-integration:0.0.5@aar'` in your `dependencies`
-
-###3. volly(TODO)
-###4. apachehttpclient(TODO)
 

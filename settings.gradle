@@ -1,4 +1,2 @@
-include ':example'
-include ':tkclient'
-include ':integration:okhttp'
-include ':integration:okhttp3'
+include ':tinker-server-sample'
+include ':tinker-server-android'

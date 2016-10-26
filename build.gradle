@@ -1,18 +1,25 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
     }
     dependencies {
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath 'com.android.tools.build:gradle:2.2.2'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath "com.tencent.tinker:tinker-patch-gradle-plugin:${TINKER_VERSION}"
     }
 }
 
+allprojects {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+}
 // See http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html.
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
@@ -30,6 +37,7 @@ subprojects {
 }
 
 subprojects { project ->
+    if (project.name.contains("sample") || project.name.contains("example")) { return; }
     repositories {
         jcenter()
     }

@@ -258,7 +258,7 @@ public class TinkerClientImpl implements TinkerClientAPI {
         SuccessReport report = new SuccessReport(this.appKey, this.appVersion, patchVersion);
         TinkerClientUrl tkClientUrl = new TinkerClientUrl.Builder()
             .url(url)
-            .body(report.toJson())
+            .body(report.toUrlEncodedForm())
             .method("POST").build();
         final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
@@ -281,7 +281,7 @@ public class TinkerClientImpl implements TinkerClientAPI {
         FailReport report = new FailReport(this.appKey, this.appVersion, patchVersion, errCode);
         TinkerClientUrl tkClientUrl = new TinkerClientUrl.Builder()
             .url(url)
-            .body(report.toJson())
+            .body(report.toUrlEncodedForm())
             .method("POST").build();
         final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {

@@ -51,10 +51,25 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
     public static final int    TINKER_DOWNLOAD_FAIL_MAX_TIMES = 3;
 
 
+    /**
+     * 下载补丁时异常
+     */
     public static final int ERROR_DOWNLOAD_FAIL       = -1;
+    /**
+     * 检测下载补丁的签名时异常
+     */
     public static final int ERROR_DOWNLOAD_CHECK_FAIL = -2;
+    /**
+     * 补丁在patchListener检测时异常
+     */
     public static final int ERROR_LISTENER_CHECK_FAIL = -3;
+    /**
+     * 补丁合成异常
+     */
     public static final int ERROR_PATCH_FAIL          = -4;
+    /**
+     * 补丁加载异常
+     */
     public static final int ERROR_LOAD_FAIL           = -5;
 
     @Override

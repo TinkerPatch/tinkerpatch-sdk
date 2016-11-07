@@ -1,4 +1,28 @@
-package com.tencent.tinker.server;
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2013-2016 Shengjie Sim Sun
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package com.tencent.tinker.server.client;
 
 import android.content.Context;
 import android.net.Uri;
@@ -13,30 +37,31 @@ import com.tencent.tinker.server.model.response.SyncResponse;
 import com.tencent.tinker.server.urlconnection.UrlConnectionUrlLoader;
 import com.tencent.tinker.server.utils.Conditions;
 import com.tencent.tinker.server.utils.Preconditions;
-import com.tencent.tinker.server.utils.Utils;
+import com.tencent.tinker.server.utils.ServerUtils;
 import com.tencent.tinker.server.utils.VersionUtils;
 
 import java.io.File;
 import java.io.InputStream;
 
 
-public class TinkerClientImpl implements TinkerClientAPI {
-
+public class TinkerClientAPI {
     public static final String TAG = "Tinker.ClientImpl";
 
-    private static volatile TinkerClientImpl client;
+    private static final String REPORT_SUCCESS_URL = "http://stat.tinkerpatch.com/succ.php";
+    private static final String REPORT_FAIL_URL    = "http://stat.tinkerpatch.com/err.php";
 
-    private final String     appVersion;
-    private final String     appKey;
-    private final String     host;
-    private final boolean    debug;
-    final Conditions conditions;
-    final UrlConnectionUrlLoader loader;
-    final VersionUtils           versionUtils;
 
-    SyncResponse lastSyncResponse;
+    private static volatile TinkerClientAPI clientAPI;
 
-    TinkerClientImpl(
+    private final String                 appVersion;
+    private final String                 appKey;
+    private final String                 host;
+    private final boolean                debug;
+    private final Conditions             conditions;
+    private final UrlConnectionUrlLoader loader;
+    private final VersionUtils           versionUtils;
+
+    TinkerClientAPI(
         String appKey, String appVersion, String host,
         Boolean debug, Conditions conditions, UrlConnectionUrlLoader loader, VersionUtils versionUtils) {
         this.appVersion = appVersion;
@@ -49,16 +74,16 @@ public class TinkerClientImpl implements TinkerClientAPI {
     }
 
     /**
-     * Singleton get method for Tinker client, you need invoke
+     * Singleton get method for Tinker clientAPI, you need invoke
      * {@link #init(Context, String, String, Boolean)} before it invoke.
      *
-     * @return the instance of {@link TinkerClientImpl}
+     * @return the instance of {@link TinkerClientAPI}
      */
-    public static TinkerClientImpl get() {
-        if (client == null) {
+    public static TinkerClientAPI get() {
+        if (clientAPI == null) {
             throw new RuntimeException("Please invoke init Tinker Client first");
         }
-        return client;
+        return clientAPI;
     }
 
     /**
@@ -69,13 +94,13 @@ public class TinkerClientImpl implements TinkerClientAPI {
      * @param appKey     your appKey get from <a href=tinkerpatch.com>tinkerpatch.com<a/>
      * @param appVersion your app version, this is "App版本号" in tinkerpatch.com
      * @param debug      use debug config, which is "开发预览" in tinkerpatch.com
-     * @return {@link #TinkerClientImpl} tinker patch client
+     * @return {@link #TinkerClientAPI} tinker patch clientAPI
      */
-    public static TinkerClientImpl init(Context context, String appKey, String appVersion, Boolean debug) {
-        if (client == null) {
-            synchronized (TinkerClientImpl.class) {
-                if (client == null) {
-                    client = new Builder()
+    public static TinkerClientAPI init(Context context, String appKey, String appVersion, Boolean debug) {
+        if (clientAPI == null) {
+            synchronized (TinkerClientAPI.class) {
+                if (clientAPI == null) {
+                    clientAPI = new Builder()
                         .appKey(appKey)
                         .appVersion(appVersion)
                         .debug(debug)
@@ -85,63 +110,68 @@ public class TinkerClientImpl implements TinkerClientAPI {
                 }
             }
         }
-        return client;
+        return clientAPI;
     }
 
-    public TinkerClientImpl params(String key, String value) {
+    public TinkerClientAPI params(String key, String value) {
         this.conditions.set(key, value);
         return this;
     }
 
-    public void updateVersionFile() {
-        if (lastSyncResponse == null) {
-            return;
-        }
-        versionUtils.updateVersionProperty(
-            appVersion,
-            Integer.parseInt(lastSyncResponse.version),
-            versionUtils.grayValue(),
-            versionUtils.id()
-        );
+    public void updateTinkerVersion(Integer newVersion, String md5) {
+        versionUtils.updateVersionProperty(getAppVersion(), newVersion, md5,
+            versionUtils.grayValue(), versionUtils.id());
     }
 
-    public void update(final Context context, final DataFetcher.DataCallback<? super File> callback) {
+    public void update(final Context context, final PatchRequestCallback callback) {
 
         if (callback == null) {
             throw new RuntimeException("callback can't be null");
         }
-
-        sync(context, new DataFetcher.DataCallback<String>() {
+        if (!callback.beforePatchRequest()) {
+            return;
+        }
+        sync(new DataFetcher.DataCallback<String>() {
             @Override
             public void onDataReady(String data) {
-                SyncResponse response = SyncResponse.fromJson(data);
+                final SyncResponse response = SyncResponse.fromJson(data);
                 if (response == null) {
-                    callback.onLoadFailed(new RuntimeException("Can't sync with version: response == null"));
+                    callback.onPatchSyncFail(new RuntimeException("Can't sync with version: response == null"));
                 } else {
+                    TinkerLog.e(TAG, "sync respond222:" + response);
 
-                    DataFetcher.DataCallback<File> downloadCallback = new DataFetcher.DataCallback<File>() {
-                        @Override
-                        public void onDataReady(File data) {
-                            callback.onDataReady(data);
-                        }
-
-                        @Override
-                        public void onLoadFailed(Exception e) {
-                            callback.onLoadFailed(e);
-                            lastSyncResponse = null;
-                        }
-                    };
-
-                    if (versionUtils.isUpdate(Integer.parseInt(response.version), getAppVersion())
-                        && !response.isPaused
+                    if (response.isRollback) {
+                        callback.onPatchRollback();
+                        return;
+                    }
+                    if (response.isPaused) {
+                        TinkerLog.i(TAG, "Needn't update, sync response is: " + response.toString()
+                            + "\ngray: " + versionUtils.grayValue());
+                        return;
+                    }
+                    if (!TextUtils.isEmpty(response.conditions)) {
+                        callback.updatePatchConditions();
+                    }
+                    final Integer newVersion = Integer.parseInt(response.version);
+                    if (versionUtils.isUpdate(newVersion, getAppVersion())
                         && versionUtils.isInGrayGroup(response.grayValue)
                         && conditions.check(response.conditions)) {
 
-                        lastSyncResponse = response;
-                        String patchPath = Utils.getServerFile(
+                        DataFetcher.DataCallback<File> downloadCallback = new DataFetcher.DataCallback<File>() {
+                            @Override
+                            public void onDataReady(File data) {
+                                callback.onPatchUpgrade(data, newVersion, getCurrentPatchVersion());
+                            }
+
+                            @Override
+                            public void onLoadFailed(Exception e) {
+                                callback.onPatchDownloadFail(e, newVersion, getCurrentPatchVersion());
+                            }
+                        };
+                        String patchPath = ServerUtils.getServerFile(
                             context, getAppVersion(), response.version
                         ).getAbsolutePath();
-                        download(context, response.version, patchPath, downloadCallback);
+                        download(response.version, patchPath, downloadCallback);
                     } else {
                         TinkerLog.i(TAG, "Needn't update, sync response is: " + response.toString()
                             + "\ngray: " + versionUtils.grayValue());
@@ -151,15 +181,19 @@ public class TinkerClientImpl implements TinkerClientAPI {
 
             @Override
             public void onLoadFailed(Exception e) {
-                callback.onLoadFailed(e);
+                callback.onPatchSyncFail(e);
             }
         });
     }
 
-    @Override
-    public void sync(final Context context, final DataFetcher.DataCallback<String> callback) {
+    /**
+     * sync http://{Host}/{appKey}/{appVersion}?d={deviceId}&v={timestamp}
+     *
+     * @param callback
+     */
+    private void sync(final DataFetcher.DataCallback<String> callback) {
         Uri.Builder urlBuilder = Uri.parse(this.host).buildUpon();
-        if (client.debug) {
+        if (clientAPI.debug) {
             urlBuilder.appendPath("dev");
         }
         final String url = urlBuilder.appendPath(this.appKey)
@@ -178,7 +212,9 @@ public class TinkerClientImpl implements TinkerClientAPI {
                     return;
                 }
                 try {
-                    String response = Utils.readStreamToString(data, Utils.CHARSET);
+                    String response = ServerUtils.readStreamToString(data, ServerUtils.CHARSET);
+                    TinkerLog.e(TAG, "sync respond111:" + response);
+
                     SyncResponse.fromJson(response);
                     callback.onDataReady(response);
                 } catch (Exception e) {
@@ -202,11 +238,17 @@ public class TinkerClientImpl implements TinkerClientAPI {
         });
     }
 
-    @Override
-    public void download(final Context context,
-                         final String patchVersion,
-                         final String filePath,
-                         final DataFetcher.DataCallback<? super File> callback) {
+    /**
+     * download
+     * http://{Host}/{appKey}/{appVersion}/file{patchVersion}?d={deviceId}&v={timestamp}
+     *
+     * @param patchVersion
+     * @param filePath
+     * @param callback
+     */
+    private void download(final String patchVersion,
+                          final String filePath,
+                          final DataFetcher.DataCallback<? super File> callback) {
 
         Preconditions.checkNotEmpty(patchVersion);
         final String url = Uri.parse(this.host)
@@ -228,7 +270,7 @@ public class TinkerClientImpl implements TinkerClientAPI {
                     return;
                 }
                 try {
-                    callback.onDataReady(Utils.readStreamToFile(data, filePath));
+                    callback.onDataReady(ServerUtils.readStreamToFile(data, filePath));
                 } catch (Exception e) {
                     callback.onLoadFailed(e);
                 } finally {
@@ -251,20 +293,30 @@ public class TinkerClientImpl implements TinkerClientAPI {
         });
     }
 
-    @Override
-    public void reportSuccess(Context context, String patchVersion) {
-        Uri.Builder urlBuilder = Uri.parse(TinkerClientAPI.REPORT_SUCCESS_URL).buildUpon();
+    /**
+     * report success http://stat.tinkerpatch.com/succ.php
+     * k:  appKey
+     * av: appVersion，当前app版本号
+     * pv: patchVersion，应用的补丁版本号
+     * t:  平台类型，填数字1
+     *
+     * @param patchVersion
+     */
+    public void reportSuccess(Integer patchVersion) {
+        Uri.Builder urlBuilder = Uri.parse(REPORT_SUCCESS_URL).buildUpon();
         final String url = urlBuilder.build().toString();
-        SuccessReport report = new SuccessReport(this.appKey, this.appVersion, patchVersion);
+        SuccessReport report = new SuccessReport(this.appKey, this.appVersion, String.valueOf(patchVersion));
         TinkerClientUrl tkClientUrl = new TinkerClientUrl.Builder()
             .url(url)
-            .body(report.toJson())
+            .body(report.toEncodeForm())
             .method("POST").build();
+
         final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-                TinkerLog.d(TAG, "reportSuccess successfully");
+                TinkerLog.d(TAG, "reportSuccess successfully:"
+                    + ServerUtils.readStreamToString(data, ServerUtils.CHARSET));
             }
 
             @Override
@@ -274,20 +326,33 @@ public class TinkerClientImpl implements TinkerClientAPI {
         });
     }
 
-    @Override
-    public void reportFail(Context context, String patchVersion, Integer errCode) {
-        Uri.Builder urlBuilder = Uri.parse(TinkerClientAPI.REPORT_FAIL_URL).buildUpon();
+    /**
+     * report fail http://stat.tinkerpatch.com/err.php
+     * k:  appKey
+     * av: appVersion，当前app版本号
+     * pv: patchVersion，应用的补丁版本号
+     * t:  平台类型，填数字1
+     * code: 错误码
+     *
+     * @param context
+     * @param patchVersion
+     * @param errCode
+     */
+    public void reportFail(Context context, Integer patchVersion, Integer errCode) {
+        Uri.Builder urlBuilder = Uri.parse(REPORT_FAIL_URL).buildUpon();
         final String url = urlBuilder.build().toString();
-        FailReport report = new FailReport(this.appKey, this.appVersion, patchVersion, errCode);
+        FailReport report = new FailReport(this.appKey, this.appVersion, String.valueOf(patchVersion), errCode);
         TinkerClientUrl tkClientUrl = new TinkerClientUrl.Builder()
             .url(url)
-            .body(report.toJson())
+            .body(report.toEncodeForm())
             .method("POST").build();
+
         final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-                TinkerLog.d(TAG, "reportFail successfully");
+                TinkerLog.d(TAG, "reportFail successfully:"
+                    + ServerUtils.readStreamToString(data, ServerUtils.CHARSET));
             }
 
             @Override
@@ -302,8 +367,12 @@ public class TinkerClientImpl implements TinkerClientAPI {
      *
      * @return patch version
      */
-    public Integer getCurrentPatchVersoin() {
+    public Integer getCurrentPatchVersion() {
         return versionUtils.getPatchVersion();
+    }
+
+    public String getCurrentPatchMd5() {
+        return versionUtils.getPatchMd5();
     }
 
     public String getAppVersion() {
@@ -329,45 +398,45 @@ public class TinkerClientImpl implements TinkerClientAPI {
 
     static class Builder {
         private static final String HOST_URL = "http://q.tinkerpatch.com";
-        private String     appVersion;
-        private String     appKey;
-        private String     host;
-        private Boolean    debug;
-        private Conditions conditions;
+        private String                 appVersion;
+        private String                 appKey;
+        private String                 host;
+        private Boolean                debug;
+        private Conditions             conditions;
         private UrlConnectionUrlLoader loader;
-        private VersionUtils versionUtils;
+        private VersionUtils           versionUtils;
 
-        TinkerClientImpl.Builder host(String host) {
+        TinkerClientAPI.Builder host(String host) {
             this.host = host;
             return this;
         }
 
-        TinkerClientImpl.Builder appKey(String appKey) {
+        TinkerClientAPI.Builder appKey(String appKey) {
             this.appKey = appKey;
             return this;
         }
 
-        TinkerClientImpl.Builder appVersion(String appVersion) {
+        TinkerClientAPI.Builder appVersion(String appVersion) {
             this.appVersion = appVersion;
             return this;
         }
 
-        TinkerClientImpl.Builder debug(boolean debug) {
+        TinkerClientAPI.Builder debug(boolean debug) {
             this.debug = debug;
             return this;
         }
 
-        TinkerClientImpl.Builder conditions(Context context) {
-            this.conditions = new Conditions(context);
+        TinkerClientAPI.Builder conditions(Context context) {
+            this.conditions = new Conditions();
             return this;
         }
 
-        TinkerClientImpl.Builder urlLoader(UrlConnectionUrlLoader loader) {
+        TinkerClientAPI.Builder urlLoader(UrlConnectionUrlLoader loader) {
             this.loader = loader;
             return this;
         }
 
-        TinkerClientImpl.Builder versionUtils(VersionUtils versionUtils) {
+        TinkerClientAPI.Builder versionUtils(VersionUtils versionUtils) {
             this.versionUtils = versionUtils;
             return this;
         }
@@ -387,9 +456,9 @@ public class TinkerClientImpl implements TinkerClientAPI {
             }
         }
 
-        public TinkerClientImpl build() {
+        public TinkerClientAPI build() {
             makeDefault();
-            return new TinkerClientImpl(
+            return new TinkerClientAPI(
                 this.appKey, this.appVersion, this.host, this.debug,
                 this.conditions, this.loader, this.versionUtils
             );

@@ -1,4 +1,5 @@
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
 version = libraryVersion
 project.archivesBaseName = ext.artifact
@@ -47,6 +48,19 @@ if (isAndroidProject) {
         archives androidJavadocsJar
     }
 
+    publishing {
+        publications {
+            TinkerServer(MavenPublication) {
+                groupId = group
+                artifactId = project.getName()
+                version = version
+                // Tell maven to prepare the generated "*.aar" file for publishing
+                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+                artifact androidJavadocsJar
+            }
+        }
+    }
+
 } else if (project.plugins.hasPlugin('java')) { // Java libraries
     println "[bintray.gradle]java project"
     task sourcesJar(type: Jar, dependsOn: classes) {
@@ -61,7 +75,20 @@ if (isAndroidProject) {
         archives sourcesJar
         archives javadocsJar
     }
+
+    publishing {
+        publications {
+            TinkerServer(MavenPublication) {
+                from components.java
+                groupId = group
+                artifactId = project.getName()
+                version = version
+            }
+        }
+    }
 }
+
+task buildAndPublishLocalMaven(dependsOn: ['build', 'publishTinkerServerPublicationToMavenLocal']) {}
 
 logger.info("Published artifacts in ${configurations.archives}:")
 configurations.archives.artifacts.files.files.each { logger.info("\t$it"); }

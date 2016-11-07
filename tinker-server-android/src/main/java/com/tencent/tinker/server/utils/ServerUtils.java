@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2013-2016 Shengjie Sim Sun
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package com.tencent.tinker.server.utils;
 
 import android.content.Context;
@@ -13,13 +37,14 @@ import java.io.InputStream;
  * Created by sun on 9/18/16.
  */
 
-public final class Utils {
-    public static final String CHARSET                   = "UTF-8";
-    public static final int    BUFFER_SIZE               = 4096;
-    public static final String TINKER_SERVER_DIR         = "tinker_server";
+public final class ServerUtils {
+    public static final String CHARSET             = "UTF-8";
+    public static final int    BUFFER_SIZE         = 4096;
+    public static final String TINKER_SERVER_DIR   = "tinker_server";
+    public static final String TINKER_VERSION_FILE = "version.info";
 
 
-    private Utils() {
+    private ServerUtils() {
         // A Utils Class
     }
 
@@ -56,19 +81,25 @@ public final class Utils {
         }
         return Integer.parseInt(string);
     }
-    public static String readStreamToString(InputStream inputStream, String charset) throws IOException {
+
+    public static String readStreamToString(InputStream inputStream, String charset) {
         if (inputStream == null) {
             return null;
         }
-
         ByteArrayOutputStream bo = new ByteArrayOutputStream();
         byte[] buffer = new byte[BUFFER_SIZE];
         int bufferLength;
 
-        while ((bufferLength = inputStream.read(buffer)) > 0) {
-            bo.write(buffer, 0, bufferLength);
+        String result;
+        try {
+            while ((bufferLength = inputStream.read(buffer)) > 0) {
+                bo.write(buffer, 0, bufferLength);
+            }
+            result = bo.toString(charset);
+        } catch (Throwable e) {
+            result = null;
         }
-        return bo.toString(charset);
+        return result;
     }
 
     public static File getServerDirectory(Context context) {

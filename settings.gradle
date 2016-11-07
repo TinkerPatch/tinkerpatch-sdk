@@ -1,2 +1,1 @@
-include ':tinker-server-sample'
 include ':tinker-server-android'

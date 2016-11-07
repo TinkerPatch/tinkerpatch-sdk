@@ -1,0 +1,8 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="debug_switch"
+        android:summary="@string/pref_debug_detail"
+        android:title="@string/pref_debug_name"/>
+</PreferenceScreen>

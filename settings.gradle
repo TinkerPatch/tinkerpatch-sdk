@@ -1,2 +1,2 @@
-include ':tinker-server-sample'
 include ':tinker-server-android'
+include ':tinker-debug-tool'

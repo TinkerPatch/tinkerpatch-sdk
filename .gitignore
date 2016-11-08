@@ -42,3 +42,4 @@ captures/
 .idea
 test.tmp
 reports
+.DS_Store

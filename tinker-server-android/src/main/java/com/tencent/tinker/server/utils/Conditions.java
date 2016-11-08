@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2013-2016 Shengjie Sim Sun
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package com.tencent.tinker.server.utils;
 
 import android.content.Context;
@@ -6,10 +30,8 @@ import android.text.TextUtils;
 import com.tencent.tinker.lib.util.TinkerLog;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +42,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import static com.tencent.tinker.server.TinkerClientImpl.TAG;
+import static com.tencent.tinker.server.client.TinkerClientAPI.TAG;
 
 
 /**
@@ -34,8 +56,8 @@ public class Conditions {
 
     private final Map<String, String> properties;
 
-    public Conditions(Context context) {
-        properties = read(context);
+    public Conditions() {
+        properties = new HashMap<>();
     }
 
     public Boolean check(String rules) {
@@ -54,7 +76,7 @@ public class Conditions {
 
     /**
      * set the k,v to conditions map.
-     * you should invoke {@link #save(Context)} for saving the map to disk
+     * you should invoke {@link #saveToDisk(Context)} for saving the map to disk
      * @param key the key
      * @param value the value
      * @return {@link Conditions} this
@@ -65,7 +87,7 @@ public class Conditions {
     }
 
     /**
-     * Clean all properties. you should invoke {@link #save(Context)} for saving to disk.
+     * Clean all properties. you should invoke {@link #saveToDisk(Context)} for saving to disk.
      * @return {@link Conditions} this
      */
     public Conditions clean() {
@@ -74,11 +96,11 @@ public class Conditions {
     }
 
     /**
-     * save to disk
+     * saveToDisk
      * @param context {@link Context}
      * @throws IOException
      */
-    public void save(Context context) throws IOException {
+    public void saveToDisk(Context context) throws IOException {
         File file = new File(context.getFilesDir(), FILE_NAME);
         ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
         outputStream.writeObject(properties);
@@ -86,21 +108,6 @@ public class Conditions {
         outputStream.close();
     }
 
-    private HashMap<String, String> read(Context context) {
-
-        try {
-            File file = new File(context.getFilesDir(), FILE_NAME);
-            if (file.exists()) {
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-                HashMap<String, String> map = (HashMap<String, String>) ois.readObject();
-                ois.close();
-                return map;
-            }
-        } catch (Exception ignore) {
-            ignore.printStackTrace();
-        }
-        return new HashMap<>();
-    }
 
     static final class Helper {
         private static final String WITH_DELIMITER = "((?<=[%1$s])|(?=[%1$s]))";

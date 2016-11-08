@@ -24,8 +24,6 @@
 
 package com.tinker.debug;
 
-import java.util.HashMap;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -40,6 +38,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import java.util.HashMap;
+
 /**
  * Created by shwenzhang on 16/11/4.
  */
@@ -47,19 +47,17 @@ import android.util.Log;
 public class DebugProvider extends ContentProvider {
     private static final String TAG       = "Tinker.DebugProvider";
 
-
-
     private static final int    DATABASE_VERSION   = 1;
     private static final String DATABASE_NAME      = "debugtool.db";
     private static final String DEBUG_CONFIG_TABLE = "config";
     private static final int    DEBUG_CONFIG_CODE  = 1;
 
-    private static final UriMatcher              sUriMatcher;
+    private static final UriMatcher              URI_MATCHER;
     private static       HashMap<String, String> projectionMap;
 
     static {
-        sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(Utils.AUTHORITY, DEBUG_CONFIG_TABLE, DEBUG_CONFIG_CODE);
+        URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+        URI_MATCHER.addURI(Utils.AUTHORITY, DEBUG_CONFIG_TABLE, DEBUG_CONFIG_CODE);
 
         projectionMap = new HashMap<>();
         projectionMap.put(BaseColumns._ID, BaseColumns._ID);
@@ -76,13 +74,15 @@ public class DebugProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE IF NOT EXISTS " + DEBUG_CONFIG_TABLE + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + Utils.KEY + " TEXT," + Utils.TYPE
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + DEBUG_CONFIG_TABLE
+                + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + Utils.KEY + " TEXT," + Utils.TYPE
                 + " INTEGER," + Utils.VALUE + " TEXT);");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
+            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+                + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + DEBUG_CONFIG_TABLE);
             onCreate(db);
         }
@@ -94,7 +94,7 @@ public class DebugProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int count;
-        switch (sUriMatcher.match(uri)) {
+        switch (URI_MATCHER.match(uri)) {
             case DEBUG_CONFIG_CODE:
                 count = db.delete(DEBUG_CONFIG_TABLE, selection, selectionArgs);
                 break;
@@ -102,13 +102,15 @@ public class DebugProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        if (getContext() != null && getContext().getContentResolver() != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return count;
     }
 
     @Override
     public String getType(Uri uri) {
-        switch (sUriMatcher.match(uri)) {
+        switch (URI_MATCHER.match(uri)) {
             case DEBUG_CONFIG_CODE:
                 return Utils.CONTENT_TYPE;
 
@@ -119,7 +121,7 @@ public class DebugProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues initialValues) {
-        if (sUriMatcher.match(uri) != DEBUG_CONFIG_CODE) {
+        if (URI_MATCHER.match(uri) != DEBUG_CONFIG_CODE) {
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
@@ -134,7 +136,9 @@ public class DebugProvider extends ContentProvider {
         long rowId = db.insert(DEBUG_CONFIG_TABLE, Utils.KEY, values);
         if (rowId > 0) {
             Uri noteUri = ContentUris.withAppendedId(Utils.CONTENT_URI, rowId);
-            getContext().getContentResolver().notifyChange(noteUri, null);
+            if (getContext() != null && getContext().getContentResolver() != null) {
+                getContext().getContentResolver().notifyChange(noteUri, null);
+            }
             return noteUri;
         }
 
@@ -151,7 +155,7 @@ public class DebugProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-        switch (sUriMatcher.match(uri)) {
+        switch (URI_MATCHER.match(uri)) {
             case DEBUG_CONFIG_CODE:
                 qb.setTables(DEBUG_CONFIG_TABLE);
                 qb.setProjectionMap(projectionMap);
@@ -164,7 +168,9 @@ public class DebugProvider extends ContentProvider {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-        c.setNotificationUri(getContext().getContentResolver(), uri);
+        if (getContext() != null && getContext().getContentResolver() != null) {
+            c.setNotificationUri(getContext().getContentResolver(), uri);
+        }
         return c;
     }
 
@@ -172,7 +178,7 @@ public class DebugProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int count;
-        switch (sUriMatcher.match(uri)) {
+        switch (URI_MATCHER.match(uri)) {
             case DEBUG_CONFIG_CODE:
                 count = db.update(DEBUG_CONFIG_TABLE, values, selection, selectionArgs);
                 break;
@@ -181,7 +187,9 @@ public class DebugProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
-        getContext().getContentResolver().notifyChange(uri, null);
+        if (getContext() != null && getContext().getContentResolver() != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return count;
     }
 }

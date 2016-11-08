@@ -76,17 +76,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         final SwitchPreference pref = (SwitchPreference) screen.findPreference("debug_switch");
         Utils.setValue(cr, ".com.tinker.debugtool.debug", pref.isChecked(), Utils.TYPE_BOOLEAN);
 
-        if (pref != null) {
-            pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Log.w(TAG, "set debug newValue:" + newValue);
-                    Utils.setValue(cr, ".com.tinker.debugtool.debug", newValue, Utils.TYPE_BOOLEAN);
-                    return true;
-                }
-            });
-        }
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Log.w(TAG, "set debug newValue:" + newValue);
+                Utils.setValue(cr, ".com.tinker.debugtool.debug", newValue, Utils.TYPE_BOOLEAN);
+                return true;
+            }
+        });
 
     }
 

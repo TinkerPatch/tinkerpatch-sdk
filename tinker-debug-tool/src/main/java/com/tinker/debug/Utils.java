@@ -54,10 +54,10 @@ public class Utils {
     public static final int TYPE_DOUBLE = 6;
 
 
-    public static void setValue(final ContentResolver resolver, final String key, final Object value, final int Type) {
+    public static void setValue(final ContentResolver resolver, final String key, final Object value, final int type) {
         final ContentValues values = new ContentValues();
         values.put(Utils.KEY, key);
-        values.put(Utils.TYPE, Type);
+        values.put(Utils.TYPE, type);
         values.put(Utils.VALUE, "" + (value == null ? "" : value.toString()));
 
         final Cursor cu = resolver.query(Utils.CONTENT_URI, null, Utils.KEY + " = ?", new String[] { key }, null);

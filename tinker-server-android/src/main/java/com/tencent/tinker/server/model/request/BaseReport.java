@@ -71,10 +71,10 @@ public class BaseReport {
             if (first) {
                 first = false;
             } else {
-                result.append("&");
+                result.append('&');
             }
             result.append(URLEncoder.encode(pair.first, CHARSET));
-            result.append("=");
+            result.append('=');
             result.append(URLEncoder.encode(pair.second, CHARSET));
         }
         return result.toString();

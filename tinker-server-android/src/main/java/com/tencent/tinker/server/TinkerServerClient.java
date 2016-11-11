@@ -156,6 +156,7 @@ public class TinkerServerClient {
     }
 
     /**
+     * 设置访问TinkerPatch服务器的频率, 以小时为单位。即每隔几个小时访问TinkerPatch服务器
      * @param hours between 0 and 24
      */
     public void setCheckIntervalByHours(int hours) {

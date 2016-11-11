@@ -28,10 +28,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-/**
- * Created by zhangshaowen on 16/11/1.
- */
-
 public final class NetStatusUtil {
     private static ConnectivityManager connectivityManager = null;
 

@@ -27,21 +27,21 @@ package com.tencent.tinker.server.model.request;
 
 import com.tencent.tinker.lib.util.TinkerLog;
 import com.tencent.tinker.server.utils.ServerUtils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by sun on 24/10/2016.
- */
+
 public class BaseReport {
     public static final String TAG = "Tinker.report";
 
-    public final String appKey;
-    public final String appVersion;
-    public final String patchVersion;
+    public final String  appKey;
+    public final String  appVersion;
+    public final String  patchVersion;
     public final Integer platformType;
 
     public BaseReport(String appKey, String appVersion, String patchVersion) {

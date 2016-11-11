@@ -45,13 +45,9 @@ import java.util.regex.Pattern;
 import static com.tencent.tinker.server.client.TinkerClientAPI.TAG;
 
 
-/**
- * Created by sun on 11/10/2016.
- */
-
 public class Conditions {
 
-    static final String FILE_NAME = "CONDITIONS_MAP";
+    static final String  FILE_NAME   = "CONDITIONS_MAP";
     static final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
 
     private final Map<String, String> properties;
@@ -77,7 +73,8 @@ public class Conditions {
     /**
      * set the k,v to conditions map.
      * you should invoke {@link #saveToDisk(Context)} for saving the map to disk
-     * @param key the key
+     *
+     * @param key   the key
      * @param value the value
      * @return {@link Conditions} this
      */
@@ -88,6 +85,7 @@ public class Conditions {
 
     /**
      * Clean all properties. you should invoke {@link #saveToDisk(Context)} for saving to disk.
+     *
      * @return {@link Conditions} this
      */
     public Conditions clean() {
@@ -97,6 +95,7 @@ public class Conditions {
 
     /**
      * saveToDisk
+     *
      * @param context {@link Context}
      * @throws IOException
      */
@@ -110,8 +109,8 @@ public class Conditions {
 
 
     static final class Helper {
-        private static final String WITH_DELIMITER = "((?<=[%1$s])|(?=[%1$s]))";
-        private static final List<String> TOKENS = new ArrayList<>(4);
+        private static final String                   WITH_DELIMITER = "((?<=[%1$s])|(?=[%1$s]))";
+        private static final List<String>             TOKENS         = new ArrayList<>(4);
         private static final HashMap<String, Integer> TOKEN_PRIORITY = new HashMap<>();
 
         static {
@@ -276,7 +275,7 @@ public class Conditions {
         }
 
         public static List<String> splitExpr(String expr) {
-            String[] ops = new String[] {"==", "!=", ">=", "<=", ">", "<"};
+            String[] ops = new String[]{"==", "!=", ">=", "<=", ">", "<"};
             for (String op : ops) {
                 if (expr.contains(op)) {
                     int pos = expr.indexOf(op);

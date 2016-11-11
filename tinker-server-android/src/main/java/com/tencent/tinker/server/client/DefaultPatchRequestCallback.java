@@ -40,17 +40,10 @@ import com.tencent.tinker.server.utils.ServerUtils;
 
 import java.io.File;
 
-/**
- * Created by zhangshaowen on 16/10/29.
- */
 
 public class DefaultPatchRequestCallback implements PatchRequestCallback {
-    private static final String TAG = "Tinker.RequestCallback";
-
     public static final String TINKER_DOWNLOAD_FAIL_TIMES     = "tinker_download_fail";
     public static final int    TINKER_DOWNLOAD_FAIL_MAX_TIMES = 3;
-
-
     /**
      * 下载补丁时异常
      */
@@ -71,6 +64,7 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
      * 补丁加载异常
      */
     public static final int ERROR_LOAD_FAIL           = -5;
+    private static final String TAG = "Tinker.RequestCallback";
 
     @Override
     public boolean beforePatchRequest() {
@@ -183,10 +177,9 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
             NetStatusUtil.isWifi(client.getContext()) ? "1" : "0");
     }
 
-    @Deprecated
     public boolean increaseDownloadError(Context context) {
         SharedPreferences sp = context.getSharedPreferences(
-            TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_MULTI_PROCESS
+            TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_PRIVATE
         );
         int currentCount = sp.getInt(TINKER_DOWNLOAD_FAIL_TIMES, 0);
         TinkerLog.e(TAG, "increaseDownloadError, current count:%d", currentCount);
@@ -199,5 +192,4 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
         }
         return false;
     }
-
 }

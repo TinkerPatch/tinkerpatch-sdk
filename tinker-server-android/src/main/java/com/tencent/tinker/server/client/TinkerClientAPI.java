@@ -52,14 +52,13 @@ public class TinkerClientAPI {
 
 
     private static volatile TinkerClientAPI clientAPI;
-
+    final Conditions   conditions;
+    final VersionUtils versionUtils;
     private final String                 appVersion;
     private final String                 appKey;
     private final String                 host;
     private final boolean                debug;
-    private final Conditions             conditions;
     private final UrlConnectionUrlLoader loader;
-    private final VersionUtils           versionUtils;
 
     TinkerClientAPI(
         String appKey, String appVersion, String host,
@@ -113,18 +112,17 @@ public class TinkerClientAPI {
         return clientAPI;
     }
 
-    public TinkerClientAPI params(String key, String value) {
-        this.conditions.set(key, value);
-        return this;
+    public Conditions params(String key, String value) {
+        return this.conditions.set(key, value);
     }
 
     public void updateTinkerVersion(Integer newVersion, String md5) {
-        versionUtils.updateVersionProperty(getAppVersion(), newVersion, md5,
-            versionUtils.grayValue(), versionUtils.id());
+        versionUtils.updateVersionProperty(
+            getAppVersion(), newVersion, md5, versionUtils.grayValue(), versionUtils.id()
+        );
     }
 
     public void update(final Context context, final PatchRequestCallback callback) {
-
         if (callback == null) {
             throw new RuntimeException("callback can't be null");
         }
@@ -138,7 +136,7 @@ public class TinkerClientAPI {
                 if (response == null) {
                     callback.onPatchSyncFail(new RuntimeException("Can't sync with version: response == null"));
                 } else {
-                    TinkerLog.e(TAG, "sync respond222:" + response);
+                    TinkerLog.i(TAG, "sync response in update:" + response);
 
                     if (response.isRollback) {
                         callback.onPatchRollback();
@@ -189,9 +187,9 @@ public class TinkerClientAPI {
     /**
      * sync http://{Host}/{appKey}/{appVersion}?d={deviceId}&v={timestamp}
      *
-     * @param callback
+     * @param callback the request callback
      */
-    private void sync(final DataFetcher.DataCallback<String> callback) {
+    public void sync(final DataFetcher.DataCallback<String> callback) {
         Uri.Builder urlBuilder = Uri.parse(this.host).buildUpon();
         if (clientAPI.debug) {
             urlBuilder.appendPath("dev");
@@ -242,13 +240,13 @@ public class TinkerClientAPI {
      * download
      * http://{Host}/{appKey}/{appVersion}/file{patchVersion}?d={deviceId}&v={timestamp}
      *
-     * @param patchVersion
-     * @param filePath
-     * @param callback
+     * @param patchVersion patchVersion
+     * @param filePath the target patch file path
+     * @param callback the request callback
      */
-    private void download(final String patchVersion,
-                          final String filePath,
-                          final DataFetcher.DataCallback<? super File> callback) {
+    public void download(final String patchVersion,
+                  final String filePath,
+                  final DataFetcher.DataCallback<? super File> callback) {
 
         Preconditions.checkNotEmpty(patchVersion);
         final String url = Uri.parse(this.host)
@@ -300,7 +298,7 @@ public class TinkerClientAPI {
      * pv: patchVersion，应用的补丁版本号
      * t:  平台类型，填数字1
      *
-     * @param patchVersion
+     * @param patchVersion patchVersion
      */
     public void reportSuccess(Integer patchVersion) {
         Uri.Builder urlBuilder = Uri.parse(REPORT_SUCCESS_URL).buildUpon();
@@ -334,11 +332,10 @@ public class TinkerClientAPI {
      * t:  平台类型，填数字1
      * code: 错误码
      *
-     * @param context
-     * @param patchVersion
-     * @param errCode
+     * @param patchVersion patchVersion
+     * @param errCode      errCode
      */
-    public void reportFail(Context context, Integer patchVersion, Integer errCode) {
+    public void reportFail(Integer patchVersion, Integer errCode) {
         Uri.Builder urlBuilder = Uri.parse(REPORT_FAIL_URL).buildUpon();
         final String url = urlBuilder.build().toString();
         FailReport report = new FailReport(this.appKey, this.appVersion, String.valueOf(patchVersion), errCode);
@@ -358,6 +355,54 @@ public class TinkerClientAPI {
             @Override
             public void onLoadFailed(Exception e) {
                 TinkerLog.e(TAG, "reportSuccess error", e);
+            }
+        });
+    }
+
+    /**
+     * 请求动态配置文件。
+     * 请求http://{Host}/c/{appKey}?d={deviceId}&v={timestamp}
+     */
+    public void getDynamicConfig(final DataFetcher.DataCallback<String> callback) {
+        final String url = Uri.parse(this.host)
+            .buildUpon()
+            .appendPath("c")
+            .appendPath(this.appKey)
+            .appendQueryParameter("d", versionUtils.id())
+            .appendQueryParameter("v", String.valueOf(System.currentTimeMillis()))
+            .build().toString();
+
+        TinkerClientUrl tkClientUrl = new TinkerClientUrl.Builder().url(url).build();
+
+        final DataFetcher<InputStream> dataFetcher = loader.buildLoadData(tkClientUrl);
+        dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
+            @Override
+            public void onDataReady(InputStream data) {
+                if (callback == null) {
+                    TinkerLog.e(TAG, "[succ] getDynamicConfig's callback is null!");
+                    return;
+                }
+                try {
+                    String response = ServerUtils.readStreamToString(data, ServerUtils.CHARSET);
+                    callback.onDataReady(response);
+                } catch (Exception e) {
+                    callback.onLoadFailed(e);
+                } finally {
+                    dataFetcher.cleanup();
+                }
+            }
+
+            @Override
+            public void onLoadFailed(Exception e) {
+                if (callback == null) {
+                    TinkerLog.e(TAG, "[fail] getDynamicConfig's callback is null!");
+                    return;
+                }
+                try {
+                    callback.onLoadFailed(e);
+                } finally {
+                    dataFetcher.cleanup();
+                }
             }
         });
     }

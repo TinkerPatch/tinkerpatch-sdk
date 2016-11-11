@@ -49,10 +49,10 @@ class Headers {
     }
 
     private static class Builder {
-        private static final String USER_AGENT_HEADER = "User-Agent";
+        private static final String USER_AGENT_HEADER  = "User-Agent";
         private static final String DEFAULT_USER_AGENT = System.getProperty("http.agent");
-        private static final String ENCODING_HEADER = "Accept-Encoding";
-        private static final String DEFAULT_ENCODING = "identity";
+        private static final String ENCODING_HEADER    = "Accept-Encoding";
+        private static final String DEFAULT_ENCODING   = "identity";
         private static final Map<String, String> DEFAULT_HEADERS;
 
         static {

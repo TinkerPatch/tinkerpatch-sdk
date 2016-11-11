@@ -34,21 +34,17 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by sun on 28/09/2016.
- */
-
 public class TinkerClientUrl {
 
     private static final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
     private final Headers headers;
-    private final String stringUrl;
-    private final String body;
-    private final String method;
+    private final String  stringUrl;
+    private final String  body;
+    private final String  method;
 
     private String safeStringUrl;
-    private URL safeUrl;
+    private URL    safeUrl;
 
     public TinkerClientUrl(String stringUrl, Headers headers, String body, String method) {
         this.stringUrl = Preconditions.checkNotEmpty(stringUrl);
@@ -96,11 +92,11 @@ public class TinkerClientUrl {
     }
 
     public static class Builder {
-        private String url;
+        private String                  url;
         private HashMap<String, String> params;
-        private String body;
-        private String method;
-        private Headers headers;
+        private String                  body;
+        private String                  method;
+        private Headers                 headers;
 
         public TinkerClientUrl.Builder url(String url) {
             this.url = url;

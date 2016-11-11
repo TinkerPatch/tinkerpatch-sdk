@@ -22,10 +22,9 @@
  * THE SOFTWARE.
  */
 
-package com.tencent.tinker.server.model.request;
+package com.tencent.tinker.server.client;
 
-public class SuccessReport extends BaseReport {
-    public SuccessReport(String appKey, String appVersion, String patchVersion) {
-        super(appKey, appVersion, patchVersion);
-    }
+public interface ConfigRequestCallback {
+    void onSuccess(String jsonConfig);
+    void onFail(Exception e);
 }

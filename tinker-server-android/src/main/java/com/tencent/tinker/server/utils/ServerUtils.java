@@ -33,10 +33,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Created by sun on 9/18/16.
- */
-
 public final class ServerUtils {
     public static final String CHARSET             = "UTF-8";
     public static final int    BUFFER_SIZE         = 4096;

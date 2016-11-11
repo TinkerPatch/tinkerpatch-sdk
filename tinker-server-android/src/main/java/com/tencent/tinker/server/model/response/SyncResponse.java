@@ -27,21 +27,18 @@ package com.tencent.tinker.server.model.response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by sun on 10/10/2016.
- */
 
 public final class SyncResponse {
 
-    private static final String KEY_VERSION = "v";
-    private static final String KEY_GRAY = "g";
+    private static final String KEY_VERSION    = "v";
+    private static final String KEY_GRAY       = "g";
     private static final String KEY_CONDITIONS = "c";
-    private static final String KEY_PAUSE = "p";
-    private static final String KEY_ROLLBACK = "e";
+    private static final String KEY_PAUSE      = "p";
+    private static final String KEY_ROLLBACK   = "e";
 
-    public final String version;
+    public final String  version;
     public final Integer grayValue;
-    public final String conditions;
+    public final String  conditions;
     public final Boolean isPaused;
     public final Boolean isRollback;
 

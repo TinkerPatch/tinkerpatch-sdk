@@ -29,9 +29,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-/**
- * Created by sun on 24/10/2016.
- */
+
 public class FailReport extends BaseReport {
     public final Integer errCode;
 

@@ -40,17 +40,10 @@ import com.tencent.tinker.server.utils.ServerUtils;
 
 import java.io.File;
 
-/**
- * Created by zhangshaowen on 16/10/29.
- */
 
 public class DefaultPatchRequestCallback implements PatchRequestCallback {
-    private static final String TAG = "Tinker.RequestCallback";
-
     public static final String TINKER_DOWNLOAD_FAIL_TIMES     = "tinker_download_fail";
     public static final int    TINKER_DOWNLOAD_FAIL_MAX_TIMES = 3;
-
-
     /**
      * 下载补丁时异常
      */
@@ -71,6 +64,7 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
      * 补丁加载异常
      */
     public static final int ERROR_LOAD_FAIL           = -5;
+    private static final String TAG = "Tinker.RequestCallback";
 
     @Override
     public boolean beforePatchRequest() {
@@ -199,5 +193,4 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
         }
         return false;
     }
-
 }

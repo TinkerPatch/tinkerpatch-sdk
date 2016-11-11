@@ -24,10 +24,6 @@
 
 package com.tencent.tinker.server.utils;
 
-/**
- * Created by zhangshaowen on 16/11/4.
- */
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -38,38 +34,22 @@ import com.tencent.tinker.lib.util.TinkerLog;
 
 import java.util.HashMap;
 
-
 public final class Debugger {
 
-    private static final String TAG             = "Tinker.Debugger";
-
-    public static final Uri    CONTENT_URI  = Uri.parse("content://com.tinker.debug.debugprovider/config");
-
-    public static final String KEY = "key";
-    public static final String TYPE = "type";
+    public static final Uri CONTENT_URI = Uri.parse("content://com.tinker.debug.debugprovider/config");
+    public static final String KEY   = "key";
+    public static final String TYPE  = "type";
     public static final String VALUE = "value";
-
-    public static final int TYPE_INT = 1;
-    public static final int TYPE_LONG = 2;
-    public static final int TYPE_STRING = 3;
+    public static final int TYPE_INT     = 1;
+    public static final int TYPE_LONG    = 2;
+    public static final int TYPE_STRING  = 3;
     public static final int TYPE_BOOLEAN = 4;
-    public static final int TYPE_FLOAT = 5;
-    public static final int TYPE_DOUBLE = 6;
-
-
-    private final String[] columns = {BaseColumns._ID, KEY, TYPE, VALUE};
-
-    private final HashMap<String, Object> values = new HashMap<>();
-
-
+    public static final int TYPE_FLOAT   = 5;
+    public static final int TYPE_DOUBLE  = 6;
+    private static final String TAG = "Tinker.Debugger";
     private static Debugger sDebugger;
-
-    public static Debugger getInstance(Context context) {
-        if (sDebugger == null) {
-            sDebugger = new Debugger(context);
-        }
-        return sDebugger;
-    }
+    private final String[] columns = {BaseColumns._ID, KEY, TYPE, VALUE};
+    private final HashMap<String, Object> values = new HashMap<>();
 
     private Debugger(final Context context) {
         final ContentResolver cr = context.getContentResolver();
@@ -104,6 +84,13 @@ public final class Debugger {
         cu.close();
     }
 
+    public static Debugger getInstance(Context context) {
+        if (sDebugger == null) {
+            sDebugger = new Debugger(context);
+        }
+        return sDebugger;
+    }
+
     public boolean isDebug() {
         Boolean debug = getBoolean(".com.tinker.debugtool.debug");
         if (debug == null) {
@@ -111,7 +98,6 @@ public final class Debugger {
         }
         return debug;
     }
-
 
 
     public String getString(final String key) {
@@ -165,7 +151,6 @@ public final class Debugger {
         }
 
         public static Object resolveObj(int type, String value) {
-
             try {
                 switch (type) {
                     case TYPE_INT:

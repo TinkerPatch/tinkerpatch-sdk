@@ -26,35 +26,35 @@ package com.tencent.tinker.server.client;
 
 import java.io.File;
 
-/**
- * Created by zhangshaowen on 16/10/29.
- */
-
 public interface PatchRequestCallback {
     /**
      * 在请求补丁前,我们可以在这个接口拦截请求
-     * @return 返回false,即不会请求服务器
+     *
+     * @return 返回false, 即不会请求服务器
      */
     boolean beforePatchRequest();
 
     /**
      * 服务器有新的补丁,并且已经成功的下载
-     * @param file 下载好的补丁地址,存放在/data/data/app_name/tinker_server/
-     * @param newVersion 新的补丁版本
+     *
+     * @param file           下载好的补丁地址,存放在/data/data/app_name/tinker_server/
+     * @param newVersion     新的补丁版本
      * @param currentVersion 当前的补丁版本
      */
     void onPatchUpgrade(File file, Integer newVersion, Integer currentVersion);
 
     /**
      * 向服务器请求新补丁时,下载补丁失败
-     * @param e 错误类型
-     * @param newVersion 下载失败的新补丁版本
+     *
+     * @param e              错误类型
+     * @param newVersion     下载失败的新补丁版本
      * @param currentVersion 当前的补丁版本
      */
     void onPatchDownloadFail(Exception e, Integer newVersion, Integer currentVersion);
 
     /**
      * 与服务器同步时失败
+     *
      * @param e 失败类型
      */
     void onPatchSyncFail(Exception e);

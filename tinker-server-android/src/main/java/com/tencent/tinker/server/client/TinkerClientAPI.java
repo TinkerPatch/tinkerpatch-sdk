@@ -52,14 +52,13 @@ public class TinkerClientAPI {
 
 
     private static volatile TinkerClientAPI clientAPI;
-
+    final Conditions   conditions;
+    final VersionUtils versionUtils;
     private final String                 appVersion;
     private final String                 appKey;
     private final String                 host;
     private final boolean                debug;
-    private final Conditions             conditions;
     private final UrlConnectionUrlLoader loader;
-    private final VersionUtils           versionUtils;
 
     TinkerClientAPI(
         String appKey, String appVersion, String host,
@@ -191,7 +190,7 @@ public class TinkerClientAPI {
      *
      * @param callback
      */
-    private void sync(final DataFetcher.DataCallback<String> callback) {
+    void sync(final DataFetcher.DataCallback<String> callback) {
         Uri.Builder urlBuilder = Uri.parse(this.host).buildUpon();
         if (clientAPI.debug) {
             urlBuilder.appendPath("dev");
@@ -246,9 +245,9 @@ public class TinkerClientAPI {
      * @param filePath
      * @param callback
      */
-    private void download(final String patchVersion,
-                          final String filePath,
-                          final DataFetcher.DataCallback<? super File> callback) {
+    void download(final String patchVersion,
+                  final String filePath,
+                  final DataFetcher.DataCallback<? super File> callback) {
 
         Preconditions.checkNotEmpty(patchVersion);
         final String url = Uri.parse(this.host)
@@ -300,7 +299,7 @@ public class TinkerClientAPI {
      * pv: patchVersion，应用的补丁版本号
      * t:  平台类型，填数字1
      *
-     * @param patchVersion
+     * @param patchVersion patchVerson
      */
     public void reportSuccess(Integer patchVersion) {
         Uri.Builder urlBuilder = Uri.parse(REPORT_SUCCESS_URL).buildUpon();
@@ -334,11 +333,10 @@ public class TinkerClientAPI {
      * t:  平台类型，填数字1
      * code: 错误码
      *
-     * @param context
-     * @param patchVersion
-     * @param errCode
+     * @param patchVersion patchVersion
+     * @param errCode      errCode
      */
-    public void reportFail(Context context, Integer patchVersion, Integer errCode) {
+    public void reportFail(Integer patchVersion, Integer errCode) {
         Uri.Builder urlBuilder = Uri.parse(REPORT_FAIL_URL).buildUpon();
         final String url = urlBuilder.build().toString();
         FailReport report = new FailReport(this.appKey, this.appVersion, String.valueOf(patchVersion), errCode);

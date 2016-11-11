@@ -41,29 +41,22 @@ import com.tencent.tinker.server.utils.NetStatusUtil;
  * Created by zhangshaowen on 16/10/24.
  */
 public class TinkerServerClient {
-    private static final String TAG = "Tinker.ServerClient";
-
     public static final String SHARE_SERVER_PREFERENCE_CONFIG = "tinker_server_config";
     public static final String TINKER_LAST_CHECK              = "tinker_last_check";
-
     public static final String CONDITION_WIFI    = "wifi";
     public static final String CONDITION_SDK     = "sdk";
     public static final String CONDITION_BRAND   = "brand";
     public static final String CONDITION_MODEL   = "model";
     public static final String CONDITION_CPU_ABI = "cpu";
-
-
     public static final long DEFAULT_CHECK_INTERVAL = 1 * 3600 * 1000;
     public static final long NEVER_CHECK_UPDATE     = -1;
-
-    private long checkInterval = DEFAULT_CHECK_INTERVAL;
-
+    private static final String TAG = "Tinker.ServerClient";
+    private static volatile TinkerServerClient client;
     private final Tinker               tinker;
     private final Context              context;
     private final PatchRequestCallback patchRequestCallback;
     private final TinkerClientAPI      clientAPI;
-
-    private static volatile TinkerServerClient client;
+    private long checkInterval = DEFAULT_CHECK_INTERVAL;
 
 
     public TinkerServerClient(Context context, Tinker tinker, String appKey,
@@ -73,19 +66,6 @@ public class TinkerServerClient {
         this.clientAPI = TinkerClientAPI.init(context, appKey, appVersion, debug);
         this.patchRequestCallback = patchRequestCallback;
         makeDefaultConditions();
-    }
-
-    public void updateTinkerCondition(String key, String value) {
-        this.clientAPI.params(key, value);
-    }
-
-    @Deprecated
-    private void makeDefaultConditions() {
-        this.clientAPI.params(CONDITION_WIFI, NetStatusUtil.isWifi(context) ? "1" : "0");
-        this.clientAPI.params(CONDITION_SDK, String.valueOf(Build.VERSION.SDK_INT));
-        this.clientAPI.params(CONDITION_BRAND, Build.BRAND);
-        this.clientAPI.params(CONDITION_MODEL, Build.MODEL);
-        this.clientAPI.params(CONDITION_CPU_ABI, Build.CPU_ABI);
     }
 
     public static TinkerServerClient get() {
@@ -121,9 +101,20 @@ public class TinkerServerClient {
         return client;
     }
 
+    public void updateTinkerCondition(String key, String value) {
+        this.clientAPI.params(key, value);
+    }
+
     @Deprecated
+    private void makeDefaultConditions() {
+        this.clientAPI.params(CONDITION_WIFI, NetStatusUtil.isWifi(context) ? "1" : "0");
+        this.clientAPI.params(CONDITION_SDK, String.valueOf(Build.VERSION.SDK_INT));
+        this.clientAPI.params(CONDITION_BRAND, Build.BRAND);
+        this.clientAPI.params(CONDITION_MODEL, Build.MODEL);
+        this.clientAPI.params(CONDITION_CPU_ABI, Build.CPU_ABI);
+    }
+
     public void checkTinkerUpdate() {
-        //check SharePreferences also
         if (!tinker.isTinkerEnabled() || !ShareTinkerInternals.isTinkerEnableWithSharedPreferences(context)) {
             TinkerLog.e(TAG, "tinker is disable, just return");
             return;
@@ -147,9 +138,7 @@ public class TinkerServerClient {
         }
     }
 
-    @Deprecated
     public void checkTinkerUpdateImmediately() {
-        //check SharePreferences also
         if (!tinker.isTinkerEnabled() || !ShareTinkerInternals.isTinkerEnableWithSharedPreferences(context)) {
             TinkerLog.e(TAG, "tinker is disable, just return");
             return;
@@ -222,7 +211,7 @@ public class TinkerServerClient {
 
     public void reportPatchFail(Integer patchVersion, int errorCode) {
         TinkerLog.i(TAG, "tinker server report patch fail, patchVersion:%d, errorCode:%d", patchVersion, errorCode);
-        clientAPI.reportFail(getContext(), patchVersion, errorCode);
+        clientAPI.reportFail(patchVersion, errorCode);
     }
 
     public void updateTinkerVersion(Integer newVersion, String patchMd5) {

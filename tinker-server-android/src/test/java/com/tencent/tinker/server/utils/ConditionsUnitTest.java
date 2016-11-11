@@ -49,6 +49,7 @@ import static org.mockito.Matchers.any;
 @PrepareForTest(TextUtils.class)
 public class ConditionsUnitTest {
     private Map<String, String> props;
+
     @Test
     public void toReversePolish1() throws Exception {
         Assert.assertTrue(

@@ -40,10 +40,6 @@ import java.util.UUID;
 
 import static com.tencent.tinker.server.client.TinkerClientAPI.TAG;
 
-/**
- * Created by sun on 18/10/2016.
- */
-
 public final class VersionUtils {
     private static final String APP_VERSION     = "app";
     private static final String UUID_VALUE      = "uuid";

@@ -55,9 +55,9 @@ public class TinkerServerClient {
     private final           Tinker               tinker;
     private final           Context              context;
     private final           PatchRequestCallback patchRequestCallback;
-    private final           TinkerClientAPI      clientAPI;
     private long checkInterval = DEFAULT_CHECK_INTERVAL;
 
+    final TinkerClientAPI clientAPI;
 
     public TinkerServerClient(Context context, Tinker tinker, String appKey,
                               String appVersion, Boolean debug, PatchRequestCallback patchRequestCallback) {

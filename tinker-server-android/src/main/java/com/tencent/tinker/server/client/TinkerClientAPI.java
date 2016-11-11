@@ -112,9 +112,8 @@ public class TinkerClientAPI {
         return clientAPI;
     }
 
-    public TinkerClientAPI params(String key, String value) {
-        this.conditions.set(key, value);
-        return this;
+    public Conditions params(String key, String value) {
+        return this.conditions.set(key, value);
     }
 
     public void updateTinkerVersion(Integer newVersion, String md5) {
@@ -190,7 +189,7 @@ public class TinkerClientAPI {
      *
      * @param callback the request callback
      */
-    void sync(final DataFetcher.DataCallback<String> callback) {
+    public void sync(final DataFetcher.DataCallback<String> callback) {
         Uri.Builder urlBuilder = Uri.parse(this.host).buildUpon();
         if (clientAPI.debug) {
             urlBuilder.appendPath("dev");
@@ -245,7 +244,7 @@ public class TinkerClientAPI {
      * @param filePath the target patch file path
      * @param callback the request callback
      */
-    void download(final String patchVersion,
+    public void download(final String patchVersion,
                   final String filePath,
                   final DataFetcher.DataCallback<? super File> callback) {
 

@@ -177,10 +177,9 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
             NetStatusUtil.isWifi(client.getContext()) ? "1" : "0");
     }
 
-    @Deprecated
     public boolean increaseDownloadError(Context context) {
         SharedPreferences sp = context.getSharedPreferences(
-            TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_MULTI_PROCESS
+            TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_PRIVATE
         );
         int currentCount = sp.getInt(TINKER_DOWNLOAD_FAIL_TIMES, 0);
         TinkerLog.e(TAG, "increaseDownloadError, current count:%d", currentCount);

@@ -42,11 +42,6 @@ android {
         versionName VERSION_NAME as String
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
     lintOptions {
         warning 'InvalidPackage'
     }

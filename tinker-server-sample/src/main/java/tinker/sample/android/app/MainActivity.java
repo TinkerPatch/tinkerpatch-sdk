@@ -44,15 +44,6 @@ public class MainActivity extends AppCompatActivity {
         Log.e(TAG, "i am on onCreate string:" + getResources().getString(R.string.test_resource));
 //        Log.e(TAG, "i am on patch onCreate");
 
-        Button loadPatchButton = (Button) findViewById(R.id.loadPatch);
-
-        loadPatchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TinkerInstaller.onReceiveUpgradePatch(getApplicationContext(), Environment.getExternalStorageDirectory().getAbsolutePath() + "/patch_signed_7zip.apk");
-            }
-        });
-
         Button requestPatchButton = (Button) findViewById(R.id.requestPatch);
 
         requestPatchButton.setOnClickListener(new View.OnClickListener() {

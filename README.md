@@ -3,13 +3,13 @@
 [![Build Status](https://travis-ci.org/simpleton/tinker_server_client.svg?branch=master)](https://travis-ci.org/simpleton/tinker_server_client)
 [ ![Download](https://api.bintray.com/packages/simsun/maven/tinker-server-android/images/download.svg) ](https://bintray.com/simsun/maven/tinker-server-android/_latestVersion)
 
-# SDK接入
+## SDK接入
 
 这里只是针对 TinkerPatch SDK的使用说明，对于 Tinker 的基本用法，可参考[ Tinker接入指南](https://github.com/Tencent/tinker/wiki/Tinker-%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97)。
 
 [更多文档](http://tinkerpatch.com/Docs/intro)
 
-## 第一步 添加gradle依赖
+### 第一步 添加gradle依赖
 
 gradle远程仓库依赖jcenter,例如 Tinker server sample中的[build.gradle](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/build.gradle).
 
@@ -27,7 +27,7 @@ dependencies {
 }
 ```
 
-## 第二步 配置AndroidManifest文件
+### 第二步 配置AndroidManifest文件
 
 在AndroidManifest中声明SDK需要的权限：
 
@@ -37,7 +37,7 @@ dependencies {
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
 
-## 第三步 配置AppKey与AppVersion
+### 第三步 配置AppKey与AppVersion
 在 TinkerPatch 平台中得到的 AppKey 以及 AppVersion记住，我们可以简单的将他们写入 [buildConfig](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/build.gradle#L86) 中:
 
 ```
@@ -45,7 +45,7 @@ buildConfigField "String", "APP_KEY", "\"f938475486f91936\""
 buildConfigField "String", "APP_VERSION",  "\"3.0.0\""
 ```
 
-## 第四步 初始化 TinkerPatch SDK
+### 第四步 初始化 TinkerPatch SDK
 首先初始化 TinkerPatch 的 SDK，例如 Sample 中 [SampleApplicationLike类](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/src/main/java/tinker/sample/android/app/SampleApplicationLike.java#L88)：
 
 ```
@@ -73,5 +73,3 @@ TinkerServerManager.reportTinkerPatchFail(result);
 ```
 TinkerServerManager.reportTinkerLoadFail();
 ```
-
-

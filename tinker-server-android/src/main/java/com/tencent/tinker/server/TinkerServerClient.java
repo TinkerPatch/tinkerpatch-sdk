@@ -204,7 +204,7 @@ public class TinkerServerClient {
     /**
      * 设置访问TinkerPatch服务器的频率, 以小时为单位。即每隔几个小时访问TinkerPatch服务器
      *
-     * @param hours between 0 and 24
+     * @param hours 大于等于0的整数
      */
     public void setCheckIntervalByHours(int hours) {
         if (hours < 0 || hours > 24) {
@@ -222,7 +222,7 @@ public class TinkerServerClient {
 
     /**
      * 设置在线参数的时间间隔
-     * @param hours
+     * @param hours 大于等于0的整数
      */
     public void setGetConfigIntervalByHours(int hours) {
         if (hours < 0 || hours > 24) {

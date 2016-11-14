@@ -16,21 +16,12 @@
         android:text="Sample patch!"/>
 
     <Button
-        android:id="@+id/loadPatch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView"
-        android:text="load patch"/>
-
-    <Button
         android:id="@+id/requestPatch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/loadPatch"
+        android:layout_below="@+id/textView"
         android:text="request patch"/>
     <Button
         android:id="@+id/requestConfig"

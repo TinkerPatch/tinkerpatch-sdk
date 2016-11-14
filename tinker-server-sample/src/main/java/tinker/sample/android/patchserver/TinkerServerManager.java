@@ -120,6 +120,18 @@ public class TinkerServerManager {
     }
 
     /**
+     * 设置在线参数的时间间隔
+     * @param hours 大于等于0的整数
+     */
+    public static void setGetConfigIntervalByHours(int hours) {
+        if (sTinkerServerClient == null) {
+            TinkerLog.e(TAG, "setGetConfigIntervalByHours, sTinkerServerClient == null");
+            return;
+        }
+        sTinkerServerClient.setGetConfigIntervalByHours(hours);
+    }
+
+    /**
      * 将在线参数返回的 json 转化为 Hashmap
      * @param jsonString
      * @return

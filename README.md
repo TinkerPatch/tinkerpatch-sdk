@@ -1,4 +1,4 @@
-# [Tinker](https://github.com/Tencent/tinker) Client
+# TinkerPatch SDK
 
 [![Build Status](https://travis-ci.org/simpleton/tinker_server_client.svg?branch=master)](https://travis-ci.org/simpleton/tinker_server_client)
 [ ![Download](https://api.bintray.com/packages/simsun/maven/tinker-server-android/images/download.svg) ](https://bintray.com/simsun/maven/tinker-server-android/_latestVersion)

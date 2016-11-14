@@ -211,7 +211,7 @@ public class TinkerClientAPI {
                 }
                 try {
                     String response = ServerUtils.readStreamToString(data, ServerUtils.CHARSET);
-                    TinkerLog.e(TAG, "sync respond111:" + response);
+                    TinkerLog.e(TAG, "tinker server sync respond:" + response);
 
                     SyncResponse.fromJson(response);
                     callback.onDataReady(response);

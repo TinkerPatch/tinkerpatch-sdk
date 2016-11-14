@@ -31,13 +31,20 @@ import android.os.MessageQueue;
 import com.tencent.tinker.lib.service.PatchResult;
 import com.tencent.tinker.lib.tinker.Tinker;
 import com.tencent.tinker.lib.util.TinkerLog;
+import com.tencent.tinker.loader.shareutil.ShareConstants;
 import com.tencent.tinker.loader.shareutil.SharePatchFileUtil;
 import com.tencent.tinker.server.TinkerServerClient;
+import com.tencent.tinker.server.client.ConfigRequestCallback;
 import com.tencent.tinker.server.client.DefaultPatchRequestCallback;
 import com.tencent.tinker.server.utils.Debugger;
 import com.tencent.tinker.server.utils.ServerUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import tinker.sample.android.BuildConfig;
 import tinker.sample.android.util.Utils;
@@ -53,6 +60,12 @@ public class TinkerServerManager {
 
     public static TinkerServerClient sTinkerServerClient;
 
+    /**
+     * 初始化 TinkerServer 实例
+     * @param context
+     * @param tinker   tinker 实例
+     * @param hours    访问服务器的时间间隔, 单位为小时, 应为 >= 0
+     */
     public static void installTinkerServer(Context context, Tinker tinker, int hours) {
         boolean debug = Debugger.getInstance(context).isDebug();
         TinkerLog.w(TAG, "installTinkerServer, debug value:" + debug);
@@ -63,7 +76,11 @@ public class TinkerServerManager {
         sTinkerServerClient.setCheckIntervalByHours(hours);
     }
 
-    public static void checkTinkerUpdate() {
+    /**
+     * 检查服务器是否有补丁更新
+     * @param immediately 是否立刻检查,忽略时间间隔限制
+     */
+    public static void checkTinkerUpdate(final boolean immediately) {
         if (sTinkerServerClient == null) {
             TinkerLog.e(TAG, "checkTinkerUpdate, sTinkerServerClient == null");
             return;
@@ -73,25 +90,73 @@ public class TinkerServerManager {
         if (tinker.isMainProcess()) {
             Looper.getMainLooper().myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
                 @Override public boolean queueIdle() {
-                    sTinkerServerClient.checkTinkerUpdate();
+                    sTinkerServerClient.checkTinkerUpdate(immediately);
                     return false;
                 }
             });
         }
     }
 
-    public static void receiveTinkerCheckPush() {
+    /**
+     * 向服务器请求在线参数信息
+     * @param configRequestCallback
+     * @param immediately            是否立刻请求,忽略时间间隔限制
+     */
+    public static void getDynamicConfig(final ConfigRequestCallback configRequestCallback, final boolean immediately) {
         if (sTinkerServerClient == null) {
-            TinkerLog.e(TAG, "receiveTinkerCheckPush, sTinkerServerClient == null");
+            TinkerLog.e(TAG, "checkTinkerUpdate, sTinkerServerClient == null");
             return;
         }
         Tinker tinker = sTinkerServerClient.getTinker();
         //only check at the main process
         if (tinker.isMainProcess()) {
-            sTinkerServerClient.checkTinkerUpdateImmediately();
+            Looper.getMainLooper().myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
+                @Override public boolean queueIdle() {
+                    sTinkerServerClient.getDynamicConfig(configRequestCallback, immediately);
+                    return false;
+                }
+            });
         }
     }
 
+    /**
+     * 将在线参数返回的 json 转化为 Hashmap
+     * @param jsonString
+     * @return
+     * @throws JSONException
+     */
+    public static HashMap<String, String> jsonToMap(String jsonString) throws JSONException {
+        HashMap<String, String> map = new HashMap<>();
+        JSONObject jObject = new JSONObject(jsonString);
+        Iterator<String> keys = jObject.keys();
+
+        while( keys.hasNext() ){
+            String key = keys.next();
+            String value = jObject.getString(key);
+            map.put(key, value);
+        }
+        return map;
+    }
+
+
+    /**
+     * 设置条件下发的属性
+     * @param key
+     * @param value
+     */
+    public void updateTinkerCondition(String key, String value) {
+        if (sTinkerServerClient == null) {
+            TinkerLog.e(TAG, "updateTinkerCondition, sTinkerServerClient == null");
+            return;
+        }
+        sTinkerServerClient.updateTinkerCondition(key, value);
+
+    }
+
+    /**
+     * 上报补丁合成情况
+     * @param patchResult
+     */
     public static void reportTinkerPatchFail(PatchResult patchResult) {
         if (sTinkerServerClient == null) {
             TinkerLog.e(TAG, "reportTinkerPatchFail, sTinkerServerClient == null");
@@ -101,16 +166,6 @@ public class TinkerServerManager {
             TinkerLog.e(TAG, "reportTinkerPatchFail, patchResult == null");
             return;
         }
-        File patchFile = new File(patchResult.rawPatchFilePath);
-        if (patchFile.exists()) {
-            File parentFile = patchFile.getParentFile();
-            if (parentFile.getName().equals(ServerUtils.TINKER_SERVER_DIR)) {
-                //delete server file whether it is success
-                SharePatchFileUtil.safeDeleteFile(parentFile);
-            }
-        }
-
-        SharePatchFileUtil.safeDeleteFile(new File(patchResult.rawPatchFilePath));
 
         if (patchResult.isSuccess) {
             TinkerLog.i(TAG, "reportTinkerPatchFail, patch success, just return");
@@ -127,9 +182,16 @@ public class TinkerServerManager {
         sTinkerServerClient.reportPatchFail(sTinkerServerClient.getCurrentPatchVersion(), DefaultPatchRequestCallback.ERROR_PATCH_FAIL);
     }
 
-    public static void reportTinkerPatchListenerFail(String patchMd5) {
+    /**
+     * 上报补丁合成情况
+     * @param patchMd5
+     */
+    public static void reportTinkerPatchListenerFail(int returnCode, String patchMd5) {
         if (sTinkerServerClient == null) {
             TinkerLog.e(TAG, "reportTinkerPatchListenerFail, sTinkerServerClient == null");
+            return;
+        }
+        if (returnCode == ShareConstants.ERROR_PATCH_OK) {
             return;
         }
         if (patchMd5 == null) {
@@ -145,6 +207,9 @@ public class TinkerServerManager {
     }
 
 
+    /**
+     * 上报补丁加载情况
+     */
     public static void reportTinkerLoadFail() {
         if (sTinkerServerClient == null) {
             TinkerLog.e(TAG, "reportTinkerPatchFail, sTinkerServerClient == null");

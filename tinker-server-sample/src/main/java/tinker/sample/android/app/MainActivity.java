@@ -17,12 +17,16 @@
 package tinker.sample.android.app;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.tencent.tinker.lib.tinker.Tinker;
+import com.tencent.tinker.lib.tinker.TinkerInstaller;
+import com.tencent.tinker.lib.util.TinkerLog;
+import com.tencent.tinker.server.client.ConfigRequestCallback;
 
 import tinker.sample.android.R;
 import tinker.sample.android.patchserver.TinkerServerManager;
@@ -40,12 +44,40 @@ public class MainActivity extends AppCompatActivity {
         Log.e(TAG, "i am on onCreate string:" + getResources().getString(R.string.test_resource));
 //        Log.e(TAG, "i am on patch onCreate");
 
+        Button loadPatchButton = (Button) findViewById(R.id.loadPatch);
+
+        loadPatchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TinkerInstaller.onReceiveUpgradePatch(getApplicationContext(), Environment.getExternalStorageDirectory().getAbsolutePath() + "/patch_signed_7zip.apk");
+            }
+        });
+
         Button requestPatchButton = (Button) findViewById(R.id.requestPatch);
 
         requestPatchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TinkerServerManager.checkTinkerUpdate();
+                TinkerServerManager.checkTinkerUpdate(true);
+            }
+        });
+
+        Button requestConfigButton = (Button) findViewById(R.id.requestConfig);
+
+        requestConfigButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TinkerServerManager.getDynamicConfig(new ConfigRequestCallback() {
+                    @Override
+                    public void onSuccess(String s) {
+                        TinkerLog.w(TAG, "request config success, config:" + s);
+                    }
+
+                    @Override
+                    public void onFail(Exception e) {
+                        TinkerLog.w(TAG, "request config failed, exception:" + e);
+                    }
+                }, true);
             }
         });
 

@@ -55,10 +55,8 @@ public class SamplePatchListener extends DefaultPatchListener {
         int returnCode = super.patchCheck(path, isUpgrade);
 
         //把这个添加到你的PatchListener实现中
-        if (returnCode != ShareConstants.ERROR_PATCH_OK) {
-            String patchMd5 = SharePatchFileUtil.getMD5(patchFile);
-            TinkerServerManager.reportTinkerPatchListenerFail(patchMd5);
-        }
+        String patchMd5 = SharePatchFileUtil.getMD5(patchFile);
+        TinkerServerManager.reportTinkerPatchListenerFail(returnCode, patchMd5);
         return returnCode;
     }
 }

@@ -13,10 +13,20 @@ android {
         versionCode 1
         versionName VERSION_NAME as String
     }
+    signingConfigs {
+        debug {
+            storeFile rootProject.file("keystore/debug.keystore")
+        }
+    }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
         }
     }
 }

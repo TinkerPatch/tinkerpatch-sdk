@@ -32,6 +32,14 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/loadPatch"
         android:text="request patch"/>
+    <Button
+        android:id="@+id/requestConfig"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/requestPatch"
+        android:text="request config"/>
 
     <Button
         android:id="@+id/cleanPatch"
@@ -39,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/requestPatch"
+        android:layout_below="@+id/requestConfig"
         android:text="clean patch"/>
     <Button
         android:id="@+id/killSelf"

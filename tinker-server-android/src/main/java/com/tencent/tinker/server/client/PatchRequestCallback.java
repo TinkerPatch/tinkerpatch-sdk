@@ -41,7 +41,7 @@ public interface PatchRequestCallback {
      * @param newVersion     新的补丁版本
      * @param currentVersion 当前的补丁版本
      */
-    void onPatchUpgrade(File file, Integer newVersion, Integer currentVersion);
+    boolean onPatchUpgrade(File file, Integer newVersion, Integer currentVersion);
 
     /**
      * 向服务器请求新补丁时,下载补丁失败

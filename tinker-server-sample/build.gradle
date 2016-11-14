@@ -11,7 +11,13 @@ dependencies {
     compile("com.tencent.tinker:tinker-android-lib:${TINKER_VERSION}") { changing = true }
     provided("com.tencent.tinker:tinker-android-anno:${TINKER_VERSION}") { changing = true }
 
-    compile("com.tencent.tinker:tinker-server-android:0.1.1") { changing = true }
+    compile("com.tencent.tinker:tinker-server-android:0.2.0") { changing = true }
+
+    //use for local maven test
+//    compile("com.tencent.tinker:tinker-android-loader:${TINKER_VERSION}") { changing = true }
+//    compile("com.tencent.tinker:aosp-dexutils:${TINKER_VERSION}") { changing = true }
+//    compile("com.tencent.tinker:bsdiff-util:${TINKER_VERSION}") { changing = true }
+//    compile("com.tencent.tinker:tinker-commons:${TINKER_VERSION}") { changing = true }
 }
 
 def gitSha() {
@@ -36,12 +42,8 @@ android {
     }
 
     signingConfigs {
-        release {
-            storeFile file("./keystore/debug.keystore")
-        }
-
         debug {
-            storeFile file("./keystore/debug.keystore")
+            storeFile rootProject.file("keystore/debug.keystore")
         }
     }
 
@@ -56,36 +58,20 @@ android {
          * you can use multiDex and install it in your ApplicationLifeCycle implement
          */
         multiDexEnabled true
-        /**
-         * not like proguard, multiDexKeepProguard is not a list, so we can't just
-         * add for you in our task. you can copy tinker keep rules at
-         * build/intermediates/tinker_intermediates/tinker_multidexkeep.pro
-         */
         multiDexKeepProguard file("keep_in_main_dex.txt")
-        /**
-         * buildConfig can change during patch!
-         * we can use the newly value when patch
-         */
-        buildConfigField "String", "MESSAGE", "\"I am the base apk\""
-//        buildConfigField "String", "MESSAGE", "\"I am the patch apk\""
-        /**
-         * client version would update with patch
-         * so we can get the newly git version easily!
-         */
-        buildConfigField "String", "CLIENTVERSION", "\"${getTinkerIdValue()}\""
-        buildConfigField "String", "PLATFORM",  "\"all\""
+
         /**
          * for tinker server,
          * you can go www.tinkerpatch.com to get your own app_ver
          */
         buildConfigField "String", "APP_KEY", "\"f938475486f91936\""
-        buildConfigField "String", "APP_VERSION",  "\"3.0.0\""
+        buildConfigField "String", "APP_VERSION",  "\"5.0.0\""
     }
 
     buildTypes {
         release {
             minifyEnabled true
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -109,11 +95,11 @@ ext {
 
     //for normal build
     //old apk file to build patch apk
-    tinkerOldApkPath = "${bakPath}/app-debug-1109-19-06-33.apk"
+    tinkerOldApkPath = "${bakPath}/tinker-server-sample-debug-1114-21-02-02.apk"
     //proguard mapping file to build patch apk
-    tinkerApplyMappingPath = "${bakPath}/app-debug-1018-17-32-47-mapping.txt"
+    tinkerApplyMappingPath = "${bakPath}/tinker-server-sample-debug-1114-17-25-21-mapping.txt"
     //resource R.txt to build patch apk, must input if there is resource changed
-    tinkerApplyResourcePath = "${bakPath}/app-debug-1109-19-06-33-R.txt"
+    tinkerApplyResourcePath = "${bakPath}/tinker-server-sample-debug-1114-21-02-02-R.txt"
 }
 
 def getOldApkPath() {

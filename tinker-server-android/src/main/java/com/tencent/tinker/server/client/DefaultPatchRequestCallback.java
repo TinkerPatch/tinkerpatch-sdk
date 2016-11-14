@@ -42,6 +42,8 @@ import java.io.File;
 
 
 public class DefaultPatchRequestCallback implements PatchRequestCallback {
+    private static final String TAG = "Tinker.RequestCallback";
+
     public static final String TINKER_DOWNLOAD_FAIL_TIMES     = "tinker_download_fail";
     public static final int    TINKER_DOWNLOAD_FAIL_MAX_TIMES = 3;
     /**
@@ -64,7 +66,6 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
      * 补丁加载异常
      */
     public static final int ERROR_LOAD_FAIL           = -5;
-    private static final String TAG = "Tinker.RequestCallback";
 
     @Override
     public boolean beforePatchRequest() {
@@ -83,8 +84,8 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
     }
 
     @Override
-    public void onPatchUpgrade(File file, Integer newVersion, Integer currentVersion) {
-        TinkerLog.e(TAG, "onPatchUpgrade, file:%s, newVersion:%d, currentVersion:%d",
+    public boolean onPatchUpgrade(File file, Integer newVersion, Integer currentVersion) {
+        TinkerLog.w(TAG, "onPatchUpgrade, file:%s, newVersion:%d, currentVersion:%d",
             file.getPath(), newVersion, currentVersion);
         TinkerServerClient client = TinkerServerClient.get();
         Context context = client.getContext();
@@ -99,9 +100,10 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
                 client.reportPatchFail(newVersion, ERROR_DOWNLOAD_CHECK_FAIL);
             }
             SharePatchFileUtil.safeDeleteFile(file);
-            return;
+            return false;
         }
         tryPatchFile(file, newVersion);
+        return true;
     }
 
     private void tryPatchFile(File patchFile, Integer newVersion) {
@@ -131,7 +133,7 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
 
     @Override
     public void onPatchDownloadFail(Exception e, Integer newVersion, Integer currentVersion) {
-        TinkerLog.e(TAG, "onPatchDownloadFail e:" + e);
+        TinkerLog.w(TAG, "onPatchDownloadFail e:" + e);
         //check network
         TinkerServerClient client = TinkerServerClient.get();
         //due to network, just return
@@ -148,13 +150,13 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
 
     @Override
     public void onPatchSyncFail(Exception e) {
-        TinkerLog.e(TAG, "onPatchSyncFail error:" + e);
+        TinkerLog.w(TAG, "onPatchSyncFail error:" + e);
         TinkerLog.printErrStackTrace(TAG, e, "onPatchSyncFail stack:");
     }
 
     @Override
     public void onPatchRollback() {
-        TinkerLog.e(TAG, "onPatchRollback");
+        TinkerLog.w(TAG, "onPatchRollback");
         rollbackPatchDirectly();
     }
 
@@ -170,7 +172,7 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
 
     @Override
     public void updatePatchConditions() {
-        TinkerLog.e(TAG, "updatePatchConditions");
+        TinkerLog.w(TAG, "updatePatchConditions");
         TinkerServerClient client = TinkerServerClient.get();
         // wifi condition should be updated
         client.updateTinkerCondition(TinkerServerClient.CONDITION_WIFI,
@@ -182,7 +184,7 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
             TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_PRIVATE
         );
         int currentCount = sp.getInt(TINKER_DOWNLOAD_FAIL_TIMES, 0);
-        TinkerLog.e(TAG, "increaseDownloadError, current count:%d", currentCount);
+        TinkerLog.w(TAG, "increaseDownloadError, current count:%d", currentCount);
 
         if (currentCount >= TINKER_DOWNLOAD_FAIL_MAX_TIMES) {
             sp.edit().putInt(TINKER_DOWNLOAD_FAIL_TIMES, 0).commit();

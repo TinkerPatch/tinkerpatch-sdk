@@ -25,11 +25,13 @@
 package tinker.sample.android.patchserver;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.tencent.tinker.lib.tinker.Tinker;
 import com.tencent.tinker.lib.tinker.TinkerInstaller;
 import com.tencent.tinker.lib.tinker.TinkerLoadResult;
 import com.tencent.tinker.lib.util.TinkerLog;
+import com.tencent.tinker.loader.shareutil.SharePatchFileUtil;
 import com.tencent.tinker.server.TinkerServerClient;
 import com.tencent.tinker.server.client.DefaultPatchRequestCallback;
 import com.tencent.tinker.server.utils.ServerUtils;
@@ -41,6 +43,9 @@ import tinker.sample.android.util.Utils;
 
 public class SamplePatchRequestCallback extends DefaultPatchRequestCallback {
     private static final String TAG = "Tinker.SampleRequestCallback";
+
+    public static final String TINKER_RETRY_PATCH     = "tinker_retry_patch";
+    public static final int    TINKER_MAX_RETRY_COUNT = 3;
 
     @Override
     public boolean beforePatchRequest() {
@@ -68,11 +73,25 @@ public class SamplePatchRequestCallback extends DefaultPatchRequestCallback {
                 if (version > 0) {
                     File patchFile = ServerUtils.getServerFile(context, client.getAppVersion(), String.valueOf(version));
                     if (patchFile.exists() && patchFile.isFile()) {
-                        TinkerLog.e(TAG, "beforePatchRequest, have pending patch to install, " +
-                            "version: %d, patch:%s", version, patchFile.getPath());
 
-                        TinkerInstaller.onReceiveUpgradePatch(context, patchFile.getAbsolutePath());
-                        return false;
+                        SharedPreferences sp = context.getSharedPreferences(
+                            TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_PRIVATE
+                        );
+                        int current = sp.getInt(TINKER_RETRY_PATCH, 0);
+                        if (current >= TINKER_MAX_RETRY_COUNT) {
+                            SharePatchFileUtil.safeDeleteFile(patchFile);
+                            sp.edit().putInt(TINKER_RETRY_PATCH, 0).commit();
+                            TinkerLog.w(TAG, "beforePatchRequest, retry patch install have more than %d count, " +
+                                "version: %d, patch:%s", current, version, patchFile.getPath());
+                        } else {
+                            TinkerLog.w(TAG, "beforePatchRequest, have pending patch to install, " +
+                                "version: %d, patch:%s", version, patchFile.getPath());
+
+                            sp.edit().putInt(TINKER_RETRY_PATCH, ++current).commit();
+                            TinkerInstaller.onReceiveUpgradePatch(context, patchFile.getAbsolutePath());
+                            return false;
+
+                        }
                     }
                 }
             }
@@ -83,7 +102,7 @@ public class SamplePatchRequestCallback extends DefaultPatchRequestCallback {
 
     @Override
     public void onPatchRollback() {
-        TinkerLog.e(TAG, "onPatchRollback");
+        TinkerLog.w(TAG, "onPatchRollback");
         TinkerServerClient client = TinkerServerClient.get();
 
         if (Utils.isBackground()) {
@@ -100,5 +119,29 @@ public class SamplePatchRequestCallback extends DefaultPatchRequestCallback {
                 }
             });
         }
+    }
+
+    @Override
+    public void onPatchDownloadFail(Exception e, Integer newVersion, Integer currentVersion) {
+        super.onPatchDownloadFail(e, newVersion, currentVersion);
+    }
+
+    @Override
+    public void onPatchSyncFail(Exception e) {
+        super.onPatchSyncFail(e);
+    }
+
+    @Override
+    public boolean onPatchUpgrade(File file, Integer newVersion, Integer currentVersion) {
+        boolean result = super.onPatchUpgrade(file, newVersion, currentVersion);
+        if (result) {
+            TinkerServerClient client = TinkerServerClient.get();
+            Context context = client.getContext();
+            SharedPreferences sp = context.getSharedPreferences(
+                TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_PRIVATE
+            );
+            sp.edit().putInt(TINKER_RETRY_PATCH, 0).commit();
+        }
+        return result;
     }
 }

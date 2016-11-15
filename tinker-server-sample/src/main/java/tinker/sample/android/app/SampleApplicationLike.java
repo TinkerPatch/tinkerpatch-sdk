@@ -86,6 +86,8 @@ public class SampleApplicationLike extends DefaultApplicationLike {
 
         //初始化TinkerPatch 服务器 SDK
         TinkerServerManager.installTinkerServer(getApplication(), Tinker.with(getApplication()), 3);
+        //每隔访问三小时服务器是否有更新
+        TinkerServerManager.checkTinkerUpdate(false);
     }
 
 

@@ -46,6 +46,11 @@ buildConfigField "String", "APP_VERSION",  "\"3.0.0\""
 ```
 
 ### 第四步 初始化 TinkerPatch SDK
+
+SDK 所有的 API 都位于 TinkerServerClient.java中，在 Sample 中我们对常用 API 二次封装到TinkerServerManager.java中。
+一般来说，你需要将 Sample 中的 TinkerServerManager.java以及SamplePatchRequestCallback.java拷贝到你的工程中。
+你也可以根据自己的需求实现Manager, [API相关文档](http://tinkerpatch.com/Docs/api)
+
 首先初始化 TinkerPatch 的 SDK，例如 Sample 中 [SampleApplicationLike类](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/src/main/java/tinker/sample/android/app/SampleApplicationLike.java#L88)：
 
 ```

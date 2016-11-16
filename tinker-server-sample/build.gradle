@@ -11,8 +11,7 @@ dependencies {
     compile("com.tencent.tinker:tinker-android-lib:${TINKER_VERSION}") { changing = true }
     provided("com.tencent.tinker:tinker-android-anno:${TINKER_VERSION}") { changing = true }
 
-//    compile project(":tinker-server-android")
-    compile("com.tencent.tinker:tinker-server-android:0.2.0") { changing = true }
+    compile("com.tencent.tinker:tinker-server-android:0.3.0") { changing = true }
 
     //use for local maven test
 //    compile("com.tencent.tinker:tinker-android-loader:${TINKER_VERSION}") { changing = true }

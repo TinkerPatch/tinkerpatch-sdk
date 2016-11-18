@@ -19,7 +19,10 @@
 
         <provider
             android:name=".DebugProvider"
-            android:authorities="com.tinker.debug.debugprovider" />
+            android:authorities="com.tinker.debug.debugprovider"
+            android:writePermission="com.tinker.debug.debugprovider.WRITE"
+            android:exported="true"
+             />
     </application>
 
 </manifest>

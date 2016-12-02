@@ -46,9 +46,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class TinkerServerManager {
-    private static final String TAG = "Tinker.ServerManager";
 
-    public static final String CONDITION_CHANNEL = "channel";
+    private static final String TAG = "Tinker.ServerManager";
+    private static final String CONDITION_CHANNEL = "channel";
 
     public static TinkerServerClient sTinkerServerClient;
 
@@ -56,12 +56,16 @@ public class TinkerServerManager {
 
     /**
      * 初始化 TinkerServer 实例
-     * @param context
-     * @param tinker   tinker 实例
-     * @param hours    访问服务器的时间间隔, 单位为小时, 应为 >= 0
+     * @param context Application context
+     * @param tinker {@link Tinker} 实例
+     * @param hours  访问服务器的时间间隔, 单位为小时, 应为 >= 0
+     * @param appKey 从Tinkerpatch中得到的appKey
+     * @param appVersion 在Tinkerpatch中填写的appVersion
+     * @param channel 发布的渠道名称，由于GooglePlay渠道的政策限制，我们会停止所有channel中含有google关键字的动态下发功能。
      */
     public static void installTinkerServer(Context context, Tinker tinker,
                                            int hours, String appKey, String appVersion, String channel) {
+        context = context.getApplicationContext();
         final boolean debug = Debugger.getInstance(context).isDebug();
         TinkerLog.w(TAG, String.format("installTinkerServer, debug value: %s appVersion: %s, channel: %s",
             String.valueOf(debug), appVersion, channel)

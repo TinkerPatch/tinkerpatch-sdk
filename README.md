@@ -11,7 +11,7 @@
 
 gradle远程仓库依赖jcenter,例如 Tinker server sample中的[build.gradle](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/build.gradle).
 
-```
+```java
 repositories {
     jcenter()
 }
@@ -19,7 +19,7 @@ repositories {
 
 再添加sdk库的dependencies依赖:
 
-```
+```java
 dependencies {
     compile("com.tencent.tinker:tinker-server-android:0.3.2")
 }
@@ -29,7 +29,7 @@ dependencies {
 
 在AndroidManifest中声明SDK需要的权限：
 
-```
+```java
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -38,7 +38,7 @@ dependencies {
 ### 第三步 配置AppKey与AppVersion
 在 TinkerPatch 平台中得到的 AppKey 以及 AppVersion记住，我们可以简单的将他们写入 [buildConfig](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/build.gradle#L86) 中:
 
-```
+```java
 buildConfigField "String", "APP_KEY", "\"f938475486f91936\""
 buildConfigField "String", "APP_VERSION",  "\"3.0.0\""
 ```
@@ -46,10 +46,9 @@ buildConfigField "String", "APP_VERSION",  "\"3.0.0\""
 ### 第四步 初始化 TinkerPatch SDK
 
 我们提供默认的默认的实现，位于`TinkerManager`和`TinkerServerManager`.
-首先初始化 TinkerPatch 的 SDK，例如 Sample 中 [SampleApplicationLike类](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/src/main/java/tinker/sample/android/app/SampleApplicationLike.java#L88)：
+首先初始化 TinkerPatch 的 SDK，例如 Sample 中 [SampleApplicationLike类](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/src/main/java/tinker/sample/android/app/SampleApplicationLike.java#L93)：
 
 ```java
-
 //初始化Tinker
 TinkerManager.installTinker(this);
 //初始化TinkerPatch SDK
@@ -59,7 +58,6 @@ TinkerServerManager.installTinkerServer(
 );
 //开始检查是否有补丁，这里配置的是每隔访问3小时服务器是否有更新。
 TinkerServerManager.checkTinkerUpdate(false);
-
 ```
 
 SDK 需要Tinker已经初始化，`3`表示客户端每隔三个小时才会访问服务器一次，具体的 API 将在后面详细说明。
@@ -68,7 +66,7 @@ appKey和appVersion为第三部填写的配置，可以通过`BuildConfig.APP_KE
 
 如果要使用SDK提供的默认的Service实现，需要在`AndroidManifest.xml`中声明：
 
-```
+```java
 <service
   android:name="com.tencent.tinker.app.service.TinkerServerResultService"
   android:exported="false"

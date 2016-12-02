@@ -45,15 +45,23 @@ buildConfigField "String", "APP_VERSION",  "\"3.0.0\""
 
 ### 第四步 初始化 TinkerPatch SDK
 
-SDK 所有的 API 都位于 TinkerServerClient.java中，在 Sample 中我们对常用 API 二次封装到TinkerServerManager.java中。
-一般来说，你需要将 Sample 中的 TinkerServerManager.java以及SamplePatchRequestCallback.java拷贝到你的工程中。
-你也可以根据自己的需求实现Manager, [API相关文档](http://tinkerpatch.com/Docs/api)
-
+我们提供默认的默认的实现，位于`TinkerManager`和`TinkerServerManager`.
 首先初始化 TinkerPatch 的 SDK，例如 Sample 中 [SampleApplicationLike类](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/src/main/java/tinker/sample/android/app/SampleApplicationLike.java#L88)：
 
+```java
+
+//初始化Tinker
+TinkerManager.installTinker(this);
+//初始化TinkerPatch SDK
+TinkerServerManager.installTinkerServer(
+  getApplication(), Tinker.with(getApplication()), 3,
+  BuildConfig.APP_KEY, BuildConfig.APP_VERSION, "default"
+);
+//开始检查是否有补丁，这里配置的是每隔访问3小时服务器是否有更新。
+TinkerServerManager.checkTinkerUpdate(false);
+
 ```
-TinkerServerManager.installTinkerServer(getApplication(), Tinker.with(getApplication()), 3, appKey, appVersion, channel);
-```
+
 SDK 需要Tinker已经初始化，`3`表示客户端每隔三个小时才会访问服务器一次，具体的 API 将在后面详细说明。
 appKey和appVersion为第三部填写的配置，可以通过`BuildConfig.APP_KEY`和`BuildConfig.APP_VERSION`得到。
 由于GooglePlay渠道的限制，不能使用原生代码下发的机制更新app，我们会过滤channel中含有`google`的关键字，停止动态更新功能。
@@ -67,5 +75,7 @@ appKey和appVersion为第三部填写的配置，可以通过`BuildConfig.APP_KE
 />
 ```
 
+你也可以根据自己的需求实现Manager, [API相关文档](http://tinkerpatch.com/Docs/api)
+所有与TinkerPatch后台交互的 API 都位于 TinkerServerClient.java中。
 
 [更多文档](http://tinkerpatch.com/Docs/intro)

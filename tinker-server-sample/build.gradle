@@ -11,12 +11,14 @@ dependencies {
     compile("com.tencent.tinker:tinker-android-lib:${TINKER_VERSION}") { changing = true }
     provided("com.tencent.tinker:tinker-android-anno:${TINKER_VERSION}") { changing = true }
 
-    //use for local maven test
-    compile("com.tencent.tinker:tinker-android-loader:${TINKER_VERSION}") { changing = true }
-    compile("com.tencent.tinker:aosp-dexutils:${TINKER_VERSION}") { changing = true }
-    compile("com.tencent.tinker:bsdiff-util:${TINKER_VERSION}") { changing = true }
-    compile("com.tencent.tinker:tinker-commons:${TINKER_VERSION}") { changing = true }
-    compile project(path: ':tinker-server-android')
+    compile("com.tencent.tinker:tinker-server-android:0.3.1")
+
+    /* use for developer */
+//    compile("com.tencent.tinker:tinker-android-loader:${TINKER_VERSION}") { changing = true }
+//    compile("com.tencent.tinker:aosp-dexutils:${TINKER_VERSION}") { changing = true }
+//    compile("com.tencent.tinker:bsdiff-util:${TINKER_VERSION}") { changing = true }
+//    compile("com.tencent.tinker:tinker-commons:${TINKER_VERSION}") { changing = true }
+//    compile project(path: ':tinker-server-android')
 }
 
 def gitSha() {
@@ -91,7 +93,7 @@ def bakPath = file("${buildDir}/bakApk/")
 ext {
     //for some reason, you may want to ignore tinkerBuild, such as instant run debug build?
     tinkerEnabled = true
-    appName = "tinker-server-sample-debug-1202-22-10-06"
+    appName = "tinker-server-sample-release-1202-22-10-06"
     //for normal build
     //old apk file to build patch apk
     tinkerOldApkPath = "${bakPath}/${appName}.apk"

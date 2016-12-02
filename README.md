@@ -21,7 +21,7 @@ repositories {
 
 ```
 dependencies {
-    compile("com.tencent.tinker:tinker-server-android:0.3.1")
+    compile("com.tencent.tinker:tinker-server-android:0.3.2")
 }
 ```
 

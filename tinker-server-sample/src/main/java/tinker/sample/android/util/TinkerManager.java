@@ -73,7 +73,8 @@ public class TinkerManager {
 
         TinkerInstaller.install(appLike,
             loadReporter, patchReporter, patchListener,
-            TinkerServerResultService.class, upgradePatchProcessor, repairPatchProcessor);
+            TinkerServerResultService.class, upgradePatchProcessor, repairPatchProcessor
+        );
 
         isInstalled = true;
     }

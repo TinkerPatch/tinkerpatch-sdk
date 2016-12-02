@@ -31,7 +31,9 @@ import com.tencent.tinker.loader.app.ApplicationLifeCycle;
 import com.tencent.tinker.loader.app.DefaultApplicationLike;
 import com.tencent.tinker.loader.shareutil.ShareConstants;
 
-import tinker.sample.android.patchserver.TinkerServerManager;
+import com.tencent.tinker.app.patchserver.TinkerServerManager;
+
+import tinker.sample.android.BuildConfig;
 import tinker.sample.android.util.TinkerManager;
 
 /**
@@ -85,7 +87,10 @@ public class SampleApplicationLike extends DefaultApplicationLike {
         TinkerManager.installTinker(this);
 
         //初始化TinkerPatch 服务器 SDK
-        TinkerServerManager.installTinkerServer(getApplication(), Tinker.with(getApplication()), 3);
+        TinkerServerManager.installTinkerServer(
+            getApplication(), Tinker.with(getApplication()), 3,
+            BuildConfig.APP_KEY, BuildConfig.APP_VERSION, "default"
+        );
         //每隔访问三小时服务器是否有更新
         TinkerServerManager.checkTinkerUpdate(false);
     }

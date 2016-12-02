@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2013-2016 Shengjie Sim Sun
+ * Copyright (c) 2016 Shengjie Sim Sun
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ import java.util.Collection;
 public final class Preconditions {
 
     private Preconditions() {
-        // Utils class.
+        // TinkerServerUtils class.
     }
 
     public static void checkArgument(boolean expression, String message) {

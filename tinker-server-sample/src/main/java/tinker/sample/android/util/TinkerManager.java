@@ -16,6 +16,9 @@
 
 package tinker.sample.android.util;
 
+import com.tencent.tinker.app.reporter.TinkerServerLoadReporter;
+import com.tencent.tinker.app.reporter.TinkerServerPatchListener;
+import com.tencent.tinker.app.service.TinkerServerResultService;
 import com.tencent.tinker.lib.listener.PatchListener;
 import com.tencent.tinker.lib.patch.AbstractPatch;
 import com.tencent.tinker.lib.patch.RepairPatch;
@@ -27,9 +30,6 @@ import com.tencent.tinker.lib.tinker.TinkerInstaller;
 import com.tencent.tinker.lib.util.TinkerLog;
 import com.tencent.tinker.loader.app.ApplicationLike;
 
-import tinker.sample.android.reporter.SampleLoadReporter;
-import tinker.sample.android.reporter.SamplePatchListener;
-import tinker.sample.android.service.SampleResultService;
 
 /**
  * Created by zhangshaowen on 16/7/3.
@@ -61,11 +61,11 @@ public class TinkerManager {
             return;
         }
         //or you can just use DefaultLoadReporter
-        LoadReporter loadReporter = new SampleLoadReporter(appLike.getApplication());
+        LoadReporter loadReporter = new TinkerServerLoadReporter(appLike.getApplication());
         //or you can just use DefaultPatchReporter
         PatchReporter patchReporter = new DefaultPatchReporter(appLike.getApplication());
         //or you can just use DefaultPatchListener
-        PatchListener patchListener = new SamplePatchListener(appLike.getApplication());
+        PatchListener patchListener = new TinkerServerPatchListener(appLike.getApplication());
         //you can set your own upgrade patch if you need
         AbstractPatch upgradePatchProcessor = new UpgradePatch();
         //you can set your own repair patch if you need
@@ -73,7 +73,8 @@ public class TinkerManager {
 
         TinkerInstaller.install(appLike,
             loadReporter, patchReporter, patchListener,
-            SampleResultService.class, upgradePatchProcessor, repairPatchProcessor);
+            TinkerServerResultService.class, upgradePatchProcessor, repairPatchProcessor
+        );
 
         isInstalled = true;
     }

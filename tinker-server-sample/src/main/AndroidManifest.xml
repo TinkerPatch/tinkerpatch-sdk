@@ -13,8 +13,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <service
-            android:name=".service.SampleResultService"
+            android:name="com.tencent.tinker.app.service.TinkerServerResultService"
             android:exported="false"/>
 
         <activity android:name=".app.MainActivity">

@@ -21,10 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.tencent.tinker.app.reporter;
 
-package com.tencent.tinker.server.client;
+import android.content.Context;
 
-public interface ConfigRequestCallback {
-    void onSuccess(String jsonConfig);
-    void onFail(Exception e);
+import com.tencent.tinker.lib.reporter.DefaultLoadReporter;
+
+import com.tencent.tinker.app.patchserver.TinkerServerManager;
+
+/**
+ * optional, you can just use DefaultLoadReporter
+ * Created by zhangshaowen on 16/4/13.
+ */
+public class TinkerServerLoadReporter extends DefaultLoadReporter {
+
+    public TinkerServerLoadReporter(Context context) {
+        super(context);
+    }
+
+
+    @Override
+    public void onLoadException(Throwable e, int errorCode) {
+        super.onLoadException(e, errorCode);
+
+        //把这个添加到你的PatchListener实现中
+        TinkerServerManager.reportTinkerLoadFail();
+    }
 }

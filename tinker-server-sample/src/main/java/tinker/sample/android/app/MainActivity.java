@@ -1,17 +1,25 @@
 /*
- * Tencent is pleased to support the open source community by making Tinker available.
+ * The MIT License (MIT)
  *
- * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (c) 2016 Shengjie Sim Sun
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * https://opensource.org/licenses/BSD-3-Clause
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 package tinker.sample.android.app;
@@ -22,13 +30,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.tencent.tinker.app.TinkerServerManager;
 import com.tencent.tinker.app.TinkerServerUtils;
 import com.tencent.tinker.lib.tinker.Tinker;
 import com.tencent.tinker.lib.util.TinkerLog;
 import com.tencent.tinker.server.client.ConfigRequestCallback;
 
 import tinker.sample.android.R;
-import com.tencent.tinker.app.patchserver.TinkerServerManager;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Tinker.MainActivity";

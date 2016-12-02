@@ -22,12 +22,13 @@
  * THE SOFTWARE.
  */
 
-package com.tencent.tinker.app.patchserver;
+package com.tencent.tinker.app;
 
 import android.content.Context;
 import android.os.Looper;
 import android.os.MessageQueue;
 
+import com.tencent.tinker.app.callback.TinkerServerPatchRequestCallback;
 import com.tencent.tinker.lib.service.PatchResult;
 import com.tencent.tinker.lib.tinker.Tinker;
 import com.tencent.tinker.lib.util.TinkerLog;
@@ -51,12 +52,11 @@ public class TinkerServerManager {
     private static final String CONDITION_CHANNEL = "channel";
 
     static TinkerServerClient sTinkerServerClient;
-
     static String channel;
 
     /**
      * 初始化 TinkerServer 实例
-     * @param context Application context
+     * @param context context
      * @param tinker {@link Tinker} 实例
      * @param hours  访问服务器的时间间隔, 单位为小时, 应为 >= 0
      * @param appKey 从Tinkerpatch中得到的appKey

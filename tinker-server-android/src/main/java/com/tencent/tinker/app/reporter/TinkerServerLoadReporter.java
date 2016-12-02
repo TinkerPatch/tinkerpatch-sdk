@@ -27,7 +27,7 @@ import android.content.Context;
 
 import com.tencent.tinker.lib.reporter.DefaultLoadReporter;
 
-import com.tencent.tinker.app.patchserver.TinkerServerManager;
+import com.tencent.tinker.app.TinkerServerManager;
 
 /**
  * optional, you can just use DefaultLoadReporter

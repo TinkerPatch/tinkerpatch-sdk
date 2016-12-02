@@ -32,7 +32,7 @@ import com.tencent.tinker.loader.shareutil.SharePatchFileUtil;
 
 import java.io.File;
 
-import com.tencent.tinker.app.patchserver.TinkerServerManager;
+import com.tencent.tinker.app.TinkerServerManager;
 
 /**
  * Created by zhangshaowen on 16/4/30.

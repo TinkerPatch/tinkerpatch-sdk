@@ -22,11 +22,12 @@
  * THE SOFTWARE.
  */
 
-package com.tencent.tinker.app.patchserver;
+package com.tencent.tinker.app.callback;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.tencent.tinker.app.TinkerServerManager;
 import com.tencent.tinker.app.TinkerServerUtils;
 import com.tencent.tinker.lib.tinker.Tinker;
 import com.tencent.tinker.lib.tinker.TinkerInstaller;

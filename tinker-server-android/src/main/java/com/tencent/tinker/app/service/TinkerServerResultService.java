@@ -25,7 +25,7 @@
 package com.tencent.tinker.app.service;
 
 import com.tencent.tinker.app.TinkerServerUtils;
-import com.tencent.tinker.app.patchserver.TinkerServerManager;
+import com.tencent.tinker.app.TinkerServerManager;
 import com.tencent.tinker.lib.service.DefaultTinkerResultService;
 import com.tencent.tinker.lib.service.PatchResult;
 import com.tencent.tinker.lib.tinker.Tinker;

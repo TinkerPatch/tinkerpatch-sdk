@@ -1,20 +1,29 @@
 /*
- * Tencent is pleased to support the open source community by making Tinker available.
+ * The MIT License (MIT)
  *
- * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (c) 2016 Shengjie Sim Sun
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * https://opensource.org/licenses/BSD-3-Clause
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 package tinker.sample.android.app;
+
 
 import android.annotation.TargetApi;
 import android.app.Application;
@@ -26,15 +35,14 @@ import android.os.Build;
 import android.support.multidex.MultiDex;
 
 import com.tencent.tinker.anno.DefaultLifeCycle;
+import com.tencent.tinker.app.TinkerManager;
+import com.tencent.tinker.app.TinkerServerManager;
 import com.tencent.tinker.lib.tinker.Tinker;
 import com.tencent.tinker.loader.app.ApplicationLifeCycle;
 import com.tencent.tinker.loader.app.DefaultApplicationLike;
 import com.tencent.tinker.loader.shareutil.ShareConstants;
 
-import com.tencent.tinker.app.patchserver.TinkerServerManager;
-
 import tinker.sample.android.BuildConfig;
-import tinker.sample.android.util.TinkerManager;
 
 /**
  * because you can not use any other class in your application, we need to
@@ -73,8 +81,6 @@ public class SampleApplicationLike extends DefaultApplicationLike {
     /**
      * install multiDex before install tinker
      * so we don't need to put the tinker lib classes in the main dex
-     *
-     * @param base
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
@@ -82,18 +88,15 @@ public class SampleApplicationLike extends DefaultApplicationLike {
         super.onBaseContextAttached(base);
         //you must install multiDex whatever tinker is installed!
         MultiDex.install(base);
-        TinkerManager.setTinkerApplicationLike(this);
 
+        //初始化Tinker
         TinkerManager.installTinker(this);
-
-        //初始化TinkerPatch 服务器 SDK
+        //初始化TinkerPatch SDK
         TinkerServerManager.installTinkerServer(
             getApplication(), Tinker.with(getApplication()), 3,
             BuildConfig.APP_KEY, BuildConfig.APP_VERSION, "default"
         );
-        //每隔访问三小时服务器是否有更新
+        //开始检查是否有补丁，这里配置的是每隔访问3小时服务器是否有更新。
         TinkerServerManager.checkTinkerUpdate(false);
     }
-
-
 }

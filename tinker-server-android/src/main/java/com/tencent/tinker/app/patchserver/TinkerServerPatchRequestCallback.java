@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2013-2016 Shengjie Sim Sun
+ * Copyright (c) 2016 Shengjie Sim Sun
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,12 @@
  * THE SOFTWARE.
  */
 
-package tinker.sample.android.patchserver;
+package com.tencent.tinker.app.patchserver;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.tencent.tinker.app.TinkerServerUtils;
 import com.tencent.tinker.lib.tinker.Tinker;
 import com.tencent.tinker.lib.tinker.TinkerInstaller;
 import com.tencent.tinker.lib.tinker.TinkerLoadResult;
@@ -38,11 +39,9 @@ import com.tencent.tinker.server.utils.ServerUtils;
 
 import java.io.File;
 
-import tinker.sample.android.util.Utils;
 
-
-public class SamplePatchRequestCallback extends DefaultPatchRequestCallback {
-    private static final String TAG = "Tinker.SampleRequestCallback";
+public class TinkerServerPatchRequestCallback extends DefaultPatchRequestCallback {
+    private static final String TAG = "Tinker.TinkerServerDefaultRequestCallback";
 
     public static final String TINKER_RETRY_PATCH     = "tinker_retry_patch";
     public static final int    TINKER_MAX_RETRY_COUNT = 3;
@@ -59,7 +58,7 @@ public class SamplePatchRequestCallback extends DefaultPatchRequestCallback {
                 TinkerLog.e(TAG, "beforePatchRequest, only request on the main process");
                 return false;
             }
-            if (Utils.isGooglePlay()) {
+            if (TinkerServerManager.isGooglePlayChannel()) {
                 TinkerLog.e(TAG, "beforePatchRequest, google play channel, return false");
                 return false;
             }
@@ -105,14 +104,14 @@ public class SamplePatchRequestCallback extends DefaultPatchRequestCallback {
         TinkerLog.w(TAG, "onPatchRollback");
         TinkerServerClient client = TinkerServerClient.get();
 
-        if (Utils.isBackground()) {
+        if (TinkerServerUtils.isBackground()) {
             TinkerLog.i(TAG, "onPatchRollback, it is in background, just clean patch and kill all process");
             rollbackPatchDirectly();
         } else {
             //we can wait process at background, such as onAppBackground
             //or we can restart when the screen off
             TinkerLog.i(TAG, "tinker wait screen to clean patch and kill all process");
-            new Utils.ScreenState(client.getContext(), new Utils.IOnScreenOff() {
+            new TinkerServerUtils.ScreenState(client.getContext(), new TinkerServerUtils.IOnScreenOff() {
                 @Override
                 public void onScreenOff() {
                     rollbackPatchDirectly();

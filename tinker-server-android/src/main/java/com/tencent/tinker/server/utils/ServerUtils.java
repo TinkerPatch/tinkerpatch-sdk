@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2013-2016 Shengjie Sim Sun
+ * Copyright (c) 2016 Shengjie Sim Sun
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ public final class ServerUtils {
 
 
     private ServerUtils() {
-        // A Utils Class
+        // A TinkerServerUtils Class
     }
 
     public static File readStreamToFile(InputStream inputStream, String filePath) throws IOException {

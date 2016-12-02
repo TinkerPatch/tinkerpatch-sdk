@@ -17,20 +17,18 @@
 package tinker.sample.android.app;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.tencent.tinker.app.TinkerServerUtils;
 import com.tencent.tinker.lib.tinker.Tinker;
-import com.tencent.tinker.lib.tinker.TinkerInstaller;
 import com.tencent.tinker.lib.util.TinkerLog;
 import com.tencent.tinker.server.client.ConfigRequestCallback;
 
 import tinker.sample.android.R;
-import tinker.sample.android.patchserver.TinkerServerManager;
-import tinker.sample.android.util.Utils;
+import com.tencent.tinker.app.patchserver.TinkerServerManager;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Tinker.MainActivity";
@@ -98,13 +96,13 @@ public class MainActivity extends AppCompatActivity {
 //        Log.e(TAG, "i am on patch onResume");
 
         super.onResume();
-        Utils.setBackground(false);
+        TinkerServerUtils.setBackground(false);
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Utils.setBackground(true);
+        TinkerServerUtils.setBackground(true);
     }
 }

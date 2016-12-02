@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2013-2016 Shengjie Sim Sun
+ * Copyright (c) 2016 Shengjie Sim Sun
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package tinker.sample.android.patchserver;
+package com.tencent.tinker.app.patchserver;
 
 import android.content.Context;
 import android.os.Looper;
@@ -37,7 +37,6 @@ import com.tencent.tinker.server.TinkerServerClient;
 import com.tencent.tinker.server.client.ConfigRequestCallback;
 import com.tencent.tinker.server.client.DefaultPatchRequestCallback;
 import com.tencent.tinker.server.utils.Debugger;
-import com.tencent.tinker.server.utils.ServerUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,13 +45,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import tinker.sample.android.BuildConfig;
-import tinker.sample.android.util.Utils;
-
-/**
- * Created by zhangshaowen on 16/11/3.
- */
-
 public class TinkerServerManager {
     private static final String TAG = "Tinker.ServerManager";
 
@@ -60,20 +52,32 @@ public class TinkerServerManager {
 
     public static TinkerServerClient sTinkerServerClient;
 
+    static String channel;
+
     /**
      * 初始化 TinkerServer 实例
      * @param context
      * @param tinker   tinker 实例
      * @param hours    访问服务器的时间间隔, 单位为小时, 应为 >= 0
      */
-    public static void installTinkerServer(Context context, Tinker tinker, int hours) {
-        boolean debug = Debugger.getInstance(context).isDebug();
-        TinkerLog.w(TAG, "installTinkerServer, debug value:" + debug);
-        sTinkerServerClient = TinkerServerClient.init(context, tinker, BuildConfig.APP_KEY, BuildConfig.APP_VERSION,
-            debug, new SamplePatchRequestCallback());
+    public static void installTinkerServer(Context context, Tinker tinker,
+                                           int hours, String appKey, String appVersion, String channel) {
+        final boolean debug = Debugger.getInstance(context).isDebug();
+        TinkerLog.w(TAG, String.format("installTinkerServer, debug value: %s appVersion: %s, channel: %s",
+            String.valueOf(debug), appVersion, channel)
+        );
+        sTinkerServerClient = TinkerServerClient.init(
+            context,
+            tinker,
+            appKey,
+            appVersion,
+            debug,
+            new TinkerServerPatchRequestCallback()
+        );
         // add channel condition
-        sTinkerServerClient.updateTinkerCondition(CONDITION_CHANNEL, Utils.getChannel());
+        sTinkerServerClient.updateTinkerCondition(CONDITION_CHANNEL, channel);
         sTinkerServerClient.setCheckIntervalByHours(hours);
+        TinkerServerManager.channel = channel;
     }
 
     /**
@@ -228,5 +232,9 @@ public class TinkerServerManager {
             return;
         }
         sTinkerServerClient.reportPatchFail(sTinkerServerClient.getCurrentPatchVersion(), DefaultPatchRequestCallback.ERROR_LOAD_FAIL);
+    }
+
+    public static boolean isGooglePlayChannel() {
+        return channel.contains("google");
     }
 }

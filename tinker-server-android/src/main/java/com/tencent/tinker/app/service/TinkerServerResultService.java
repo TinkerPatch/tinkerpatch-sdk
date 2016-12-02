@@ -1,25 +1,31 @@
 /*
- * Tencent is pleased to support the open source community by making Tinker available.
+ * The MIT License (MIT)
  *
- * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (c) 2016 Shengjie Sim Sun
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * https://opensource.org/licenses/BSD-3-Clause
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
-package tinker.sample.android.service;
+package com.tencent.tinker.app.service;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.Toast;
-
+import com.tencent.tinker.app.TinkerServerUtils;
+import com.tencent.tinker.app.patchserver.TinkerServerManager;
 import com.tencent.tinker.lib.service.DefaultTinkerResultService;
 import com.tencent.tinker.lib.service.PatchResult;
 import com.tencent.tinker.lib.tinker.Tinker;
@@ -29,45 +35,28 @@ import com.tencent.tinker.loader.shareutil.SharePatchFileUtil;
 
 import java.io.File;
 
-import tinker.sample.android.patchserver.TinkerServerManager;
-import tinker.sample.android.util.Utils;
-
 /**
  * optional, you can just use DefaultTinkerResultService
  * we can restart process when we are at background or screen off
- * Created by zhangshaowen on 16/4/13.
  */
-public class SampleResultService extends DefaultTinkerResultService {
-    private static final String TAG = "Tinker.SampleResultService";
+public class TinkerServerResultService extends DefaultTinkerResultService {
+    private static final String TAG = "Tinker.TinkerServerResultService";
 
 
     @Override
     public void onPatchResult(final PatchResult result) {
         if (result == null) {
-            TinkerLog.e(TAG, "SampleResultService received null result!!!!");
+            TinkerLog.e(TAG, "received null result!!!!");
             return;
         }
-        TinkerLog.i(TAG, "SampleResultService receive result: %s", result.toString());
+        TinkerLog.i(TAG, "receive result: %s", result.toString());
 
         //first, we want to kill the recover process
         TinkerServiceInternals.killTinkerPatchServiceProcess(getApplicationContext());
-
         TinkerServerManager.reportTinkerPatchFail(result);
 
-
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (result.isSuccess) {
-                    Toast.makeText(getApplicationContext(), "patch success, please restart process", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "patch fail, please check reason", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
         if (result.isSuccess) {
+            TinkerLog.i(TAG, "patch success, please restart process");
             File rawFile = new File(result.rawPatchFilePath);
             if (rawFile.exists()) {
                 TinkerLog.i(TAG, "save delete raw patch file");
@@ -76,14 +65,14 @@ public class SampleResultService extends DefaultTinkerResultService {
             //not like TinkerResultService, I want to restart just when I am at background!
             //if you have not install tinker this moment, you can use TinkerApplicationHelper api
             if (checkIfNeedKill(result)) {
-                if (Utils.isBackground()) {
+                if (TinkerServerUtils.isBackground()) {
                     TinkerLog.i(TAG, "it is in background, just restart process");
                     restartProcess();
                 } else {
                     //we can wait process at background, such as onAppBackground
                     //or we can restart when the screen off
                     TinkerLog.i(TAG, "tinker wait screen to restart process");
-                    new Utils.ScreenState(getApplicationContext(), new Utils.IOnScreenOff() {
+                    new TinkerServerUtils.ScreenState(getApplicationContext(), new TinkerServerUtils.IOnScreenOff() {
                         @Override
                         public void onScreenOff() {
                             restartProcess();
@@ -93,6 +82,8 @@ public class SampleResultService extends DefaultTinkerResultService {
             } else {
                 TinkerLog.i(TAG, "I have already install the newly patch version!");
             }
+        } else {
+            TinkerLog.i(TAG, "patch fail, please check reason");
         }
 
         //repair current patch fail, just clean!
@@ -105,10 +96,9 @@ public class SampleResultService extends DefaultTinkerResultService {
     /**
      * you can restart your process through service or broadcast
      */
-    private void restartProcess() {
+    void restartProcess() {
         TinkerLog.i(TAG, "app is background now, i can kill quietly");
         //you can send service or broadcast intent to restart your process
         android.os.Process.killProcess(android.os.Process.myPid());
     }
-
 }

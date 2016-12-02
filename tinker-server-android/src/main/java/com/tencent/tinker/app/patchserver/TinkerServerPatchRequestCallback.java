@@ -104,6 +104,12 @@ public class TinkerServerPatchRequestCallback extends DefaultPatchRequestCallbac
         TinkerLog.w(TAG, "onPatchRollback");
         TinkerServerClient client = TinkerServerClient.get();
 
+        Tinker tinker = client.getTinker();
+        if (!tinker.isTinkerLoaded()) {
+            TinkerLog.w(TAG, "onPatchRollback, tinker is not loaded, just return");
+            return;
+        }
+
         if (TinkerServerUtils.isBackground()) {
             TinkerLog.i(TAG, "onPatchRollback, it is in background, just clean patch and kill all process");
             rollbackPatchDirectly();

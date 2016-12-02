@@ -91,14 +91,14 @@ def bakPath = file("${buildDir}/bakApk/")
 ext {
     //for some reason, you may want to ignore tinkerBuild, such as instant run debug build?
     tinkerEnabled = true
-
+    appName = "tinker-server-sample-debug-1202-22-10-06"
     //for normal build
     //old apk file to build patch apk
-    tinkerOldApkPath = "${bakPath}/tinker-server-sample-debug-1114-21-02-02.apk"
+    tinkerOldApkPath = "${bakPath}/${appName}.apk"
     //proguard mapping file to build patch apk
-    tinkerApplyMappingPath = "${bakPath}/tinker-server-sample-debug-1114-17-25-21-mapping.txt"
+    tinkerApplyMappingPath = "${bakPath}/${appName}-mapping.txt"
     //resource R.txt to build patch apk, must input if there is resource changed
-    tinkerApplyResourcePath = "${bakPath}/tinker-server-sample-debug-1114-21-02-02-R.txt"
+    tinkerApplyResourcePath = "${bakPath}/${appName}-R.txt"
 }
 
 def getOldApkPath() {

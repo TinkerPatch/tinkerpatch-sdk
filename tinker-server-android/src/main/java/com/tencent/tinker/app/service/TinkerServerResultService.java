@@ -72,7 +72,8 @@ public class TinkerServerResultService extends DefaultTinkerResultService {
                     //we can wait process at background, such as onAppBackground
                     //or we can restart when the screen off
                     TinkerLog.i(TAG, "tinker wait screen to restart process");
-                    new TinkerServerUtils.ScreenState(getApplicationContext(), new TinkerServerUtils.IOnScreenOff() {
+                    new TinkerServerUtils.ScreenState(
+                        getApplicationContext(), new TinkerServerUtils.IOnScreenOff() {
                         @Override
                         public void onScreenOff() {
                             restartProcess();

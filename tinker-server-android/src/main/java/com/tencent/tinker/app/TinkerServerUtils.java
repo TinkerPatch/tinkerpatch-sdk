@@ -31,10 +31,17 @@ import android.content.IntentFilter;
 
 import com.tencent.tinker.lib.util.TinkerLog;
 
-public class TinkerServerUtils {
+public final class TinkerServerUtils {
     private static final String TAG = "Tinker.TinkerServerUtils";
-
     private static boolean background = false;
+
+    public interface IOnScreenOff {
+        void onScreenOff();
+    }
+
+    private TinkerServerUtils() {
+        // Utility
+    }
 
     public static boolean isBackground() {
         return background;
@@ -42,10 +49,6 @@ public class TinkerServerUtils {
 
     public static void setBackground(boolean back) {
         background = back;
-    }
-
-    public interface IOnScreenOff {
-        void onScreenOff();
     }
 
     public static class ScreenState {

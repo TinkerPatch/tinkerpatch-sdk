@@ -58,7 +58,9 @@ public class TinkerServerPatchListener extends DefaultPatchListener {
     @Override
     public int patchCheck(String path, boolean isUpgrade) {
         File patchFile = new File(path);
-        TinkerLog.i(TAG, "receive a patch file: %s, isUpgrade:%b, file size:%d", path, isUpgrade, SharePatchFileUtil.getFileOrDirectorySize(patchFile));
+        TinkerLog.i(TAG, "receive a patch file: %s, isUpgrade:%b, file size:%d",
+            path, isUpgrade, SharePatchFileUtil.getFileOrDirectorySize(patchFile)
+        );
         int returnCode = super.patchCheck(path, isUpgrade);
 
         //把这个添加到你的PatchListener实现中

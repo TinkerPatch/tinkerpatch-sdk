@@ -70,33 +70,40 @@ public class TinkerServerPatchRequestCallback extends DefaultPatchRequestCallbac
             if (tinkerLoadResult.currentVersion == null || !currentPatchMd5.equals(tinkerLoadResult.currentVersion)) {
                 Integer version = client.getCurrentPatchVersion();
                 if (version > 0) {
-                    File patchFile = ServerUtils.getServerFile(context, client.getAppVersion(), String.valueOf(version));
-                    if (patchFile.exists() && patchFile.isFile()) {
-
-                        SharedPreferences sp = context.getSharedPreferences(
-                            TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_PRIVATE
-                        );
-                        int current = sp.getInt(TINKER_RETRY_PATCH, 0);
-                        if (current >= TINKER_MAX_RETRY_COUNT) {
-                            SharePatchFileUtil.safeDeleteFile(patchFile);
-                            sp.edit().putInt(TINKER_RETRY_PATCH, 0).commit();
-                            TinkerLog.w(TAG, "beforePatchRequest, retry patch install have more than %d count, " +
-                                "version: %d, patch:%s", current, version, patchFile.getPath());
-                        } else {
-                            TinkerLog.w(TAG, "beforePatchRequest, have pending patch to install, " +
-                                "version: %d, patch:%s", version, patchFile.getPath());
-
-                            sp.edit().putInt(TINKER_RETRY_PATCH, ++current).commit();
-                            TinkerInstaller.onReceiveUpgradePatch(context, patchFile.getAbsolutePath());
-                            return false;
-
-                        }
+                    File patchFile = ServerUtils.getServerFile(
+                        context, client.getAppVersion(), String.valueOf(version)
+                    );
+                    if (patchFile.exists() && patchFile.isFile() && handlePatchFile(context, version, patchFile)) {
+                        return false;
                     }
                 }
             }
         }
-
         return result;
+    }
+
+    private boolean handlePatchFile(Context context, Integer version, File patchFile) {
+        SharedPreferences sp = context.getSharedPreferences(
+            TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_PRIVATE
+        );
+        int current = sp.getInt(TINKER_RETRY_PATCH, 0);
+        if (current >= TINKER_MAX_RETRY_COUNT) {
+            SharePatchFileUtil.safeDeleteFile(patchFile);
+            sp.edit().putInt(TINKER_RETRY_PATCH, 0).commit();
+            TinkerLog.w(TAG,
+                "beforePatchRequest, retry patch install more than %d times, version: %d, patch:%s",
+                current, version, patchFile.getPath()
+            );
+        } else {
+            TinkerLog.w(TAG, "beforePatchRequest, have pending patch to install, version: %d, patch:%s",
+                version, patchFile.getPath()
+            );
+
+            sp.edit().putInt(TINKER_RETRY_PATCH, ++current).commit();
+            TinkerInstaller.onReceiveUpgradePatch(context, patchFile.getAbsolutePath());
+            return true;
+        }
+        return false;
     }
 
     @Override

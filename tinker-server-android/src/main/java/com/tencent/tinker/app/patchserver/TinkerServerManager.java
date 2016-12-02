@@ -50,7 +50,7 @@ public class TinkerServerManager {
     private static final String TAG = "Tinker.ServerManager";
     private static final String CONDITION_CHANNEL = "channel";
 
-    public static TinkerServerClient sTinkerServerClient;
+    static TinkerServerClient sTinkerServerClient;
 
     static String channel;
 
@@ -150,7 +150,7 @@ public class TinkerServerManager {
         JSONObject jObject = new JSONObject(jsonString);
         Iterator<String> keys = jObject.keys();
 
-        while( keys.hasNext() ){
+        while (keys.hasNext()) {
             String key = keys.next();
             String value = jObject.getString(key);
             map.put(key, value);
@@ -195,11 +195,15 @@ public class TinkerServerManager {
             ? patchResult.patchVersion : SharePatchFileUtil.getMD5(new File(patchResult.rawPatchFilePath));
 
         if (!patchMd5.equals(sTinkerServerClient.getCurrentPatchMd5())) {
-            TinkerLog.e(TAG, "reportTinkerPatchFail, md5 not equal, " +
-                "patchMd5:%s, currentPatchMd5:%s", patchMd5, sTinkerServerClient.getCurrentPatchMd5());
+            TinkerLog.e(TAG, "reportTinkerPatchFail, md5 not equal, patchMd5:%s, currentPatchMd5:%s",
+                patchMd5, sTinkerServerClient.getCurrentPatchMd5()
+            );
             return;
         }
-        sTinkerServerClient.reportPatchFail(sTinkerServerClient.getCurrentPatchVersion(), DefaultPatchRequestCallback.ERROR_PATCH_FAIL);
+        sTinkerServerClient.reportPatchFail(
+            sTinkerServerClient.getCurrentPatchVersion(),
+            DefaultPatchRequestCallback.ERROR_PATCH_FAIL
+        );
     }
 
     /**
@@ -219,11 +223,15 @@ public class TinkerServerManager {
             return;
         }
         if (!patchMd5.equals(sTinkerServerClient.getCurrentPatchMd5())) {
-            TinkerLog.e(TAG, "reportTinkerPatchListenerFail, md5 not equal, " +
-                "patchMd5:%s, currentPatchMd5:%s", patchMd5, sTinkerServerClient.getCurrentPatchMd5());
+            TinkerLog.e(TAG, "reportTinkerPatchListenerFail, md5 not equal, patchMd5:%s, currentPatchMd5:%s",
+                patchMd5, sTinkerServerClient.getCurrentPatchMd5()
+            );
             return;
         }
-        sTinkerServerClient.reportPatchFail(sTinkerServerClient.getCurrentPatchVersion(), DefaultPatchRequestCallback.ERROR_LISTENER_CHECK_FAIL);
+        sTinkerServerClient.reportPatchFail(
+            sTinkerServerClient.getCurrentPatchVersion(),
+            DefaultPatchRequestCallback.ERROR_LISTENER_CHECK_FAIL
+        );
     }
 
 
@@ -235,7 +243,10 @@ public class TinkerServerManager {
             TinkerLog.e(TAG, "reportTinkerPatchFail, sTinkerServerClient == null");
             return;
         }
-        sTinkerServerClient.reportPatchFail(sTinkerServerClient.getCurrentPatchVersion(), DefaultPatchRequestCallback.ERROR_LOAD_FAIL);
+        sTinkerServerClient.reportPatchFail(
+            sTinkerServerClient.getCurrentPatchVersion(),
+            DefaultPatchRequestCallback.ERROR_LOAD_FAIL
+        );
     }
 
     public static boolean isGooglePlayChannel() {

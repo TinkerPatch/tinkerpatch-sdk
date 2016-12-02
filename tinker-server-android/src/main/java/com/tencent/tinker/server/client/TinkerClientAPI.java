@@ -129,6 +129,7 @@ public class TinkerClientAPI {
         if (!callback.beforePatchRequest()) {
             return;
         }
+
         sync(new DataFetcher.DataCallback<String>() {
             @Override
             public void onDataReady(String data) {

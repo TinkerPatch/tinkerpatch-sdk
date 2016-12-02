@@ -30,6 +30,12 @@
 
     </rule>
 
+    <rule ref="rulesets/java/design.xml/AvoidDeeplyNestedIfStmts">
+        <properties>
+            <property name="problemDepth" value="5"/>
+        </properties>
+    </rule>
+
     <rule ref="rulesets/java/empty.xml/EmptyCatchBlock" message="Commented blocks are ok">
         <properties>
             <property name="allowCommentedBlocks" value="true"/>

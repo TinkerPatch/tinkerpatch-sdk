@@ -1,6 +1,6 @@
 # TinkerPatch SDK
 
-[![Build Status](https://travis-ci.org/simpleton/tinker_server_client.svg?branch=master)](https://travis-ci.org/simpleton/tinker_server_client)
+[![Build Status](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk.svg?branch=master)](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk)
 [ ![Download](https://api.bintray.com/packages/simsun/maven/tinker-server-android/images/download.svg) ](https://bintray.com/simsun/maven/tinker-server-android/_latestVersion)
 
 ## SDK接入

@@ -24,6 +24,7 @@
 
 package com.tencent.tinker.server.urlconnection;
 
+import com.tencent.tinker.lib.util.TinkerLog;
 import com.tencent.tinker.server.model.DataFetcher;
 import com.tencent.tinker.server.model.TinkerClientUrl;
 
@@ -33,6 +34,7 @@ import java.util.concurrent.Executors;
 
 public class UrlConnectionUrlLoader {
 
+    public static final String TAG = "Tinker.UrlLoader";
     private final Executor executor;
 
     public UrlConnectionUrlLoader() {
@@ -40,6 +42,7 @@ public class UrlConnectionUrlLoader {
     }
 
     public DataFetcher<InputStream> buildLoadData(TinkerClientUrl url) {
+        TinkerLog.i(TAG, "loadData from: %s", url.toStringUrl());
         return new UrlConnectionStreamFetcher(executor, url);
     }
 }

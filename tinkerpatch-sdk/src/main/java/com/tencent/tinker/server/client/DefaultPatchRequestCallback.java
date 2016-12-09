@@ -85,7 +85,7 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
 
     @Override
     public boolean onPatchUpgrade(File file, Integer newVersion, Integer currentVersion) {
-        TinkerLog.w(TAG, "onPatchUpgrade, file:%s, newVersion:%d, currentVersion:%d",
+        TinkerLog.i(TAG, "onPatchUpgrade, file:%s, newVersion:%d, currentVersion:%d",
             file.getPath(), newVersion, currentVersion);
         TinkerServerClient client = TinkerServerClient.get();
         Context context = client.getContext();
@@ -172,7 +172,7 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
 
     @Override
     public void updatePatchConditions() {
-        TinkerLog.w(TAG, "updatePatchConditions");
+        TinkerLog.d(TAG, "updatePatchConditions");
         TinkerServerClient client = TinkerServerClient.get();
         // wifi condition should be updated
         client.updateTinkerCondition(TinkerServerClient.CONDITION_WIFI,
@@ -184,7 +184,7 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
             TinkerServerClient.SHARE_SERVER_PREFERENCE_CONFIG, Context.MODE_PRIVATE
         );
         int currentCount = sp.getInt(TINKER_DOWNLOAD_FAIL_TIMES, 0);
-        TinkerLog.w(TAG, "increaseDownloadError, current count:%d", currentCount);
+        TinkerLog.i(TAG, "increaseDownloadError, current count:%d", currentCount);
 
         if (currentCount >= TINKER_DOWNLOAD_FAIL_MAX_TIMES) {
             sp.edit().putInt(TINKER_DOWNLOAD_FAIL_TIMES, 0).commit();

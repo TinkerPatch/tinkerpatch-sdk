@@ -61,17 +61,15 @@ public final class Debugger {
             cu = null;
         }
 
-        if (cu == null) {
+        if (cu == null || cu.getCount() <= 0) {
             TinkerLog.w(TAG, "debugger not attached cu == null");
+            if (cu != null) {
+                cu.close();
+            }
             return;
         }
 
-        if (cu.getCount() <= 0) {
-            TinkerLog.w(TAG, "debugger not attached cu size == 0");
-            cu.close();
-            return;
-        }
-        TinkerLog.w(TAG, "debugger attached");
+        TinkerLog.i(TAG, "debugger attached");
 
         final int keyIdx = cu.getColumnIndex("key");
         final int typeIdx = cu.getColumnIndex("type");

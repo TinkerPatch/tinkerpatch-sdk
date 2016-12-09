@@ -69,22 +69,21 @@ public final class VersionUtils {
 
     public boolean isInGrayGroup(Integer gray) {
         boolean result = gray == null || gray >= grayValue;
-        TinkerLog.w(TAG, "isInGrayGroup return %b, gray value:%d and my gray value is %d", result, gray, grayValue);
+        TinkerLog.d(TAG, "isInGrayGroup return %b, gray value:%d and my gray value is %d", result, gray, grayValue);
         return result;
     }
 
     public boolean isUpdate(Integer version, String currentAppVersion) {
         if (!currentAppVersion.equals(appVersion)) {
-            TinkerLog.w(TAG, "update return true, appVersion from %s to %s", appVersion, currentAppVersion);
+            TinkerLog.d(TAG, "update return true, appVersion from %s to %s", appVersion, currentAppVersion);
             return true;
         }
         Integer current = getPatchVersion();
         if (version > current) {
-            TinkerLog.w(TAG, "update return true, patchVersion from %s to %s", current, version);
-
+            TinkerLog.d(TAG, "update return true, patchVersion from %s to %s", current, version);
             return true;
         } else {
-            TinkerLog.w(TAG, "update return false, target version is not latest. current version is:" + version);
+            TinkerLog.d(TAG, "update return false, target version is not latest. current version is:" + version);
             return false;
         }
     }
@@ -141,7 +140,7 @@ public final class VersionUtils {
 
     public void updateVersionProperty(String appVersion, int currentVersion,
                                       String patchMd5, int grayValue, String uuid) {
-        TinkerLog.i(TAG, "updateVersionProperty file path:"
+        TinkerLog.d(TAG, "updateVersionProperty file path:"
             + versionFile.getAbsolutePath()
             + " , appVersion: " + appVersion
             + " , patchVersion:" + currentVersion

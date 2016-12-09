@@ -66,7 +66,7 @@ public class TinkerServerManager {
     public static void installTinkerServer(Context context, Tinker tinker,
                                            int hours, String appKey, String appVersion, String channel) {
         final boolean debug = Debugger.getInstance(context).isDebug();
-        TinkerLog.w(TAG, String.format("installTinkerServer, debug value: %s appVersion: %s, channel: %s",
+        TinkerLog.i(TAG, String.format("installTinkerServer, debug value: %s appVersion: %s, channel: %s",
             String.valueOf(debug), appVersion, channel)
         );
         sTinkerServerClient = TinkerServerClient.init(

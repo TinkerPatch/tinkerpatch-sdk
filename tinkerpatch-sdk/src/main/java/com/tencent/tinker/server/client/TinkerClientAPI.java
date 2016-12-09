@@ -137,14 +137,14 @@ public class TinkerClientAPI {
                 if (response == null) {
                     callback.onPatchSyncFail(new RuntimeException("Can't sync with version: response == null"));
                 } else {
-                    TinkerLog.i(TAG, "sync response in update:" + response);
+                    TinkerLog.d(TAG, "sync response in update:" + response);
 
                     if (response.isRollback) {
                         callback.onPatchRollback();
                         return;
                     }
                     if (response.isPaused) {
-                        TinkerLog.i(TAG, "Needn't update, sync response is: " + response.toString()
+                        TinkerLog.d(TAG, "Needn't update, sync response is: " + response.toString()
                             + "\ngray: " + versionUtils.grayValue());
                         return;
                     }
@@ -172,7 +172,7 @@ public class TinkerClientAPI {
                         ).getAbsolutePath();
                         download(response.version, patchPath, downloadCallback);
                     } else {
-                        TinkerLog.i(TAG, "Needn't update, sync response is: " + response.toString()
+                        TinkerLog.d(TAG, "Needn't update, sync response is: " + response.toString()
                             + "\ngray: " + versionUtils.grayValue());
                     }
                 }
@@ -212,7 +212,7 @@ public class TinkerClientAPI {
                 }
                 try {
                     String response = ServerUtils.readStreamToString(data, ServerUtils.CHARSET);
-                    TinkerLog.e(TAG, "tinker server sync respond:" + response);
+                    TinkerLog.d(TAG, "tinker server sync respond:" + response);
 
                     SyncResponse.fromJson(response);
                     callback.onDataReady(response);

@@ -64,8 +64,7 @@ public class Conditions {
         try {
             return Helper.calcReversePolish(rpList, properties);
         } catch (Exception ignore) {
-            TinkerLog.e(TAG, "parse conditions error(have you written '==' as '='?): " + rules);
-            TinkerLog.w(TAG, "exception:" + ignore);
+            TinkerLog.e(TAG, "parse conditions error(have you written '==' as '='?): " + rules, ignore);
             return false;
         }
     }

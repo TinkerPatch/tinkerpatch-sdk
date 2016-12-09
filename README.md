@@ -21,7 +21,7 @@ repositories {
 
 ```java
 dependencies {
-    compile("com.tencent.tinker:tinkerpatch-sdk:0.3.2")
+    compile("com.tencent.tinker:tinkerpatch-sdk:0.3.3")
 }
 ```
 

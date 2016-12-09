@@ -1,7 +1,7 @@
 # TinkerPatch SDK
 
 [![Build Status](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk.svg?branch=master)](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk)
-[ ![Download](https://api.bintray.com/packages/simsun/maven/tinker-server-android/images/download.svg) ](https://bintray.com/simsun/maven/tinker-server-android/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/simsun/maven/tinkerpatch-sdk/images/download.svg) ](https://bintray.com/simsun/maven/tinkerpatch-sdk/_latestVersion)
 
 ## SDK接入
 
@@ -21,7 +21,7 @@ repositories {
 
 ```java
 dependencies {
-    compile("com.tencent.tinker:tinker-server-android:0.3.2")
+    compile("com.tencent.tinker:tinkerpatch-sdk:0.3.2")
 }
 ```
 

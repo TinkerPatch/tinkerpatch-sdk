@@ -9,7 +9,7 @@
 
 ### 第一步 添加gradle依赖
 
-gradle远程仓库依赖jcenter,例如 Tinker server sample中的[build.gradle](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/build.gradle).
+gradle远程仓库依赖jcenter,例如 Tinker server sample中的[build.gradle](https://github.com/TinkerPatch/tinkerpatch-sample/blob/master/app/build.gradle).
 
 ```java
 repositories {
@@ -36,7 +36,7 @@ dependencies {
 ```
 
 ### 第三步 配置AppKey与AppVersion
-在 TinkerPatch 平台中得到的 AppKey 以及 AppVersion记住，我们可以简单的将他们写入 [buildConfig](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/build.gradle#L86) 中:
+在 TinkerPatch 平台中得到的 AppKey 以及 AppVersion记住，我们可以简单的将他们写入`buildConfig`
 
 ```java
 buildConfigField "String", "APP_KEY", "\"f938475486f91936\""
@@ -46,7 +46,7 @@ buildConfigField "String", "APP_VERSION",  "\"3.0.0\""
 ### 第四步 初始化 TinkerPatch SDK
 
 我们提供默认的默认的实现，位于`TinkerManager`和`TinkerServerManager`.
-首先初始化 TinkerPatch 的 SDK，例如 Sample 中 [SampleApplicationLike类](https://github.com/simpleton/tinker_server_client/blob/master/tinker-server-sample/src/main/java/tinker/sample/android/app/SampleApplicationLike.java#L93)：
+首先初始化 TinkerPatch 的 SDK，例如 Sample 中 [SampleApplicationLike类](https://github.com/TinkerPatch/tinkerpatch-sample/blob/master/app/src/main/java/tinker/sample/android/app/SampleApplicationLike.java)：
 
 ```java
 //初始化Tinker
@@ -77,3 +77,4 @@ appKey和appVersion为第三部填写的配置，可以通过`BuildConfig.APP_KE
 所有与TinkerPatch后台交互的 API 都位于 TinkerServerClient.java中。
 
 [更多文档](http://tinkerpatch.com/Docs/intro)
+[Sample](https://github.com/TinkerPatch/tinkerpatch-sample)

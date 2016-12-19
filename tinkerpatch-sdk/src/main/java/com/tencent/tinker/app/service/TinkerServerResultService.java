@@ -88,7 +88,7 @@ public class TinkerServerResultService extends DefaultTinkerResultService {
         }
 
         //repair current patch fail, just clean!
-        if (!result.isSuccess && !result.isUpgradePatch) {
+        if (!result.isSuccess) {
             //if you have not install tinker this moment, you can use TinkerApplicationHelper api
             Tinker.with(getApplicationContext()).cleanPatch();
         }

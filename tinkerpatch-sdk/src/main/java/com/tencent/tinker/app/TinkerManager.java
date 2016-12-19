@@ -28,7 +28,6 @@ import com.tencent.tinker.app.reporter.TinkerServerPatchListener;
 import com.tencent.tinker.app.service.TinkerServerResultService;
 import com.tencent.tinker.lib.listener.PatchListener;
 import com.tencent.tinker.lib.patch.AbstractPatch;
-import com.tencent.tinker.lib.patch.RepairPatch;
 import com.tencent.tinker.lib.patch.UpgradePatch;
 import com.tencent.tinker.lib.reporter.DefaultPatchReporter;
 import com.tencent.tinker.lib.reporter.LoadReporter;
@@ -63,12 +62,9 @@ public final class TinkerManager {
         PatchListener patchListener = new TinkerServerPatchListener(appLike.getApplication());
         //you can set your own upgrade patch if you need
         AbstractPatch upgradePatchProcessor = new UpgradePatch();
-        //you can set your own repair patch if you need
-        AbstractPatch repairPatchProcessor = new RepairPatch();
-
         TinkerInstaller.install(appLike,
             loadReporter, patchReporter, patchListener,
-            TinkerServerResultService.class, upgradePatchProcessor, repairPatchProcessor
+            TinkerServerResultService.class, upgradePatchProcessor
         );
 
         isInstalled = true;

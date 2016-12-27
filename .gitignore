@@ -38,3 +38,10 @@ captures/
 
 # Keystore files
 *.jks
+
+.idea
+test.tmp
+reports
+.DS_Store
+
+example

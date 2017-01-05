@@ -1,6 +1,6 @@
 # TinkerPatch SDK
 
-[![Build Status](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk.svg?branch=master)](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk)
+[![Build Status](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk.svg?branch=develop)](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk)
 [ ![Download](https://api.bintray.com/packages/simsun/maven/tinkerpatch-sdk/images/download.svg) ](https://bintray.com/simsun/maven/tinkerpatch-sdk/_latestVersion)
 
 ## SDK接入

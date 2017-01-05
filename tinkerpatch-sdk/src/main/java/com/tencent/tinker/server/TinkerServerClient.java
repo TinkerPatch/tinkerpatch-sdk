@@ -231,21 +231,48 @@ public class TinkerServerClient {
         checkConfigInterval = (long) hours * 3600 * 1000;
     }
 
+    public boolean checkParameter() {
+        return clientAPI.getAppKey() != null && clientAPI.getAppVersion() != null;
+    }
+
     /**
-     * 上报补丁成功
-     * @param patchVersion
+     * 上报补丁下载成功
+     * @param patchVersion 补丁包版本号
      */
-    public void reportPatchSuccess(Integer patchVersion) {
-        TinkerLog.i(TAG, "tinker server report patch success, patchVersion:%d", patchVersion);
-        clientAPI.reportSuccess(patchVersion);
+    public void reportPatchDownloadSuccess(Integer patchVersion) {
+        if (!checkParameter()) {
+            TinkerLog.e(TAG, "check parameter fail, appKey or appVersion is null, "
+                + "reportPatchDownloadSuccess just return");
+            return;
+        }
+        TinkerLog.i(TAG, "tinker server report patch download success, patchVersion:%d", patchVersion);
+        clientAPI.reportDownloadSuccess(patchVersion);
+    }
+
+    /**
+     * 上报补丁应用成功
+     * @param patchVersion 补丁包版本号
+     */
+    public void reportPatchApplySuccess(Integer patchVersion) {
+        if (!checkParameter()) {
+            TinkerLog.e(TAG, "check parameter fail, appKey or appVersion is null, "
+                + "reportPatchApplySuccess just return");
+            return;
+        }
+        TinkerLog.i(TAG, "tinker server report patch apply success, patchVersion:%d", patchVersion);
+        clientAPI.reportApplySuccess(patchVersion);
     }
 
     /**
      * 上报补丁异常
-     * @param patchVersion
+     * @param patchVersion 补丁包版本号
      * @param errorCode {@link DefaultPatchRequestCallback}
      */
     public void reportPatchFail(Integer patchVersion, int errorCode) {
+        if (!checkParameter()) {
+            TinkerLog.e(TAG, "check parameter fail, appKey or appVersion is null, reportPatchFail just return");
+            return;
+        }
         TinkerLog.i(TAG, "tinker server report patch fail, patchVersion:%d, errorCode:%d", patchVersion, errorCode);
         clientAPI.reportFail(patchVersion, errorCode);
     }

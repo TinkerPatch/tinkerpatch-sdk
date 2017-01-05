@@ -47,9 +47,9 @@ import java.io.InputStream;
 public class TinkerClientAPI {
     public static final String TAG = "Tinker.ClientImpl";
 
-    private static final String REPORT_SUCCESS_URL = "http://stat.tinkerpatch.com/succ.php";
-    private static final String REPORT_FAIL_URL    = "http://stat.tinkerpatch.com/err.php";
-
+    private static final String REPORT_APPLY_SUCCESS_URL    = "http://stat.tinkerpatch.com/succApply.php";
+    private static final String REPORT_DOWNLOAD_SUCCESS_URL = "http://stat.tinkerpatch.com/succ.php";
+    private static final String REPORT_FAIL_URL             = "http://stat.tinkerpatch.com/err.php";
 
     private static volatile TinkerClientAPI clientAPI;
     final Conditions   conditions;
@@ -293,16 +293,28 @@ public class TinkerClientAPI {
     }
 
     /**
-     * report success http://stat.tinkerpatch.com/succ.php
-     * k:  appKey
-     * av: appVersion，当前app版本号
-     * pv: patchVersion，应用的补丁版本号
-     * t:  平台类型，填数字1
-     *
+     * report download success http://stat.tinkerpatch.com/succDownload.php
      * @param patchVersion patchVersion
      */
-    public void reportSuccess(Integer patchVersion) {
-        Uri.Builder urlBuilder = Uri.parse(REPORT_SUCCESS_URL).buildUpon();
+    public void reportDownloadSuccess(Integer patchVersion) {
+        reportSuccess(patchVersion, REPORT_DOWNLOAD_SUCCESS_URL);
+    }
+
+    /**
+     * report apply success http://stat.tinkerpatch.com/succ.php
+     * @param patchVersion patchVersion
+     */
+    public void reportApplySuccess(Integer patchVersion) {
+        reportSuccess(patchVersion, REPORT_APPLY_SUCCESS_URL);
+    }
+
+    /**
+     * Report success to back
+     * @param patchVersion patchVersion
+     * @param reportUrl report url
+     */
+    private void reportSuccess(final Integer patchVersion, final String reportUrl) {
+        Uri.Builder urlBuilder = Uri.parse(reportUrl).buildUpon();
         final String url = urlBuilder.build().toString();
         SuccessReport report = new SuccessReport(this.appKey, this.appVersion, String.valueOf(patchVersion));
         TinkerClientUrl tkClientUrl = new TinkerClientUrl.Builder()
@@ -314,25 +326,22 @@ public class TinkerClientAPI {
         dataFetcher.loadData(new DataFetcher.DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-                TinkerLog.d(TAG, "reportSuccess successfully:"
-                    + ServerUtils.readStreamToString(data, ServerUtils.CHARSET));
+                TinkerLog.d(TAG,
+                    String.format("reportSuccess successfully, url:%s, response: %s",
+                        reportUrl,
+                        ServerUtils.readStreamToString(data, ServerUtils.CHARSET))
+                );
             }
 
             @Override
             public void onLoadFailed(Exception e) {
-                TinkerLog.e(TAG, "reportSuccess error", e);
+                TinkerLog.e(TAG, "reportSuccess error, url: " + reportUrl, e);
             }
         });
     }
 
     /**
-     * report fail http://stat.tinkerpatch.com/err.php
-     * k:  appKey
-     * av: appVersion，当前app版本号
-     * pv: patchVersion，应用的补丁版本号
-     * t:  平台类型，填数字1
-     * code: 错误码
-     *
+     * Report fail to tinkerpatch backend
      * @param patchVersion patchVersion
      * @param errCode      errCode
      */

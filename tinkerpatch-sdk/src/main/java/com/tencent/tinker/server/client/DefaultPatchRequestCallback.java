@@ -89,6 +89,7 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
             file.getPath(), newVersion, currentVersion);
         TinkerServerClient client = TinkerServerClient.get();
         Context context = client.getContext();
+        client.reportPatchDownloadSuccess(newVersion);
 
         ShareSecurityCheck securityCheck = new ShareSecurityCheck(context);
         if (!securityCheck.verifyPatchMetaSignature(file)) {
@@ -109,26 +110,28 @@ public class DefaultPatchRequestCallback implements PatchRequestCallback {
     private void tryPatchFile(File patchFile, Integer newVersion) {
         TinkerServerClient client = TinkerServerClient.get();
         Context context = client.getContext();
-
         //In order to calculate the user number, just report success here
-        client.reportPatchSuccess(newVersion);
         String patchMd5 = SharePatchFileUtil.getMD5(patchFile);
         //update version
         client.updateTinkerVersion(newVersion, patchMd5);
         //delete old patch sever file
-        File[] files = ServerUtils.getServerDirectory(context).listFiles();
-        if (files != null) {
-            String currentName = patchFile.getName();
-            for (File file : files) {
-                String fileName = file.getName();
-                if (fileName.equals(currentName) || fileName.equals(ServerUtils.TINKER_VERSION_FILE)) {
-                    continue;
+        File serverDir = ServerUtils.getServerDirectory(context);
+        if (serverDir != null) {
+            File[] files = serverDir.listFiles();
+            if (files != null) {
+                String currentName = patchFile.getName();
+                for (File file : files) {
+                    String fileName = file.getName();
+                    if (fileName.equals(currentName) || fileName.equals(ServerUtils.TINKER_VERSION_FILE)) {
+                        continue;
+                    }
+                    SharePatchFileUtil.safeDeleteFile(file);
                 }
-                SharePatchFileUtil.safeDeleteFile(file);
             }
+            client.reportPatchApplySuccess(newVersion);
+            //try install
+            TinkerInstaller.onReceiveUpgradePatch(context, patchFile.getAbsolutePath());
         }
-        //try install
-        TinkerInstaller.onReceiveUpgradePatch(context, patchFile.getAbsolutePath());
     }
 
     @Override

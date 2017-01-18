@@ -22,3 +22,5 @@
 [Sample](https://github.com/TinkerPatch/tinkerpatch-sample)
 
 [Easy-sample](https://github.com/TinkerPatch/tinkerpatch-easy-sample)
+
+[Flavors-sample](https://github.com/TinkerPatch/tinkerpatch-flavors-sample)

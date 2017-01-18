@@ -1,0 +1,155 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+version = libraryVersion
+project.archivesBaseName = ext.artifact
+
+def isAndroidProject = project.plugins.hasPlugin('com.android.application') || project.plugins.hasPlugin('com.android.library')
+if (isAndroidProject) {
+    def releaseVariants = project.android.libraryVariants.findAll {
+        it.buildType.name.equalsIgnoreCase('release')
+    }
+
+    task androidJavadocs(type: Javadoc, dependsOn: 'compileReleaseJavaWithJavac') {
+        source = releaseVariants.collect { it.javaCompile.source }
+        classpath = files(releaseVariants.collect {
+            files(it.javaCompile.classpath.files, project.android.bootClasspath)
+        })
+
+        options {
+            encoding "UTF-8"
+            charSet 'UTF-8'
+            title "$libraryName $libraryVersion"
+            author true
+            version true
+            links('http://docs.oracle.com/javase/7/docs/api/')
+            linksOffline('http://d.android.com/reference', "${android.sdkDirectory}/docs/reference")
+        }
+
+        exclude '**/BuildConfig.java'
+        exclude '**/R.java'
+    }
+
+    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+        classifier = 'javadoc'
+        from androidJavadocs.destinationDir
+        baseName "${project.name}${JAR_POSTFIX}"
+    }
+
+    task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from project.android.sourceSets.main.java.source
+        baseName "${project.name}${JAR_POSTFIX}"
+    }
+
+
+    artifacts {
+        archives androidSourcesJar
+        archives androidJavadocsJar
+    }
+
+    publishing {
+        publications {
+            TinkerServer(MavenPublication) {
+                groupId = group
+                artifactId = project.getName()
+                version = version
+                // Tell maven to prepare the generated "*.aar" file for publishing
+                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+                artifact androidJavadocsJar
+            }
+        }
+    }
+
+} else if (project.plugins.hasPlugin('java')) { // Java libraries
+    println "[bintray.gradle]java project"
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+    task javadocsJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+    artifacts {
+        archives sourcesJar
+        archives javadocsJar
+    }
+
+    publishing {
+        publications {
+            TinkerServer(MavenPublication) {
+                from components.java
+                groupId = group
+                artifactId = project.getName()
+                version = version
+            }
+        }
+    }
+}
+
+task buildAndPublishLocalMaven(dependsOn: ['build', 'publishTinkerServerPublicationToMavenLocal']) {}
+
+logger.info("Published artifacts in ${configurations.archives}:")
+configurations.archives.artifacts.files.files.each { logger.info("\t$it"); }
+
+Properties properties = new Properties()
+try {
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+} catch (ignored) {
+    properties.setProperty("bintray.user", "user")
+    properties.setProperty("bintray.apikey", "key")
+    properties.setProperty("bintray.gpg.password", "pwd")
+}
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        publish = true
+        dryRun = false
+        publicDownloadNumbers = true
+        version {
+            desc = libraryDescription
+            gpg {
+                sign = true //Determines whether to GPG sign the files. The default is false
+                passphrase = properties.getProperty("bintray.gpg.password")
+                //Optional. The passphrase for GPG signing'
+            }
+        }
+    }
+}
+
+//https://www.jfrog.com/confluence/display/RTF/Gradle+Artifactory+Plugin
+// for SNAPSHOT VERSION
+
+//apply plugin: "com.jfrog.artifactory"
+//artifactory {
+//    contextUrl = 'http://oss.jfrog.org/artifactory' //The base Artifactory URL if not overridden by the publisher/resolver
+//    resolve {
+//        repository {
+//            repoKey = 'libs-release'
+//        }
+//    }
+//    publish {
+//        repository {
+//            repoKey = 'oss-snapshot-local' //The Artifactory repository key to publish to
+//            username = bintray.user
+//            password = bintray.key
+//            maven = true
+//        }
+//        defaults {
+//            //这里的名字和前面bintray.configurations的值一致即可，会将其包含的输出上传到jfrog上去
+//            publishConfigs('archives')
+//        }
+//    }
+//}

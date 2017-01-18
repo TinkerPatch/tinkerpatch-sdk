@@ -8,6 +8,9 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath "com.tencent.tinker:tinker-patch-gradle-plugin:${TINKER_VERSION}"
     }
 }
 
@@ -16,4 +19,61 @@ allprojects {
         //mavenLocal()
         jcenter()
     }
+}
+// See http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html.
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
+
+subprojects {
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = JavaVersion.VERSION_1_7
+        targetCompatibility = JavaVersion.VERSION_1_7
+    }
+}
+
+subprojects { project ->
+    if (project.name.contains("sample") || project.name.contains("example")) { return; }
+    repositories {
+        jcenter()
+    }
+    apply plugin: 'checkstyle'
+
+    checkstyle {
+        toolVersion = '6.12.1'
+    }
+
+    checkstyle {
+        configFile = rootProject.file('checkstyle.xml')
+        configProperties.checkStyleConfigDir = rootProject.rootDir
+    }
+
+    task checkstyle(type: Checkstyle) {
+        source 'src'
+        include '**/*.java'
+        exclude '**/gen/**'
+
+        // empty classpath
+        classpath = files()
+    }
+
+    afterEvaluate {
+        if (project.tasks.findByName('check')) {
+            check.dependsOn('checkstyle')
+        }
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }

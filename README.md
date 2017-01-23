@@ -1,4 +1,5 @@
 # TinkerPatch SDK
+[![Slack](http://slack.tinkerpatch.com/badge.svg)](http://slack.tinkerpatch.com)
 
 ### 一键集成SDK (推荐使用) [![Download](https://api.bintray.com/packages/simsun/maven/tinkerpatch-android-sdk/images/download.svg) ](https://bintray.com/simsun/maven/tinkerpatch-android-sdk/_latestVersion)
 无需修改项目结构，集成简单、方便，

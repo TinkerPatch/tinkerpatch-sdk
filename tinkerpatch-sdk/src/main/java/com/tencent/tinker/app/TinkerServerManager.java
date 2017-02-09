@@ -37,6 +37,7 @@ import com.tencent.tinker.loader.shareutil.SharePatchFileUtil;
 import com.tencent.tinker.server.TinkerServerClient;
 import com.tencent.tinker.server.client.ConfigRequestCallback;
 import com.tencent.tinker.server.client.DefaultPatchRequestCallback;
+import com.tencent.tinker.server.client.PatchRequestCallback;
 import com.tencent.tinker.server.utils.Debugger;
 
 import org.json.JSONException;
@@ -63,8 +64,44 @@ public class TinkerServerManager {
      * @param appVersion 在Tinkerpatch中填写的appVersion
      * @param channel 发布的渠道名称，由于GooglePlay渠道的政策限制，我们会停止所有channel中含有google关键字的动态下发功能。
      */
-    public static void installTinkerServer(Context context, Tinker tinker,
-                                           int hours, String appKey, String appVersion, String channel) {
+    public static void installTinkerServer(
+        Context context,
+        Tinker tinker,
+        int hours,
+        String appKey,
+        String appVersion,
+        String channel
+    ) {
+        installTinkerServer(
+            context,
+            tinker,
+            hours,
+            appKey,
+            appVersion,
+            channel,
+            new TinkerServerPatchRequestCallback()
+        );
+    }
+
+    /**
+     * 初始化 TinkerServer 实例
+     * @param context context
+     * @param tinker {@link Tinker} 实例
+     * @param hours  访问服务器的时间间隔, 单位为小时, 应为 >= 0
+     * @param appKey 从Tinkerpatch中得到的appKey
+     * @param appVersion 在Tinkerpatch中填写的appVersion
+     * @param channel 发布的渠道名称，由于GooglePlay渠道的政策限制，我们会停止所有channel中含有google关键字的动态下发功能。
+     * @param patchRequestCallback {@link PatchRequestCallback} patch请求的callback
+     */
+    public static void installTinkerServer(
+        Context context,
+        Tinker tinker,
+        int hours,
+        String appKey,
+        String appVersion,
+        String channel,
+        PatchRequestCallback patchRequestCallback
+    ) {
         final boolean debug = Debugger.getInstance(context).isDebug();
         TinkerLog.i(TAG, String.format("installTinkerServer, debug value: %s appVersion: %s, channel: %s",
             String.valueOf(debug), appVersion, channel)
@@ -75,7 +112,7 @@ public class TinkerServerManager {
             appKey,
             appVersion,
             debug,
-            new TinkerServerPatchRequestCallback()
+            patchRequestCallback
         );
         // add channel condition
         sTinkerServerClient.updateTinkerCondition(CONDITION_CHANNEL, channel);

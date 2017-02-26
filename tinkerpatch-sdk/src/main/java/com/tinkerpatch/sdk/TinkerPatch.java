@@ -96,6 +96,16 @@ public abstract class TinkerPatch {
     }
 
     /**
+     * 获得当前的补丁版本,
+     * 在TinkerPatch sdk 1.1.4 版本添加
+     *
+     * @return 当前补丁版本号。（此版本号由后台管理，且单调递增）
+     */
+    public Integer getPatchVersion() {
+        return 0;
+    }
+
+    /**
      * 向后台获取是否有补丁包更新,默认的访问间隔为3个小时
      * 若参数为true,即每次调用都会真正的访问后台配置
      *

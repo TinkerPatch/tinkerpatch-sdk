@@ -15,7 +15,7 @@ buildscript {
     }
     dependencies {
         // TinkerPatch 插件
-        classpath "com.tinkerpatch.sdk:tinkerpatch-gradle-plugin:1.1.0"
+        classpath "com.tinkerpatch.sdk:tinkerpatch-gradle-plugin:1.1.4"
     }
 }
 ```
@@ -30,7 +30,7 @@ buildscript {
 dependencies {
     // 若使用annotation需要单独引用,对于tinker的其他库都无需再引用
     provided("com.tencent.tinker:tinker-android-anno:1.7.7")
-    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.1.0")
+    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.1.4")
 }
 ```
 **注意,若使用 annotation 自动生成 Application， 需要单独引入 Tinker的 tinker-android-anno 库。除此之外，我们无需再单独引入 tinker 的其他库。**

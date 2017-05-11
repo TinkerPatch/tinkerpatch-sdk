@@ -36,11 +36,20 @@ android {
     defaultConfig {
         consumerProguardFiles 'proguard-rules.txt'
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
+    compile ("com.tencent.tinker:tinker-android-lib:${TINKER_VERSION}") { changing = true }
+    compile ("com.tencent.tinker:tinker-android-loader:${TINKER_VERSION}") { changing = true }
+    compile ("com.tencent.tinker:aosp-dexutils:${TINKER_VERSION}") { changing = true }
+    compile ("com.tencent.tinker:bsdiff-util:${TINKER_VERSION}") { changing = true }
+    compile ("com.tencent.tinker:tinker-commons:${TINKER_VERSION}") { changing = true }
 
     testCompile 'junit:junit:4.12'
     testCompile "org.powermock:powermock-module-junit4:1.6.2"

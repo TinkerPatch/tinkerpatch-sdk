@@ -37,7 +37,9 @@ public abstract class TinkerPatch {
      * 设置Tinker相关Log的真正实现,用于自定义日志输出
      * @param imp
      */
-    public static void setLogIml(TinkerLog.TinkerLogImp imp) {}
+    public static void setLogIml(TinkerLog.TinkerLogImp imp) {
+        // nothing
+    }
 
     /**
      * 用默认的构造参数初始化TinkerPatch的SDK
@@ -69,9 +71,7 @@ public abstract class TinkerPatch {
      * 获得ApplicationLike的实例
      * @return
      */
-    public ApplicationLike getApplcationLike() {
-        return null;
-    }
+    public abstract ApplicationLike getApplcationLike();
 
     /**
      * 反射补丁的Library path, 自动加载library

@@ -26,6 +26,7 @@ package com.tencent.tinker.server.urlconnection;
 
 
 import com.tencent.tinker.lib.util.TinkerLog;
+import com.tencent.tinker.loader.shareutil.SharePatchFileUtil;
 import com.tencent.tinker.server.model.DataFetcher;
 import com.tencent.tinker.server.model.TinkerClientUrl;
 import com.tencent.tinker.server.utils.Preconditions;
@@ -43,8 +44,7 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
 
     private static final String TAG = "Tinker.UrlConnectionFetcher";
     private final TinkerClientUrl tkUrl;
-    private final Executor        executor;
-    InputStream stream;
+    private Executor        executor;
 
     public UrlConnectionStreamFetcher(Executor executor, TinkerClientUrl tkUrl) {
         this.tkUrl = tkUrl;
@@ -56,7 +56,6 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
         ConnectionWorker worker = new ConnectionWorker(tkUrl, new DataCallback<InputStream>() {
             @Override
             public void onDataReady(InputStream data) {
-                stream = data;
                 callback.onDataReady(data);
             }
 
@@ -65,18 +64,16 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
                 callback.onLoadFailed(e);
             }
         });
-        executor.execute(worker);
+        if (executor != null) {
+            executor.execute(worker);
+        } else {
+            TinkerLog.e(TAG, "Executor is null");
+        }
     }
 
     @Override
     public void cleanup() {
-        try {
-            if (stream != null) {
-                stream.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.executor = null;
     }
 
     @Override
@@ -101,6 +98,7 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
 
         @Override
         public void run() {
+            InputStream inputStream = null;
             try {
                 HttpURLConnection conn = (HttpURLConnection) url.toURL().openConnection();
                 conn.setRequestMethod(url.getMethod());
@@ -126,11 +124,13 @@ public class UrlConnectionStreamFetcher implements DataFetcher<InputStream> {
                 }
                 conn.connect();
                 TinkerLog.d(TAG, "response code " + conn.getResponseCode() + " msg: " + conn.getResponseMessage());
-                InputStream inputStream = conn.getInputStream();
+                inputStream = conn.getInputStream();
                 this.callback.onDataReady(inputStream);
             } catch (IOException e) {
                 e.printStackTrace();
                 this.callback.onLoadFailed(e);
+            } finally {
+                SharePatchFileUtil.closeQuietly(inputStream);
             }
         }
     }

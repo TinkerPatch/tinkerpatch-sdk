@@ -1,4 +1,5 @@
 # TinkerPatch SDK
+[![Build Status](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk.svg?branch=master)](https://travis-ci.org/TinkerPatch/tinkerpatch-sdk)
 [![Join Slack](https://slack.tinkerpatch.com/badge.svg)](https://slack.tinkerpatch.com)
 
 
@@ -17,12 +18,14 @@
 
 
 
+### 例子
+[一键接入例子](https://github.com/TinkerPatch/tinkerpatch-easy-sample)
+
+[完成ApplicationLike改造的例子](https://github.com/TinkerPatch/tinkerpatch-sample)
+
+[使用多Flavor和加固的例子](https://github.com/TinkerPatch/tinkerpatch-flavors-sample)
+
+[结合AndResGuard的例子](https://github.com/TinkerPatch/tinkerpatch-andresguard-sample)
 
 ### 其他
 [更多文档](http://tinkerpatch.com/Docs/intro)
-
-[Sample](https://github.com/TinkerPatch/tinkerpatch-sample)
-
-[Easy-sample](https://github.com/TinkerPatch/tinkerpatch-easy-sample)
-
-[Flavors-sample](https://github.com/TinkerPatch/tinkerpatch-flavors-sample)

@@ -25,7 +25,11 @@
 
 [使用多Flavor和加固的例子](https://github.com/TinkerPatch/tinkerpatch-flavors-sample)
 
-[结合AndResGuard的例子](https://github.com/TinkerPatch/tinkerpatch-andresguard-sample)
+[使用AndResGuard的例子](https://github.com/TinkerPatch/tinkerpatch-andresguard-sample)
+
+[使用Kotlin的例子](https://github.com/TinkerPatch/tinkerpatch-kotlin)
+
+[使用Rxjava2和Retrolambda的例子](https://github.com/TinkerPatch/tinkerpatch-rxjava2)
 
 ### 其他
 [更多文档](http://tinkerpatch.com/Docs/intro)

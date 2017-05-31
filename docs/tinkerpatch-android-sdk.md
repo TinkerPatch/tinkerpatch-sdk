@@ -17,12 +17,12 @@ buildscript {
     }
     dependencies {
         // TinkerPatch 插件
-        classpath "com.tinkerpatch.sdk:tinkerpatch-gradle-plugin:1.1.6"
+        classpath "com.tinkerpatch.sdk:tinkerpatch-gradle-plugin:1.1.7"
     }
 }
 ```
 
-**注意，在这里 SDK 使用了 fat 打包的模式，我们不能再引入任何 Tinker 的相关依赖，否则会造成版本冲突。当前 SDK 是基于 tinker 1.7.9 内核开发的。**
+**注意，在这里 SDK 使用了 fat 打包的模式，我们不能再引入任何 Tinker 的相关依赖，否则会造成版本冲突。当前 SDK 是基于 tinker 1.7.11 内核开发的。**
 
 ## 第二步 集成 TinkerPatch SDK
 
@@ -31,8 +31,8 @@ buildscript {
 ```
 dependencies {
     // 若使用annotation需要单独引用,对于tinker的其他库都无需再引用
-    provided("com.tencent.tinker:tinker-android-anno:1.7.9")
-    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.1.6")
+    provided("com.tinkerpatch.tinker:tinker-android-anno:1.7.11")
+    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.1.7")
 }
 ```
 **注意,若使用 annotation 自动生成 Application， 需要单独引入 Tinker 的 tinker-android-anno 库。除此之外，我们无需再单独引入 tinker 的其他库。**
@@ -106,7 +106,7 @@ public class SampleApplication extends Application {
         tinkerApplicationLike = TinkerPatchApplicationLike.getTinkerPatchApplicationLike();
 
         // 初始化TinkerPatch SDK, 更多配置可参照API章节中的,初始化SDK
-        TinkerPatch.init(this)
+        TinkerPatch.init(tinkerApplicationLike)
             .reflectPatchLibrary()
             .setPatchRollbackOnScreenOff(true)
             .setPatchRestartOnSrceenOff(true)
@@ -259,7 +259,7 @@ TinkerPatch 的使用步骤非常简单，一般来说可以参考以下几个�
 | 乐加固   | Tested  |
 | 爱加密   | Tested |
 | 梆梆加固 | Tested  |
-| 360加固 | TODO（对特定场景的Android N支持还存在问题）|
+| 360加固 | Tested |
 | 其他    | 请自行测试，只要满足下面规则的都可以支持 |
 
 这里是否支持加固，需要加固厂商明确以下两点：

@@ -17,7 +17,7 @@ buildscript {
     }
     dependencies {
         // TinkerPatch 插件
-        classpath "com.tinkerpatch.sdk:tinkerpatch-gradle-plugin:1.1.7"
+        classpath "com.tinkerpatch.sdk:tinkerpatch-gradle-plugin:1.2.2"
     }
 }
 ```
@@ -31,8 +31,8 @@ buildscript {
 ```
 dependencies {
     // 若使用annotation需要单独引用,对于tinker的其他库都无需再引用
-    provided("com.tinkerpatch.tinker:tinker-android-anno:1.7.11")
-    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.1.7")
+    provided("com.tinkerpatch.tinker:tinker-android-anno:1.9.2")
+    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.2.2")
 }
 ```
 **注意,若使用 annotation 自动生成 Application， 需要单独引入 Tinker 的 tinker-android-anno 库。除此之外，我们无需再单独引入 tinker 的其他库。**
@@ -48,12 +48,17 @@ apply from: 'tinkerpatch.gradle'
 
 ```
 tinkerpatchSupport {
-    tinkerpatchSupport {
     /** 可以在debug的时候关闭 tinkerPatch **/
     tinkerEnable = true
 
     /** 是否使用一键接入功能  **/
     reflectApplication = true
+
+    /** 是否开启加固模式，只有在使用加固时才能开启此开关 **/
+    protectedApp = false
+
+    /** 补丁是否支持新增 Activity **/
+    supportComponent = false
 
     autoBackupApkPath = "${bakPath}"
 
@@ -84,7 +89,8 @@ tinkerpatchSupport {
 | baseProguardMappingFile       | "" | `基准包的 Proguard mapping.txt 文件路径, 对应 tinker 插件 applyMapping 参数`；在编译新的 apk 时候，我们希望通过保持基准 apk 的 proguard 混淆方式，从而减少补丁包的大小。这是强烈推荐的，编译补丁包时，我们推荐输入基准 apk 生成的 mapping.txt 文件。   |  
 | baseResourceRFile       | "" |  `基准包的资源 R.txt 文件路径, 对应 tinker 插件 applyResourceMapping 参数`；在编译新的apk时候，我们希望通基准 apk 的 R.txt 文件来保持 Resource Id 的分配，这样不仅可以减少补丁包的大小，同时也避免由于 Resource Id 改变导致 remote view 异常。   |  
 | protectedApp | false | 是否开启支持加固，**注意：只有在使用加固时才能开启此开关**|
-
+| supportComponent | false | 是否开启支持在补丁包中动态增加Activity |
+| backupFileNameFormat | '${appName}-${variantName}' | 格式化命名备份文件 **这里请使用单引号** |
 
 **一般来说，我们无需修改引用 android 的编译配置，也不用修改 tinker 插件原来的配置**。针对特殊需求，具体的参数含义可参考 Tinker 文档:[Tinker 接入指南](https://github.com/Tencent/tinker/wiki/Tinker-%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97).
 
@@ -266,3 +272,31 @@ TinkerPatch 的使用步骤非常简单，一般来说可以参考以下几个�
 
 1. 不能提前导入类；
 2. 在art平台若要编译oat文件，需要将内联取消。
+
+### 3. 重命名备份文件
+
+```
+  /**
+    * （可选）重命名备份文件的格式化字符串，默认为'${appName}-${variantName}'
+    *
+    * Available vars:
+    * 1. projectName
+    * 2. appName
+    * 3. packageName
+    * 4. buildType
+    * 5. versionName
+    * 6. versionCode
+    * 7. buildTime
+    * 8. fileSHA1
+    * 9. flavorName
+    * 10. variantName
+    *
+    * default value: '${appName}-${variantName}'
+    * Note: plz use single-quotation wrapping this format string
+   ** /
+   backupFileNameFormat = '${appName}-${variantName}'
+```
+
+### 4. 对新增Activity的支持
+
+基础包必须设置`supportComponent=true`

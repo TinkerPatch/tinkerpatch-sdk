@@ -1,5 +1,8 @@
 # 定制化SDK 接入
 
+**作者已不再维护此SDK，建议使用 一键集成SDK**
+
+
 这里只是针对 TinkerPatch SDK的使用说明，对于 Tinker 的基本用法，可参考[ Tinker接入指南](https://github.com/Tencent/tinker/wiki/Tinker-%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97)。
 
 ## 第一步 添加gradle依赖

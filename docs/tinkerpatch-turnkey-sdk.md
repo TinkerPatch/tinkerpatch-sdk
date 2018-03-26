@@ -17,12 +17,12 @@ buildscript {
     }
     dependencies {
         // TinkerPatch 插件
-        classpath "com.tinkerpatch.sdk:tinkerpatch-gradle-plugin:1.2.2"
+        classpath "com.tinkerpatch.sdk:tinkerpatch-gradle-plugin:1.2.5"
     }
 }
 ```
 
-**注意，在这里 SDK 使用了 fat 打包的模式，我们不能再引入任何 Tinker 的相关依赖，否则会造成版本冲突。当前 SDK 是基于 tinker 1.7.11 内核开发的。**
+**注意，在这里 SDK 使用了 fat 打包的模式，我们不能再引入任何 Tinker 的相关依赖，否则会造成版本冲突。**
 
 ## 第二步 集成 TinkerPatch SDK
 
@@ -31,8 +31,8 @@ buildscript {
 ```
 dependencies {
     // 若使用annotation需要单独引用,对于tinker的其他库都无需再引用
-    provided("com.tinkerpatch.tinker:tinker-android-anno:1.9.2")
-    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.2.2")
+    provided("com.tinkerpatch.tinker:tinker-android-anno:1.9.5")
+    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.2.5")
 }
 ```
 **注意,若使用 annotation 自动生成 Application， 需要单独引入 Tinker 的 tinker-android-anno 库。除此之外，我们无需再单独引入 tinker 的其他库。**
